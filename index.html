@@ -30,6 +30,7 @@
       <div id="box-shadow-generator">
         <div id="controls">
           <h2>Configurações da Sombra:</h2>
+          <div id="layer-controls-container"></div>
           <div id="shadow-controls-container"></div>
 
           <h2 class="section-title-secondary">Forma & Tamanho</h2>
@@ -44,6 +45,20 @@
 
         <div id="preview">
           <h2>Preview do efeito:</h2>
+          
+          <div class="preview-controls">
+            <div class="presets-bar">
+               <!-- Presets generated via JS or hardcoded -->
+               <button class="preset-btn" data-preset="soft">Soft</button>
+               <button class="preset-btn" data-preset="neumorphism">Neumorph</button>
+               <button class="preset-btn" data-preset="cristal">Glass</button>
+            </div>
+            <div class="color-config">
+               <label title="Cor do Fundo"><input type="color" id="bg-color-picker" value="#f3f4f6"></label>
+               <label title="Cor do Objeto"><input type="color" id="obj-color-picker" value="#ffffff"></label>
+            </div>
+          </div>
+
           <div id="box"></div>
         </div>
       </div>
@@ -55,6 +70,7 @@
           <div class="tabs-header">
              <button class="tab-btn active" data-tab="css">CSS</button>
              <button class="tab-btn" data-tab="dart">Dart</button>
+             <button class="tab-btn" data-tab="tailwind">Tailwind</button>
           </div>
 
           <div id="rules-area">
@@ -71,6 +87,10 @@
                 <p>📦 Pacote necessário:</p>
                 <code>flutter pub add flutter_inset_box_shadow</code>
               </div>
+            </div>
+            
+            <div id="tailwind-content" class="tab-content">
+               <p id="tailwind-rule">class="<span></span>"</p>
             </div>
           </div>
         </div>

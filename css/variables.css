@@ -18,11 +18,13 @@
   --text-light: #ffffff;
   
   /* Glass Effect Tokens */
-  --glass-bg: rgba(255, 255, 255, 0.85); /* Increased opacity for better text contrast background */
+  --glass-bg: rgba(255, 255, 255, 0.85); 
   --glass-bg-hover: rgba(255, 255, 255, 0.95);
   --glass-border: 1px solid rgba(255, 255, 255, 0.6);
   --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-  --glass-blur: blur(16px); /* Stronger blur */
+  --glass-blur: blur(16px);
+  
+  --bg-secondary: rgba(255, 255, 255, 0.4); /* Added for lists/secondary items */
   
   /* Input/Control Colors */
   --input-bg: rgba(255, 255, 255, 0.5);

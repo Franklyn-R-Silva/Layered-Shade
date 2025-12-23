@@ -93,3 +93,71 @@ input[type="range"]::-webkit-slider-thumb:hover {
     margin-right: auto;
     font-weight: 600;
 }
+
+/* Preset and Preview Controls */
+.preview-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.presets-bar {
+    display: flex;
+    gap: 8px;
+}
+
+.preset-btn {
+    background: rgba(255, 255, 255, 0.4); /* darker bg */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* dark border */
+    color: var(--text-main); /* dark text */
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* subtle shadow */
+}
+
+.preset-btn:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white; /* white text on hover */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+}
+
+.color-config {
+    display: flex;
+    gap: 8px;
+}
+
+.color-config label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid rgba(0, 0, 0, 0.15); /* Visible border */
+    transition: border-color 0.2s;
+    background: white; /* Fallback */
+}
+
+.color-config label:hover {
+    border-color: var(--primary-color);
+}
+
+.color-config input[type="color"] {
+    width: 150%;
+    height: 150%;
+    margin: -25%;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+}

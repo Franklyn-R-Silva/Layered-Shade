@@ -10,12 +10,15 @@ class ShadowController {
     this.model = model;
     this.view = view;
 
+    // Initialize Layer Manager
+    this.view.initLayerManager({
+        onSelect: (index) => this.handleLayerSelect(index),
+        onAdd: () => this.handleLayerAdd(),
+        onRemove: (index) => this.handleLayerRemove(index)
+    });
+
     // Initial Render
-    {
-        const state = this.model.getState();
-        this.view.updateInputs(state);
-        this.view.updatePreview(this.model.getCSS(), this.model.getDart(), state.inset, state.borderRadius);
-    }
+    this.refreshView();
 
     // Bind events
     this.view.bindEvents(this.handleEvent.bind(this));
@@ -24,24 +27,33 @@ class ShadowController {
   handleEvent(type, value) {
     if (type === 'reset') {
       this.model.reset();
-      const state = this.model.getState();
-      this.view.updateInputs(state);
-      this.view.updatePreview(this.model.getCSS(), this.model.getDart(), state.inset, state.borderRadius);
+      this.refreshView();
       return;
     }
 
     if (type === 'copy') {
-      // Value passed from View is the 'activeTab' name string ('css' or 'dart')
+      // Value passed from View is the 'activeTab' name string ('css' or 'dart' or 'tailwind')
       this.copyToClipboard(value);
       return;
     }
 
-    // Normal updates
+    if (type === 'preset') {
+        this.applyPreset(value);
+        return;
+    }
+
+    if (['canvasColor', 'backgroundColor'].includes(type)) {
+        this.model.update(type, value);
+        this.refreshView();
+        return;
+    }
+
+    // Normal updates (Slider inputs)
     if (type === 'opacity') {
         value = value / 100;
     }
     
-    if (['horizontal', 'vertical', 'blur', 'spread', 'borderRadius'].includes(type)) { // Padding removed
+    if (['horizontal', 'vertical', 'blur', 'spread', 'borderRadius'].includes(type)) { 
         const intVal = parseInt(value);
         if (!isNaN(intVal)) {
             value = intVal;
@@ -49,21 +61,91 @@ class ShadowController {
     }
 
     this.model.update(type, value);
-    
+    this.refreshView();
+  }
+
+  handleLayerSelect(index) {
+      this.model.selectLayer(index);
+      this.refreshView();
+  }
+
+  handleLayerAdd() {
+      this.model.addLayer();
+      this.refreshView();
+  }
+
+  handleLayerRemove(index) {
+      this.model.removeLayer(index);
+      this.refreshView();
+  }
+
+  applyPreset(presetName) {
+      // Quick hardcoded presets for now
+      // ideally this could be in a config file
+      this.model.reset();
+      
+      if (presetName === 'soft') {
+          this.model.update('blur', 10);
+          this.model.update('opacity', 0.15);
+          this.model.update('vertical', 4);
+          this.model.update('horizontal', 0);
+          this.model.update('spread', 0);
+          this.model.update('canvasColor', '#f3f4f6');
+          this.model.update('backgroundColor', '#ffffff');
+      } else if (presetName === 'neumorphism') {
+          this.model.reset(); // clear layers
+          // Layer 1 - light
+          this.model.update('horizontal', -5);
+          this.model.update('vertical', -5);
+          this.model.update('blur', 10);
+          this.model.update('color', '#ffffff');
+          this.model.update('opacity', 1);
+          
+          this.model.addLayer();
+          // Layer 2 - dark
+          this.model.update('horizontal', 5);
+          this.model.update('vertical', 5);
+          this.model.update('blur', 10);
+          this.model.update('color', '#bebebe');
+          this.model.update('opacity', 1);
+          
+          this.model.update('backgroundColor', '#e0e0e0');
+          this.model.update('canvasColor', '#e0e0e0');
+      } else if (presetName === 'cristal') {
+          // Glassmorphism simulation (simplified)
+          this.model.update('color', '#ffffff');
+          this.model.update('opacity', 0.4);
+          this.model.update('blur', 8);
+          this.model.update('spread', 2);
+          this.model.update('backgroundColor', 'rgba(255, 255, 255, 0.25)'); 
+          this.model.update('canvasColor', '#4158d0'); // Nice blue gradient fallback color
+          // Ideally glass needs backdrop-filter, but that's a CSS property of the box itself, 
+          // currently we only generate box-shadow. 
+      }
+
+      this.refreshView();
+  }
+
+  refreshView() {
     const state = this.model.getState();
-    this.view.updateInputs(state); 
-    this.view.updatePreview(this.model.getCSS(), this.model.getDart(), state.inset, state.borderRadius);
+    const css = this.model.getCSS();
+    const dart = this.model.getDart();
+    const tailwind = this.model.getTailwind();
+
+    this.view.updateInputs(state);
+    this.view.updatePreview(css, dart, tailwind, state);
   }
 
   copyToClipboard(mode) {
     let textToCopy = "";
+    const state = this.model.getState();
     
     if (mode === 'dart') {
         textToCopy = this.model.getDart();
+    } else if (mode === 'tailwind') {
+        textToCopy = this.model.getTailwind();
     } else {
-        // Default to CSS
-        // If border radius is > 0, we can include it.
-        const state = this.model.getState();
+        // CSS
         const shadowRule = this.model.getCSS();
         
         textToCopy = `box-shadow: ${shadowRule};\n-webkit-box-shadow: ${shadowRule};\n-moz-box-shadow: ${shadowRule};`;

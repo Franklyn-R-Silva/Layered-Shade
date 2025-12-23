@@ -1,0 +1,128 @@
+/* Layer Manager Styles */
+
+.layer-controls-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.layer-controls-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.layer-btn {
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-secondary);
+    color: var(--text-main);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.layer-btn.add {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+}
+
+.layer-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.layer-btn.add:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 6px 10px rgba(79, 70, 229, 0.3);
+}
+
+.layers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 25px;
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 4px; /* Space for scrollbar */
+}
+
+.layer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-secondary);
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border: 1px solid transparent; /* Smoother border transition */
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.layer-item:hover {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(79, 70, 229, 0.1);
+}
+
+.layer-item.active {
+    border-color: var(--primary-color);
+    background: rgba(79, 70, 229, 0.08);
+    box-shadow: inset 3px 0 0 var(--primary-color); /* Left accent bar */
+}
+
+.layer-name {
+    font-size: 0.95rem;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.layer-item.active .layer-name {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.remove-layer-btn {
+    background: rgba(0,0,0,0.05);
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.remove-layer-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+/* Scrollbar for layers list */
+.layers-list::-webkit-scrollbar {
+    width: 5px;
+}
+.layers-list::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.02);
+}
+.layers-list::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+.layers-list::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0,0,0,0.2);
+}

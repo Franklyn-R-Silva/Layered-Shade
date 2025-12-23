@@ -1,6 +1,7 @@
 import { TabManager } from '../components/TabManager.js';
 import { NotificationManager } from '../components/NotificationManager.js';
 import { ControlFactory } from '../components/ControlFactory.js';
+import { LayerManager } from '../components/LayerManager.js';
 import { shadowControls } from '../config/controlsConfig.js';
 
 export class ShadowView {
@@ -8,6 +9,7 @@ export class ShadowView {
       // Containers
       this.shadowContainer = document.querySelector("#shadow-controls-container");
       this.shapeContainer = document.querySelector("#shape-controls-container");
+      this.layerContainer = document.querySelector("#layer-controls-container");
       
       // Initialize dynamic controls
       this.initDynamicControls();
@@ -31,6 +33,7 @@ export class ShadowView {
   
       // Outputs
       this.previewBox = document.querySelector("#box");
+      this.previewWrapper = document.querySelector("#preview"); 
       this.rule = document.querySelector("#rule span");
       this.webkitRule = document.querySelector("#webkit-rule span");
       this.mozRule = document.querySelector("#moz-rule span");
@@ -38,11 +41,17 @@ export class ShadowView {
       this.borderRadiusRuleSpan = document.querySelector("#border-radius-rule span");
       this.dartRule = document.querySelector("#dart-rule span");
       this.dartInstallInfo = document.querySelector("#dart-install-info");
+      this.tailwindRule = document.querySelector("#tailwind-rule span");
+
+      // Customization Inputs
+      this.bgColorPicker = document.querySelector("#bg-color-picker");
+      this.objColorPicker = document.querySelector("#obj-color-picker");
 
       // Buttons
       this.copyBtn = document.querySelector("#copiarTexto");
       this.copyText = document.querySelector("#texto");
       this.resetBtn = document.querySelector("#resetButton");
+      this.presetBtns = document.querySelectorAll(".preset-btn");
       
       // Managers
       this.notificationManager = new NotificationManager(this.copyText, this.copyBtn);
@@ -68,6 +77,10 @@ export class ShadowView {
                 this.shapeContainer.appendChild(control);
             }
         });
+    }
+
+    initLayerManager(callbacks) {
+        this.layerManager = new LayerManager(this.layerContainer, callbacks);
     }
 
     onTabChanged(newTab) {
@@ -96,26 +109,51 @@ export class ShadowView {
       
       this.resetBtn.addEventListener("click", () => handler("reset"));
       this.copyBtn.addEventListener("click", () => handler("copy", this.activeTab));
+
+      // Presets
+      this.presetBtns.forEach(btn => {
+          btn.addEventListener("click", () => handler("preset", btn.dataset.preset));
+      });
+
+      // Color Customization
+      this.bgColorPicker.addEventListener("input", (e) => handler("canvasColor", e.target.value));
+      this.objColorPicker.addEventListener("input", (e) => handler("backgroundColor", e.target.value));
     }
   
-    updatePreview(cssString, dartString, isInset, borderRadius) {
+    updatePreview(cssString, dartString, tailwindString, state) {
       this.previewBox.style.boxShadow = cssString;
-      this.previewBox.style.borderRadius = `${borderRadius}px`;
+      this.previewBox.style.borderRadius = `${state.borderRadius}px`;
+      this.previewBox.style.backgroundColor = state.backgroundColor;
+      
+      // Update canvas background if previewWrapper has a specific area, 
+      // but actually user asked to change the preview area background.
+      // We can apply it to the parent of #box which is #preview.
+      // #preview has h2 etc, maybe we just want the area around the box.
+      // But let's apply to #preview for now.
+      // Better: Apply to #preview or create a wrapper. 
+      // The CSS structure has #preview { ... }. 
+      this.previewWrapper.style.backgroundColor = state.canvasColor;
 
       this.rule.innerText = cssString;
       this.webkitRule.innerText = cssString;
       this.mozRule.innerText = cssString;
+      this.tailwindRule.innerText = tailwindString;
       
-      if (borderRadius > 0) {
+      if (state.borderRadius > 0) {
           this.borderRadiusRule.style.display = 'block';
-          this.borderRadiusRuleSpan.innerText = `${borderRadius}px`;
+          this.borderRadiusRuleSpan.innerText = `${state.borderRadius}px`;
       } else {
           this.borderRadiusRule.style.display = 'none';
       }
 
       this.dartRule.innerText = dartString;
-      this.isInset = isInset;
+      this.isInset = state.inset;
       this.checkInstallInfo();
+
+      // Update Layer Manager UI
+      if (this.layerManager) {
+          this.layerManager.update(state.layerCount, state.currentLayerIndex);
+      }
     }
 
     checkInstallInfo() {
@@ -127,18 +165,26 @@ export class ShadowView {
     }
   
     updateInputs(state) {
+        // Update customization pickers
+        this.bgColorPicker.value = state.canvasColor;
+        this.objColorPicker.value = state.backgroundColor;
+
         shadowControls.forEach(config => {
             const slider = document.getElementById(config.id);
             const textInput = document.getElementById(`${config.id}-value`);
 
             if (config.type === 'checkbox') {
                 slider.checked = state[config.id];
-            } else if (config.id === 'opacity') { // Fixed ID from previous step
+            } else if (config.id === 'opacity') {
                 slider.value = state.opacity * 100;
                 textInput.value = state.opacity;
             } else {
-                slider.value = state[config.id];
-                if (textInput) textInput.value = state[config.id];
+                // If the property exists in state, update it.
+                // Some properties might be global (borderRadius) or layer specific
+                if (state[config.id] !== undefined) {
+                    slider.value = state[config.id];
+                    if (textInput) textInput.value = state[config.id];
+                }
             }
         });
     }
