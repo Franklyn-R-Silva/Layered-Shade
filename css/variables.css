@@ -1,0 +1,20 @@
+:root {
+  /* Colors */
+  --primary-color: #005cc8;
+  --primary-hover: #003d82;
+  --secondary-color: #e9d60a;
+  --text-color: #333;
+  --label-color: #555;
+  --bg-color: #f4f4f4;
+  --panel-bg: white;
+  --border-color: #ccc;
+  --input-bg: #d3d3d3;
+  
+  /* Spacing */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  
+  /* Borders */
+  --border-radius: 5px;
+}

@@ -31,7 +31,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
     <link href="css/styles.css" rel="stylesheet" />
-    <script src="js/scripts.js" defer></script>
+    <script type="module" src="js/main.js"></script>
   </head>
 
   <body>
@@ -203,18 +203,35 @@
       </div>
     </div>
     <footer id="generated-rule">
-      <h2>Copie e cole no seu arquivo de CSS:</h2>
-      <div id="rules-area" role="region" aria-label="Código CSS gerado">
-        <p id="rule">box-shadow: <span></span>;</p>
-        <p id="webkit-rule">-webkit-box-shadow: <span></span>;</p>
-        <p id="moz-rule">-moz-box-shadow: <span></span>;</p>
+      <h2>Copie e cole no seu arquivo:</h2>
+      
+      <div class="tabs-container">
+        <div class="tabs-header">
+           <button class="tab-btn active" data-tab="css">CSS</button>
+           <button class="tab-btn" data-tab="dart">Dart</button>
+        </div>
+
+        <div id="rules-area" role="region" aria-label="Código gerado">
+          <!-- CSS Tab Content -->
+          <div id="css-content" class="tab-content active">
+            <p id="rule">box-shadow: <span></span>;</p>
+            <p id="webkit-rule">-webkit-box-shadow: <span></span>;</p>
+            <p id="moz-rule">-moz-box-shadow: <span></span>;</p>
+          </div>
+          
+          <!-- Dart Tab Content -->
+          <div id="dart-content" class="tab-content">
+            <pre id="dart-rule"><span></span></pre>
+          </div>
+        </div>
       </div>
+      
       <!-- Clique no quadro acima para copiar as regras -->
       <button
         class="copiarTexto"
         name="copiarTexto"
         id="copiarTexto"
-        aria-label="Copiar código CSS para a área de transferência"
+        aria-label="Copiar código para a área de transferência"
       >
         <p id="texto">Clique aqui para copiar as regras</p>
       </button>
