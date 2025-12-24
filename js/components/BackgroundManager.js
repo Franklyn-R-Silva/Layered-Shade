@@ -113,6 +113,13 @@ export class BackgroundManager {
                            <input type="range" id="bg-pos-y" min="0" max="100" value="${layer.posY ?? 50}">
                        </div>
                    </div>
+                   <div class="control-header control-header-margin"><label>Tamanho (Radial)</label></div>
+                   <select id="bg-radial-size" class="form-select bg-select-input">
+                       <option value="farthest-corner" ${layer.size === 'farthest-corner' ? 'selected' : ''}>Farthest Corner (Padrão)</option>
+                       <option value="closest-side" ${layer.size === 'closest-side' ? 'selected' : ''}>Closest Side</option>
+                       <option value="closest-corner" ${layer.size === 'closest-corner' ? 'selected' : ''}>Closest Corner</option>
+                       <option value="farthest-side" ${layer.size === 'farthest-side' ? 'selected' : ''}>Farthest Side</option>
+                   </select>
                 `
                 }
                 
@@ -163,6 +170,11 @@ export class BackgroundManager {
       );
       posY?.addEventListener('input', (e) =>
         this.callbacks.onUpdateLayer('bgLayerPosY', e.target.value),
+      );
+
+      const radialSize = this.controlsContainer.querySelector('#bg-radial-size');
+      radialSize?.addEventListener('change', (e) =>
+        this.callbacks.onUpdateLayer('bgLayerSize', e.target.value),
       );
     }
 

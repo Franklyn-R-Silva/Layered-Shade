@@ -155,14 +155,18 @@ export class ShadowView {
   }
 
   updatePreview(cssString, dartString, tailwindString, state, backgroundCSS) {
+    // Generate Box Shadow string
     this.previewBox.style.boxShadow = cssString;
     this.previewBox.style.borderRadius = `${state.borderRadius}px`;
 
     // Apply background (Solid or Gradient Layers)
+    // Validar backgroundCSS para evitar erros no style
+    // Radial gradient syntax can be tricky.
     this.previewBox.style.background = backgroundCSS;
 
     this.previewWrapper.style.backgroundColor = state.canvasColor;
 
+    // Update Code Blocks
     this.rule.innerText = cssString;
     this.webkitRule.innerText = cssString;
     this.mozRule.innerText = cssString;
