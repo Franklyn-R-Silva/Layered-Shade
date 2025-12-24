@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
@@ -32,9 +32,7 @@
           <span class="toolbar-label">Templates:</span>
           <div class="presets-bar">
             <button class="preset-btn" data-preset="soft">Soft</button>
-            <button class="preset-btn" data-preset="neumorphism">
-              Neumorph
-            </button>
+            <button class="preset-btn" data-preset="neumorphism">Neumorph</button>
             <button class="preset-btn" data-preset="cristal">Glass</button>
           </div>
         </div>
@@ -45,7 +43,11 @@
           <span class="toolbar-label">Fundo & Objeto:</span>
           <div class="color-config">
             <label title="Cor do Fundo (Canvas)" for="bg-color-picker"
-              ><input type="color" id="bg-color-picker" value="#ffffff" title="Seletor de cor do fundo"
+              ><input
+                type="color"
+                id="bg-color-picker"
+                value="#ffffff"
+                title="Seletor de cor do fundo"
             /></label>
             <div id="gradient-manager-container"></div>
           </div>
@@ -55,9 +57,7 @@
       <div id="box-shadow-generator">
         <div id="controls">
           <div class="sidebar-tabs">
-            <button class="sidebar-tab active" data-sidebar="shadow">
-              Sombra
-            </button>
+            <button class="sidebar-tab active" data-sidebar="shadow">Sombra</button>
             <button class="sidebar-tab" data-sidebar="background">Fundo</button>
           </div>
 
@@ -82,19 +82,12 @@
 
             <div class="color-mode-section">
               <label for="base-bg-picker">Cor Base (Sólida):</label>
-              <input
-                type="color"
-                id="base-bg-picker"
-                value="#ffdd00"
-                title="Cor Base Sólida"
-              />
+              <input type="color" id="base-bg-picker" value="#ffdd00" title="Cor Base Sólida" />
             </div>
           </div>
 
           <div class="form-control button-control">
-            <button type="button" id="resetButton" class="reset-btn">
-              ↺ Resetar Tudo
-            </button>
+            <button type="button" id="resetButton" class="reset-btn">↺ Resetar Tudo</button>
           </div>
         </div>
 
@@ -119,9 +112,8 @@
               <p id="rule">box-shadow: <span></span>;</p>
               <p id="webkit-rule">-webkit-box-shadow: <span></span>;</p>
               <p id="moz-rule">-moz-box-shadow: <span></span>;</p>
-              <p id="border-radius-rule" class="hidden-rule">
-                border-radius: <span></span>;
-              </p>
+              <p id="bg-rule">background: <span></span>;</p>
+              <p id="border-radius-rule" class="hidden-rule">border-radius: <span></span>;</p>
             </div>
 
             <div id="dart-content" class="tab-content">

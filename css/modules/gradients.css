@@ -1,32 +1,32 @@
 /* Gradient Controls Styles (Compact) */
 
 #gradient-manager-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .gradient-controls-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 4px 10px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .gradient-toggle {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-right: 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 5px;
 }
 
 .toggle-label {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
 /* Toggle Switch */
@@ -51,18 +51,18 @@
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  transition: .4s;
+  transition: 0.4s;
 }
 
 .slider:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 14px;
   width: 14px;
   left: 2px;
   bottom: 2px;
   background-color: white;
-  transition: .4s;
+  transition: 0.4s;
 }
 
 input:checked + .slider {
@@ -83,55 +83,148 @@ input:checked + .slider:before {
 
 /* Color Inputs */
 .color-mode-section {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .color-mode-section.hidden {
-    display: none;
+  display: none;
 }
 
 .gradient-inputs {
-    display: flex;
-    gap: 5px;
+  display: flex;
+  gap: 5px;
 }
 
 .color-input-wrapper {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 2px solid rgba(0,0,0,0.1);
-    position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .color-picker-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
 }
 
 .color-picker-label span {
-    font-size: 0; /* Hide text but keep for accessibility/structure */
+  font-size: 0; /* Hide text but keep for accessibility/structure */
 }
 
 /* Tooltip on hover logic could be added here if needed */
 
 .angle-control {
-    display: flex;
-    flex-direction: column;
-    width: 60px;
+  display: flex;
+  flex-direction: column;
+  width: 60px;
 }
 
 .angle-control label {
-    font-size: 0.7rem;
-    white-space: nowrap;
-    color: var(--text-muted);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  color: var(--text-muted);
 }
 
-.angle-control input[type="range"] {
-    height: 4px;
+.angle-control input[type='range'] {
+  height: 4px;
+}
+/* Stop List Styles */
+.bg-stops-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  margin-top: 12px;
+}
+
+.bg-stops-header label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.bg-add-stop-btn {
+  background: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bg-add-stop-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.bg-stops-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bg-stop-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.bg-stop-input {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.bg-stop-slider {
+  flex-grow: 1;
+  height: 4px;
+}
+
+.bg-remove-stop-btn {
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  opacity: 0.7;
+}
+
+.bg-remove-stop-btn:hover {
+  opacity: 1;
+}
+
+/* Position Controls (Radial) */
+.bg-position-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.bg-position-control {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bg-position-control label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }

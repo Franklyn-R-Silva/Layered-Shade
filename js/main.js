@@ -40,6 +40,24 @@ class ShadowController {
             // updates specific active layer param
             this.model.update(key, value);
             this.refreshView();
+        },
+        onCopyLayer: (index, mode) => {
+             const layer = this.model.backgroundLayers[index];
+             if(!layer) return;
+             
+             let text = "";
+             if (mode === 'css') {
+                 // Generate CSS just for this layer
+                 text = this.model.getBackgroundCSSForLayer(layer) + ";"; 
+             } else if (mode === 'dart') {
+                 text = this.model.getLayerDart(layer);
+             } else if (mode === 'tailwind') {
+                 text = this.model.getLayerTailwind(layer);
+             }
+             
+             navigator.clipboard.writeText(text).then(() => {
+                 this.view.showCopyFeedback(); // We can reuse the main copy feedback
+             });
         }
     });
 

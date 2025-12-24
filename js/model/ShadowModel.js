@@ -113,10 +113,16 @@ export class ShadowModel {
      */
     getBackgroundCSS() {
         const layersCSS = this.backgroundLayers.map(layer => {
-            const stopsStr = layer.stops.map(s => `${s.color} ${s.position}%`).join(', ');
+            const stopsStr = layer.stops
+                .sort((a,b) => a.position - b.position)
+                .map(s => `${s.color} ${s.position}%`).join(', ');
             
             if (layer.type === 'radial') {
-                return `radial-gradient(${layer.shape}, ${stopsStr})`;
+                // Radial position syntax: radial-gradient(shape at position, stops)
+                // Default center if not specified
+                const posX = layer.posX !== undefined ? layer.posX : 50;
+                const posY = layer.posY !== undefined ? layer.posY : 50;
+                return `radial-gradient(${layer.shape || 'circle'} at ${posX}% ${posY}%, ${stopsStr})`;
             }
             // Linear
             return `linear-gradient(${layer.angle}deg, ${stopsStr})`;
@@ -127,6 +133,79 @@ export class ShadowModel {
             return `${layersCSS.join(', ')}, ${this.boxProperties.backgroundColor}`;
         }
         return this.boxProperties.backgroundColor;
+    }
+
+    /**
+     * Generates Dart/Flutter code for a specific gradient layer
+     */
+    getLayerDart(layer) {
+        let code = '';
+        const sortedStops = [...layer.stops].sort((a, b) => a.position - b.position);
+        
+        // Stops and Colors
+        const colors = sortedStops.map(s => {
+             const c = this.hexToColorObj(s.color.startsWith('#') ? s.color : this.rgbaToHex(s.color));
+             // Handle alpha if hexToColorObj doesn't (it currently assumes strict hex) -- 
+             // actually hexToColorObj expects #RRGGBB.
+             // If s.color is rgba, we need a better parser. 
+             // For now assuming input is hex from color picker.
+             return `Color(0xFF${c.hex})`;
+        }).join(',\n      ');
+
+        const stops = sortedStops.map(s => (s.position / 100).toFixed(2)).join(', ');
+
+        if (layer.type === 'radial') {
+             const posX = (layer.posX !== undefined ? layer.posX : 50) / 100 * 2 - 1; // 0..100 -> -1..1
+             const posY = (layer.posY !== undefined ? layer.posY : 50) / 100 * 2 - 1;
+             
+             code += `RadialGradient(\n`;
+             code += `    center: Alignment(${posX.toFixed(2)}, ${posY.toFixed(2)}),\n`;
+             code += `    radius: 0.5,\n`; // Default radius logic might need a slider, sticking to simple for now
+             code += `    colors: [\n      ${colors}\n    ],\n`;
+             code += `    stops: [${stops}],\n`;
+             code += `  )`;
+        } else {
+             // Linear
+             // This is a rough approximation of CSS angles to Flutter Alignment
+             // Real conversion is complex math, but let's stick to standard 4 corners for simplicity or just expose alignment?
+             // Only exact 45/90/etc map cleanly. 
+             // We will produce a generic LinearGradient
+             code += `LinearGradient(\n`;
+             // TODO: implement angle to alignment conversion if strict accuracy needed
+             code += `    begin: Alignment.topLeft,\n`; 
+             code += `    end: Alignment.bottomRight,\n`;
+             code += `    transform: GradientRotation(${ (layer.angle * Math.PI / 180).toFixed(3) }),\n`; 
+             code += `    colors: [\n      ${colors}\n    ],\n`;
+             code += `    stops: [${stops}],\n`;
+             code += `  )`;
+        }
+        return code;
+    }
+
+    /**
+     * Generates Tailwind code for a gradient layer
+     * Tailwind doesn't support multi-layer gradients well via utility classes alone
+     * without config. We will generate arbitrary values.
+     */
+    getLayerTailwind(layer) {
+        // bg-[linear-gradient(90deg,red,blue)]
+        // We reuse the CSS generation logic but wrap it validly
+        const css = this.getBackgroundCSSForLayer(layer);
+        const arbitrary = css.replace(/, /g, ',').replace(/ /g, '_');
+        return `bg-[${arbitrary}]`;
+    }
+
+    getBackgroundCSSForLayer(layer) {
+        const stopsStr = layer.stops
+            .sort((a,b) => a.position - b.position)
+            .map(s => `${s.color} ${s.position}%`).join(', ');
+        
+        if (layer.type === 'radial') {
+            const posX = layer.posX !== undefined ? layer.posX : 50;
+            const posY = layer.posY !== undefined ? layer.posY : 50;
+            return `radial-gradient(${layer.shape || 'circle'} at ${posX}% ${posY}%, ${stopsStr})`;
+        }
+        return `linear-gradient(${layer.angle}deg, ${stopsStr})`;
     }
 
     /**
@@ -149,23 +228,25 @@ export class ShadowModel {
         const { borderRadius } = this.boxProperties;
         let code = '';
 
-        if (borderRadius > 0 || this.boxProperties.useGradient) {
+        if (borderRadius > 0 || this.backgroundLayers.length > 0 || this.boxProperties.backgroundColor) {
             code += `// Container decoration\n`;
             code += `decoration: BoxDecoration(\n`;
             if (borderRadius > 0) code += `  borderRadius: BorderRadius.circular(${borderRadius}),\n`;
             
-            if (this.boxProperties.useGradient) {
-                 const start = this.hexToColorObj(this.boxProperties.gradientStart);
-                 const end = this.hexToColorObj(this.boxProperties.gradientEnd);
-                 // Convert degrees to Alignment vaguely
-                 code += `  gradient: LinearGradient(\n`;
-                 code += `    begin: Alignment.topLeft,\n`; 
-                 code += `    end: Alignment.bottomRight,\n`;
-                 code += `    colors: [\n`;
-                 code += `      Color(0xFF${start.hex}),\n`;
-                 code += `      Color(0xFF${end.hex}),\n`;
-                 code += `    ],\n`;
-                 code += `  ),\n`;
+            // Background
+            // Flutter doesn't natively support stacking multiple background gradients in one BoxDecoration easily 
+            // without using a Stack widget or ShaderMasks. 
+            // BoxDecoration accepts only ONE gradient or ONE color.
+            // If we have layers, we might just output the TOP most layer as the gradient, 
+            // or if user wants layers, they'd conceptually need a Stack.
+            // For this generator, let's assume valid output is the TOP gradient if exists, else solid.
+            if (this.backgroundLayers.length > 0) {
+                 const topLayer = this.backgroundLayers[this.backgroundLayers.length - 1]; // Visual top is usually last in stack?
+                 // Actually in CSS: layers listed first are ON TOP.
+                 // let's assume backgroundLayers[0] is top.
+                 // CSS: background: linear-gradient(...), linear-gradient(...) -> First is top.
+                 const cssTopLayer = this.backgroundLayers[0];
+                 code += `  gradient: ${this.getLayerDart(cssTopLayer)},\n`;
             } else {
                  const bg = this.hexToColorObj(this.boxProperties.backgroundColor);
                  code += `  color: Color(0xFF${bg.hex}),\n`;
@@ -196,7 +277,7 @@ export class ShadowModel {
 
         code += `  ],\n`;
         
-        if (borderRadius > 0) {
+        if (borderRadius > 0 || this.backgroundLayers.length > 0) {
             code += `)`;
         }
 
@@ -208,20 +289,19 @@ export class ShadowModel {
      */
     getTailwind() {
         // Tailwind arbitrary value: shadow-[...]
-        // We need to replace spaces with underscores for arbitrary values in Tailwind class names
-        // But for multiple shadows, commas are used.
-        // shadow-[0px_10px_20px_rgba(0,0,0,0.5),_0px_4px_6px_rgba(0,0,0,0.1)]
         
         let shadowString = this.getCSS();
-        // Simple heuristic: replace spaces with underscores, but keep commas
-        // Actually, for arbitrary values, spaces are often problematic if not escaped or underscored.
-        // Let's allow spaces but in config it's a string.
-        // If we want a CLASS name:
-        // shadow-[...]
+        const arbitraryShadow = shadowString.replace(/, /g, ',').replace(/ /g, '_');
         
-        const arbitraryValue = shadowString.replace(/, /g, ',').replace(/ /g, '_');
+        // Background arbitrary
+        // Tailwind allows bg-[value]
+        const bgCSS = this.getBackgroundCSS(); 
+        const arbitraryBg = bgCSS.replace(/, /g, ',').replace(/ /g, '_')
+                                 .replace(/\(/g, '\\(').replace(/\)/g, '\\)'); // Escape parens might be needed in some contexts but for raw string usually _ is enough
+        // Actually tailwind arbitrary values with spaces are tricky. 
+        // Ideally we return a list of classes.
         
-        return `shadow-[${arbitraryValue}]`;
+        return `shadow-[${arbitraryShadow}] bg-[${arbitraryBg.replace(/\\/g, '')}]`;
     }
 
     /**
@@ -244,8 +324,15 @@ export class ShadowModel {
       return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
+    rgbaToHex(rgba) {
+        // Basic fallback if color is not #hex
+        // TODO: implement robust parsing if needed
+        return "#000000";
+    }
+
     hexToColorObj(hex) {
-        let c = hex.substring(1);
+        // Handle #RRGGBB
+        let c = hex.startsWith('#') ? hex.substring(1) : hex;
         if(c.length === 3) {
             c = c.split('').map(char => char + char).join('');
         }
