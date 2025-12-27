@@ -99,6 +99,26 @@ export class ShadowModel {
     };
   }
 
+  /* Shadow Layer Management */
+  addLayer() {
+    this.layers.push({ ...this.defaultLayerState });
+    this.currentLayerIndex = this.layers.length - 1;
+  }
+
+  removeLayer(index) {
+    if (this.layers.length <= 1) return; // Keep at least one layer
+    this.layers.splice(index, 1);
+    if (this.currentLayerIndex >= this.layers.length) {
+      this.currentLayerIndex = this.layers.length - 1;
+    }
+  }
+
+  selectLayer(index) {
+    if (index >= 0 && index < this.layers.length) {
+      this.currentLayerIndex = index;
+    }
+  }
+
   /* Background Layer Management */
   addBackgroundLayer(type = 'linear') {
     this.backgroundLayers.push({
