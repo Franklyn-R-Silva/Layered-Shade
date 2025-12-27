@@ -24,7 +24,7 @@ Nós, como membros, contribuidores e líderes, nos comprometemos a fazer da part
 
 ## Aplicação
 
-Instâncias de comportamento abusivo podem ser reportadas para **franklyn.roberto.dev@gmail.com**.
+Instâncias de comportamento abusivo podem ser reportadas para **franklyn.mobile.dev@gmail.com**.
 
 Todas as reclamações serão revisadas e investigadas de forma justa.
 
