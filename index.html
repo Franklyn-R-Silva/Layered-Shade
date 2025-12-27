@@ -175,23 +175,6 @@
       <!-- Professional Footer -->
       <footer class="site-footer">
         <div class="footer-content">
-          <div class="footer-stats">
-            <span class="visitor-count">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-              <span id="goatcounter-total">--</span> visitas
-            </span>
-          </div>
-
           <div class="footer-author">Desenvolvido por <strong>Franklyn R. Silva</strong></div>
 
           <div class="footer-social">
@@ -226,34 +209,4 @@
       </footer>
     </div>
   </body>
-
-  <!-- Analytics: GoatCounter (gratuito e privacy-friendly) -->
-  <script
-    type="text/javascript"
-    data-goatcounter="https://franklyn.goatcounter.com/count"
-    async
-    src="//gc.zgo.at/count.js"
-  ></script>
-
-  <!-- Fetch visitor count from GoatCounter -->
-  <script>
-    (function () {
-      const counterElement = document.getElementById('goatcounter-total');
-      if (!counterElement) return;
-
-      // GoatCounter public API endpoint for total pageviews
-      fetch('https://franklyn.goatcounter.com/counter//.json')
-        .then((response) => response.json())
-        .then((data) => {
-          if (data && data.count) {
-            // Format number with locale (1.234 for pt-BR)
-            counterElement.textContent = parseInt(data.count).toLocaleString('pt-BR');
-          }
-        })
-        .catch(() => {
-          // If API fails, try alternative or keep default
-          counterElement.textContent = '0';
-        });
-    })();
-  </script>
 </html>
