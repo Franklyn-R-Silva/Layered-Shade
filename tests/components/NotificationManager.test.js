@@ -3,7 +3,7 @@
  * Tests for NotificationManager component
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { NotificationManager } from './NotificationManager.js';
+import { NotificationManager } from '../../js/components/NotificationManager.js';
 
 describe('NotificationManager', () => {
   let copyTextElement;

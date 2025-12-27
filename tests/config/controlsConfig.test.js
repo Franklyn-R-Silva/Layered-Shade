@@ -3,7 +3,7 @@
  * Tests for the controls configuration
  */
 import { describe, it, expect } from 'vitest';
-import { shadowControls } from './controlsConfig.js';
+import { shadowControls } from '../../js/config/controlsConfig.js';
 
 describe('controlsConfig', () => {
   describe('shadowControls', () => {

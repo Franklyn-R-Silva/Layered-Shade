@@ -3,7 +3,7 @@
  * Unit tests for ShadowModel class
  */
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ShadowModel } from './ShadowModel.js';
+import { ShadowModel } from '../../js/model/ShadowModel.js';
 
 describe('ShadowModel', () => {
   let model;

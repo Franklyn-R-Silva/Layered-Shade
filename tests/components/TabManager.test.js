@@ -3,7 +3,7 @@
  * Tests for TabManager component
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { TabManager } from './TabManager.js';
+import { TabManager } from '../../js/components/TabManager.js';
 
 describe('TabManager', () => {
   let viewContext;

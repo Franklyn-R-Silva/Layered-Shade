@@ -3,7 +3,7 @@
  * Tests for ControlFactory component
  */
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ControlFactory } from './ControlFactory.js';
+import { ControlFactory } from '../../js/components/ControlFactory.js';
 
 describe('ControlFactory', () => {
   describe('createRangeControl', () => {

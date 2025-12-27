@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'happy-dom',
-    include: ['**/*.test.js'],
+    include: ['tests/**/*.test.js'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
@@ -15,7 +15,7 @@ export default defineConfig({
         'js/components/TabManager.js',
         'js/components/LayerManager.js',
       ],
-      exclude: ['**/*.test.js', 'node_modules/**'],
+      exclude: ['**/*.test.js', 'node_modules/**', 'tests/**'],
     },
   },
 });

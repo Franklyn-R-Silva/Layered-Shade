@@ -3,7 +3,7 @@
  * Tests for LayerManager component
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { LayerManager } from './LayerManager.js';
+import { LayerManager } from '../../js/components/LayerManager.js';
 
 describe('LayerManager', () => {
   let container;
