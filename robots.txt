@@ -1,0 +1,17 @@
+# Robots.txt for Layered Shade
+# https://layeredshade.netlify.app/
+
+User-agent: *
+Allow: /
+
+# Sitemap (if added in the future)
+# Sitemap: https://layeredshade.netlify.app/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Disallow development/test files
+Disallow: /coverage/
+Disallow: /node_modules/
+Disallow: /.github/
+Disallow: /tests/
