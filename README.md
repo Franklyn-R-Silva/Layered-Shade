@@ -1,13 +1,16 @@
-# 🎨 Gerador de Box Shadow (CSS & Flutter)
+# 🎨 Layered Shade - Box Shadow Generator
 
 Uma ferramenta web moderna e interativa para gerar sombras CSS (`box-shadow`) e código Dart/Flutter (`BoxShadow`) visualmente.
 
-[![Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://gerador-de-box-shadow.netlify.app/)
+[![Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://layeredshade.netlify.app/)
+[![CI](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml/badge.svg)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/Tests-125%20passing-success)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions)
+[![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](https://github.com/Franklyn-R-Silva/Layered-Shade)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Performance](https://img.shields.io/badge/Performance-98%25-success)](https://pagespeed.web.dev/analysis/https-gerador-de-box-shadow-netlify-app/1)
-[![Accessibility](https://img.shields.io/badge/Accessibility-95%25-success)](https://pagespeed.web.dev/analysis/https-gerador-de-box-shadow-netlify-app/1)
-[![Best Practices](https://img.shields.io/badge/Best%20Practices-100%25-success)](https://pagespeed.web.dev/analysis/https-gerador-de-box-shadow-netlify-app/1)
-[![SEO](https://img.shields.io/badge/SEO-100%25-success)](https://pagespeed.web.dev/analysis/https-gerador-de-box-shadow-netlify-app/1)
+[![Performance](https://img.shields.io/badge/Performance-98%25-success)](https://pagespeed.web.dev/analysis/https-layeredshade-netlify-app/1)
+[![Accessibility](https://img.shields.io/badge/Accessibility-95%25-success)](https://pagespeed.web.dev/analysis/https-layeredshade-netlify-app/1)
+[![Best Practices](https://img.shields.io/badge/Best%20Practices-100%25-success)](https://pagespeed.web.dev/analysis/https-layeredshade-netlify-app/1)
+[![SEO](https://img.shields.io/badge/SEO-100%25-success)](https://pagespeed.web.dev/analysis/https-layeredshade-netlify-app/1)
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -15,7 +18,7 @@ Uma ferramenta web moderna e interativa para gerar sombras CSS (`box-shadow`) e 
 
 ## 🚀 Demo
 
-[👉 Acesse a ferramenta online](https://gerador-de-box-shadow.netlify.app/)
+[👉 Acesse a ferramenta online](https://layeredshade.netlify.app/)
 
 ![Preview](github/tela.png)
 
@@ -86,14 +89,14 @@ Para detalhes técnicos completos, consulte [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ### Online
 
-Acesse [gerador-de-box-shadow.netlify.app](https://gerador-de-box-shadow.netlify.app/)
+Acesse [layeredshade.netlify.app](https://layeredshade.netlify.app/)
 
 ### Localmente
 
 1. Clone o repositório:
 
    ```bash
-   git clone https://github.com/Franklyn-R-Silva/Gerador-de-box-shadow-com-JavaScript.git
+   git clone https://github.com/Franklyn-R-Silva/Layered-Shade.git
    ```
 
 2. Abra a pasta no VS Code

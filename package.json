@@ -1,12 +1,14 @@
 {
-  "name": "gerador-box-shadow",
+  "name": "layered-shade",
   "version": "1.0.0",
-  "description": "Gerador de Box Shadow - CSS & Flutter",
+  "description": "Layered Shade - Box Shadow Generator for CSS & Flutter",
   "type": "module",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint js/",
+    "lint:fix": "eslint js/ --fix"
   },
   "keywords": [
     "box-shadow",
@@ -20,6 +22,7 @@
   "devDependencies": {
     "vitest": "^2.1.8",
     "@vitest/coverage-v8": "^2.1.8",
-    "happy-dom": "^15.11.7"
+    "happy-dom": "^15.11.7",
+    "eslint": "^8.57.0"
   }
 }
