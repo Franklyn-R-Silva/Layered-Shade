@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build output (if using bundlers in future)
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Cache
+.cache/
+.temp/
