@@ -5,13 +5,13 @@ Uma ferramenta web moderna e interativa para gerar sombras CSS (`box-shadow`) e 
 [![Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://gerador-de-box-shadow.netlify.app/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-### 🛠️ Tecnologias Utilizadas
+## 🛠️ Tecnologias Utilizadas
 
-<img src="https://go-skill-icons.vercel.app/api/icons?i=html,css,js&theme=dark&perline=3" alt="Skills: HTML, CSS, JavaScript"/>
+![Skills](https://go-skill-icons.vercel.app/api/icons?i=html,css,js&theme=dark&perline=3)
 
 ## 🚀 Demo
 
-**[👉 Acesse a ferramenta online](https://gerador-de-box-shadow.netlify.app/)**
+[👉 Acesse a ferramenta online](https://gerador-de-box-shadow.netlify.app/)
 
 ![Preview](github/tela.png)
 
@@ -37,7 +37,7 @@ Uma ferramenta web moderna e interativa para gerar sombras CSS (`box-shadow`) e 
 - **Tailwind**: Classes utilitárias arbitrárias
 - **Cópia Inteligente**: Botão sensível ao contexto (CSS/Dart/Tailwind)
 
-## 🛠️ Tecnologias
+## � Stack Técnica
 
 | Tecnologia     | Uso                                                  |
 | -------------- | ---------------------------------------------------- |
@@ -49,7 +49,7 @@ Uma ferramenta web moderna e interativa para gerar sombras CSS (`box-shadow`) e 
 
 O projeto segue o padrão **MVC (Model-View-Controller)**:
 
-```
+```text
 js/
 ├── main.js              # Controller
 ├── model/
@@ -97,7 +97,7 @@ Acesse [gerador-de-box-shadow.netlify.app](https://gerador-de-box-shadow.netlify
 
 ## 👤 Autor
 
-**Franklyn R. Silva**
+Franklyn R. Silva
 
 - GitHub: [@Franklyn-R-Silva](https://github.com/Franklyn-R-Silva)
 - LinkedIn: [franklyn-roberto-dev](https://www.linkedin.com/in/franklyn-roberto-dev/)
