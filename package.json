@@ -23,6 +23,6 @@
     "vitest": "^2.1.8",
     "@vitest/coverage-v8": "^2.1.8",
     "happy-dom": "^15.11.7",
-    "eslint": "^8.57.0"
+    "eslint": "^9.39.2"
   }
 }
