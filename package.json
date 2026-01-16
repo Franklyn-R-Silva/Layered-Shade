@@ -20,7 +20,7 @@
   "author": "Franklyn R. Silva",
   "license": "MIT",
   "devDependencies": {
-    "vitest": "^2.1.8",
+    "vitest": "^4.0.17",
     "@vitest/coverage-v8": "^2.1.8",
     "happy-dom": "^20.1.0",
     "eslint": "^9.39.2"
