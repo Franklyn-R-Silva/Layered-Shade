@@ -77,7 +77,7 @@ header p {
   flex-direction: column;
   min-height: 520px;
   padding: var(--spacing-8);
-  justify-content: center; /* Center content vertically now */
+  justify-content: flex-start;
   align-items: center; /* Center content horizontally */
   background: var(--glass-bg); /* Ensure it has glass background */
   border-radius: var(--radius-lg);
@@ -87,22 +87,20 @@ header p {
   backdrop-filter: var(--glass-blur);
 }
 
+/* Title stays in normal flow at the top; the preview box centers itself in the
+   remaining space via `margin: auto`. (Previously absolutely positioned, which
+   could overlap the box on small screens.) */
 #preview h2 {
-  margin-bottom: var(--spacing-8);
   align-self: flex-start;
-  width: 100%;
-  position: absolute; /* Float title */
-  top: var(--spacing-8);
-  left: var(--spacing-8);
+  margin-bottom: var(--spacing-6);
 }
 
 #box {
   width: 200px;
   height: 200px;
-  background: #ffd700;
+  background: #ffdd00;
   border-radius: var(--radius-md);
   margin: auto; /* Center the box in the remaining space */
-  align-self: center;
 }
 
 /* Responsive adjustments */
@@ -114,8 +112,9 @@ header p {
     font-size: 2.5rem;
   }
 
-  .reference-input p {
-    display: none;
+  #preview {
+    min-height: 360px;
+    position: static; /* No sticky preview on small screens */
   }
 
   #box {

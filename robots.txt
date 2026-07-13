@@ -4,8 +4,8 @@
 User-agent: *
 Allow: /
 
-# Sitemap (if added in the future)
-# Sitemap: https://layeredshade.netlify.app/sitemap.xml
+# Sitemap
+Sitemap: https://layeredshade.netlify.app/sitemap.xml
 
 # Crawl-delay for polite crawling
 Crawl-delay: 1

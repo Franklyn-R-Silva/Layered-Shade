@@ -1,7 +1,9 @@
 /* Glassmorphism Configuration & Utilities */
 
-/* Glass Panels */
-#controls-container, 
+/* Glass Panels
+   NOTE: the controls sidebar element is `#controls` (was previously an orphaned
+   `#controls-container` selector, so the panel had no glass background). */
+#controls,
 #preview,
 .glass-panel {
   background: var(--glass-bg);
@@ -14,7 +16,8 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-#controls-container:hover, 
+/* Hover lift is reserved for the preview panel only — lifting the controls
+   panel while the user is dragging a slider would be disorienting. */
 #preview:hover {
   box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
   transform: translateY(-4px);

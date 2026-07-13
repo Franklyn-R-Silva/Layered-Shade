@@ -56,6 +56,17 @@ input[type="range"]:hover {
     background: rgba(0, 0, 0, 0.25);
 }
 
+/* Restore a visible keyboard focus ring (the resting `outline: none` above
+   hides it, leaving sliders inaccessible to keyboard users). */
+input[type="range"]:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 4px;
+}
+
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.35);
+}
+
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
