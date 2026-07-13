@@ -20,6 +20,7 @@
 
   function onRange(e: Event) {
     let v = Number((e.target as HTMLInputElement).value);
+    if (Number.isNaN(v)) return; // ignore non-numeric text entry
     if (config.id === 'opacity') v = v / 100;
     actions.update(config.id, v);
   }
