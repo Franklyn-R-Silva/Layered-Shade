@@ -151,6 +151,15 @@ describe('ShadowModel', () => {
       expect(model.backgroundLayers).toHaveLength(0);
       expect(model.currentBgLayerIndex).toBe(-1);
     });
+
+    // Regression: reset() used opacity 0.5 while the constructor seeded 0.2,
+    // so Reset visibly changed the shadow. Both must match.
+    it('should restore the same opacity as the initial state', () => {
+      const initialOpacity = new ShadowModel().layers[0].opacity;
+      model.update('opacity', 0.9);
+      model.reset();
+      expect(model.layers[0].opacity).toBe(initialOpacity);
+    });
   });
 
   // ============================================
@@ -351,6 +360,38 @@ describe('ShadowModel', () => {
       expect(bgCSS).toContain('radial-gradient');
       expect(bgCSS).toContain('#ffdd00');
     });
+
+    // Regression: getBackgroundCSS used to sort layer.stops in place, mutating
+    // model state on every render. Generation must be side-effect free.
+    it('should not mutate the order of layer.stops', () => {
+      model.addBackgroundLayer('linear');
+      model.backgroundLayers[0].stops = [
+        { color: '#ff0000', position: 80 },
+        { color: '#00ff00', position: 10 },
+        { color: '#0000ff', position: 40 },
+      ];
+      const before = model.backgroundLayers[0].stops.map((s) => s.position);
+
+      model.getBackgroundCSS();
+      model.getBackgroundCSS();
+
+      const after = model.backgroundLayers[0].stops.map((s) => s.position);
+      expect(after).toEqual(before);
+    });
+
+    it('getBackgroundCSSForLayer should not mutate stop order', () => {
+      const layer = {
+        type: 'linear',
+        angle: 90,
+        stops: [
+          { color: '#ffffff', position: 100 },
+          { color: '#000000', position: 0 },
+        ],
+      };
+      const before = layer.stops.map((s) => s.position);
+      model.getBackgroundCSSForLayer(layer);
+      expect(layer.stops.map((s) => s.position)).toEqual(before);
+    });
   });
 
   // ============================================
@@ -432,6 +473,30 @@ describe('ShadowModel', () => {
     it('should replace spaces with underscores', () => {
       const tw = model.getTailwind();
       expect(tw).not.toMatch(/shadow-\[[^\]]*\s[^\]]*\]/);
+    });
+
+    // Regression: escaping used to be applied and then stripped, producing
+    // broken output. Arbitrary values must contain no backslashes and no
+    // whitespace inside either bracketed token.
+    it('should not contain backslashes (escaping regression)', () => {
+      model.addBackgroundLayer('radial');
+      const tw = model.getTailwind();
+      expect(tw).not.toContain('\\');
+    });
+
+    it('should keep rgba() intact with no internal spaces (shadow regression)', () => {
+      model.update('color', '#ff0000');
+      model.update('opacity', 0.5);
+      const tw = model.getTailwind();
+      // rgba values must be underscore/comma-packed, never "rgba(255, 0, 0..."
+      expect(tw).toContain('rgba(');
+      expect(tw).not.toMatch(/\[[^\]]*\s[^\]]*\]/);
+    });
+
+    it('should preserve gradient parentheses in bg token', () => {
+      model.addBackgroundLayer('linear');
+      const tw = model.getTailwind();
+      expect(tw).toContain('linear-gradient(');
     });
   });
 

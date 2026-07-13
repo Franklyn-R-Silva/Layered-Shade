@@ -60,6 +60,17 @@ describe('NotificationManager', () => {
 
       vi.useRealTimers();
     });
+
+    it('should revert text after timeout for Tailwind', async () => {
+      vi.useFakeTimers();
+
+      manager.showCopyFeedback('tailwind');
+      vi.advanceTimersByTime(2000);
+
+      expect(copyTextElement.textContent).toBe('Clique aqui para copiar as regras (Tailwind)');
+
+      vi.useRealTimers();
+    });
   });
 
   describe('updateCopyButtonText', () => {
@@ -73,9 +84,14 @@ describe('NotificationManager', () => {
       expect(copyTextElement.textContent).toBe('Clique aqui para copiar as regras (Dart)');
     });
 
-    it('should default to Dart for unknown tabs', () => {
+    it('should update text for Tailwind tab', () => {
       manager.updateCopyButtonText('tailwind');
-      expect(copyTextElement.textContent).toBe('Clique aqui para copiar as regras (Dart)');
+      expect(copyTextElement.textContent).toBe('Clique aqui para copiar as regras (Tailwind)');
+    });
+
+    it('should default to CSS for unknown tabs', () => {
+      manager.updateCopyButtonText('unknown');
+      expect(copyTextElement.textContent).toBe('Clique aqui para copiar as regras (CSS)');
     });
   });
 });

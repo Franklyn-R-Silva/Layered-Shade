@@ -213,8 +213,9 @@ export class ShadowView {
       if (config.type === 'checkbox') {
         slider.checked = state[config.id];
       } else if (config.id === 'opacity') {
-        slider.value = state.opacity * 100;
-        if (textInput) textInput.value = state.opacity;
+        const displayValue = Math.round(state.opacity * 100);
+        slider.value = displayValue;
+        if (textInput) textInput.value = displayValue;
       } else {
         if (state[config.id] !== undefined) {
           slider.value = state[config.id];

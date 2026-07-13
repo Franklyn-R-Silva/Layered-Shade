@@ -243,5 +243,5 @@ class ShadowController {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const app = new ShadowController(new ShadowModel(), new ShadowView());
+  new ShadowController(new ShadowModel(), new ShadowView());
 });

@@ -175,7 +175,7 @@ export class ShadowModel {
    * Clears all layers and restores default values.
    */
   reset() {
-    this.layers = [{ ...this.defaultLayerState, opacity: 0.5 }];
+    this.layers = [{ ...this.defaultLayerState, opacity: 0.2 }];
     this.currentLayerIndex = 0;
     this.backgroundLayers = [];
     this.currentBgLayerIndex = -1;
@@ -244,7 +244,7 @@ export class ShadowModel {
    */
   getBackgroundCSS() {
     const layersCSS = this.backgroundLayers.map((layer) => {
-      const stopsStr = layer.stops
+      const stopsStr = [...layer.stops]
         .sort((a, b) => a.position - b.position)
         .map((s) => `${s.color} ${s.position}%`)
         .join(', ');
@@ -254,7 +254,7 @@ export class ShadowModel {
         // Default center if not specified
         const posX = layer.posX !== undefined ? layer.posX : 50;
         const posY = layer.posY !== undefined ? layer.posY : 50;
-        let size = layer.size || 'farthest-corner';
+        const size = layer.size || 'farthest-corner';
 
         // Simplify default size to avoid syntax quirks in some browsers if position is present
         // radial-gradient(circle at 50% 50%, ...) is safest for default
@@ -338,7 +338,7 @@ export class ShadowModel {
   }
 
   getBackgroundCSSForLayer(layer) {
-    const stopsStr = layer.stops
+    const stopsStr = [...layer.stops]
       .sort((a, b) => a.position - b.position)
       .map((s) => `${s.color} ${s.position}%`)
       .join(', ');
@@ -346,7 +346,7 @@ export class ShadowModel {
     if (layer.type === 'radial') {
       const posX = layer.posX !== undefined ? layer.posX : 50;
       const posY = layer.posY !== undefined ? layer.posY : 50;
-      let size = layer.size || 'farthest-corner';
+      const size = layer.size || 'farthest-corner';
 
       if (size === 'farthest-corner') {
         return `radial-gradient(${layer.shape || 'circle'} at ${posX}% ${posY}%, ${stopsStr})`;
@@ -393,10 +393,8 @@ export class ShadowModel {
       // or if user wants layers, they'd conceptually need a Stack.
       // For this generator, let's assume valid output is the TOP gradient if exists, else solid.
       if (this.backgroundLayers.length > 0) {
-        const topLayer = this.backgroundLayers[this.backgroundLayers.length - 1]; // Visual top is usually last in stack?
-        // Actually in CSS: layers listed first are ON TOP.
-        // let's assume backgroundLayers[0] is top.
-        // CSS: background: linear-gradient(...), linear-gradient(...) -> First is top.
+        // In CSS `background: gradientA, gradientB`, the first layer is on top.
+        // BoxDecoration accepts only one gradient, so we export the top (first) layer.
         const cssTopLayer = this.backgroundLayers[0];
         code += `  gradient: ${this.getLayerDart(cssTopLayer)},\n`;
       } else {
@@ -440,23 +438,23 @@ export class ShadowModel {
    * Generates Tailwind CSS configuration/classes
    */
   getTailwind() {
-    // Tailwind arbitrary value: shadow-[...]
+    // Tailwind arbitrary values (shadow-[...] / bg-[...]): spaces are significant,
+    // so encode them as underscores and drop the space after commas. Parentheses
+    // from rgba()/gradient functions are valid inside arbitrary values as-is and
+    // must NOT be stripped or escaped.
+    const arbitraryShadow = this.toTailwindArbitrary(this.getCSS());
+    const arbitraryBg = this.toTailwindArbitrary(this.getBackgroundCSS());
 
-    let shadowString = this.getCSS();
-    const arbitraryShadow = shadowString.replace(/, /g, ',').replace(/ /g, '_');
+    return `shadow-[${arbitraryShadow}] bg-[${arbitraryBg}]`;
+  }
 
-    // Background arbitrary
-    // Tailwind allows bg-[value]
-    const bgCSS = this.getBackgroundCSS();
-    const arbitraryBg = bgCSS
-      .replace(/, /g, ',')
-      .replace(/ /g, '_')
-      .replace(/\(/g, '\\(')
-      .replace(/\)/g, '\\)'); // Escape parens might be needed in some contexts but for raw string usually _ is enough
-    // Actually tailwind arbitrary values with spaces are tricky.
-    // Ideally we return a list of classes.
-
-    return `shadow-[${arbitraryShadow}] bg-[${arbitraryBg.replace(/\\/g, '')}]`;
+  /**
+   * Normalizes a CSS value string into a Tailwind arbitrary-value token.
+   * @param {string} value - Raw CSS value
+   * @returns {string} Token safe for `[...]` arbitrary values
+   */
+  toTailwindArbitrary(value) {
+    return value.replace(/,\s+/g, ',').replace(/\s+/g, '_');
   }
 
   /**
@@ -479,9 +477,9 @@ export class ShadowModel {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
 
-  rgbaToHex(rgba) {
-    // Basic fallback if color is not #hex
-    // TODO: implement robust parsing if needed
+  rgbaToHex(_rgba) {
+    // Basic fallback if color is not #hex.
+    // TODO: implement robust rgba() parsing if gradient stops ever store rgba strings.
     return '#000000';
   }
 

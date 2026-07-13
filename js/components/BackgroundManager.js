@@ -88,7 +88,7 @@ export class BackgroundManager {
 
   renderControls(layer) {
     // Controls for the ACTIVE layer
-    let controlsHtml = `
+    const controlsHtml = `
             <div class="bg-controls-group">
                 <div class="control-header"><label>Tipo</label></div>
                 <select id="bg-type-select" class="form-select bg-select-input">
