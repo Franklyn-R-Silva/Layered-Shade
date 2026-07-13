@@ -1,31 +1,39 @@
 import js from '@eslint/js';
+import ts from 'typescript-eslint';
+import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
 
 /**
- * ESLint flat config (ESLint 9+).
- * Mirrors the rules previously kept in the legacy .eslintrc.json.
+ * ESLint flat config (ESLint 10) for a Svelte 5 + TypeScript project.
  */
-export default [
+export default ts.config(
   {
-    ignores: ['node_modules/', 'coverage/', '**/*.test.js'],
+    ignores: ['dist/', 'node_modules/', 'coverage/', 'css/', 'js/', '**/*.test.ts'],
   },
   js.configs.recommended,
+  ...ts.configs.recommended,
+  ...svelte.configs.recommended,
   {
-    files: ['js/**/*.js'],
     languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      globals: {
-        ...globals.browser,
-      },
+      globals: { ...globals.browser },
     },
     rules: {
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'no-console': 'off',
       'prefer-const': 'warn',
       'no-var': 'error',
       eqeqeq: ['error', 'always'],
-      curly: ['error', 'multi-line'],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+      ],
     },
   },
-];
+  {
+    files: ['**/*.svelte', '**/*.svelte.ts'],
+    languageOptions: {
+      parserOptions: {
+        parser: ts.parser,
+      },
+    },
+  },
+);

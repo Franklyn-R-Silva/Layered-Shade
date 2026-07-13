@@ -6,13 +6,13 @@ Uma ferramenta web moderna e interativa para gerar sombras CSS (`box-shadow`) e 
 
 [![Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://layeredshade.netlify.app/)
 [![CI](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml/badge.svg)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-133%20passing-success)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions)
+[![Tests](https://img.shields.io/badge/Tests-71%20passing-success)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions)
 [![Coverage](https://img.shields.io/badge/Coverage-core%20logic%20~99%25-brightgreen)](https://github.com/Franklyn-R-Silva/Layered-Shade)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
 
 ## 🛠️ Tecnologias
 
-![Skills](https://go-skill-icons.vercel.app/api/icons?i=html,css,js&theme=dark&perline=3)
+![Skills](https://go-skill-icons.vercel.app/api/icons?i=svelte,typescript,vite,css&theme=dark&perline=4)
 
 ## 🚀 Demo
 
@@ -20,11 +20,11 @@ Uma ferramenta web moderna e interativa para gerar sombras CSS (`box-shadow`) e 
 
 ### Preview
 
-![Preview](../../github/tela.png)
+![Preview](../../public/github/tela.png)
 
 ### Demo Animado
 
-![Demo](../../github/demo.webp)
+![Demo](../../public/github/demo.webp)
 
 ## ✨ Funcionalidades
 
@@ -50,11 +50,13 @@ Uma ferramenta web moderna e interativa para gerar sombras CSS (`box-shadow`) e 
 
 ## 📊 Stack Técnica
 
-| Tecnologia     | Uso                                                  |
-| -------------- | ---------------------------------------------------- |
-| **HTML5**      | Estrutura semântica                                  |
-| **CSS3**       | Variables, Grid, Flexbox, Animations, Glassmorphism  |
-| **JavaScript** | ES6+, Modules, Classes (Vanilla - zero dependências) |
+| Tecnologia     | Uso                                                 |
+| -------------- | --------------------------------------------------- |
+| **Svelte 5**   | UI reativa com runes (`$state`, `$derived`)         |
+| **TypeScript** | Estado, lógica e componentes tipados                |
+| **Vite**       | Servidor de dev e build de produção                 |
+| **CSS3**       | Variables, Grid, Flexbox, Animations, Glassmorphism |
+| **Vitest**     | Testes de unidade do núcleo de lógica puro          |
 
 ## ♿ Acessibilidade (A11y)
 
@@ -75,32 +77,28 @@ Acesse [layeredshade.netlify.app](https://layeredshade.netlify.app/)
 
 ### Localmente
 
-1. Clone o repositório:
+```bash
+git clone https://github.com/Franklyn-R-Silva/Layered-Shade.git
+cd Layered-Shade
+npm install
+npm run dev      # http://localhost:5173
+```
 
-   ```bash
-   git clone https://github.com/Franklyn-R-Silva/Layered-Shade.git
-   ```
-
-2. Abra a pasta no VS Code
-
-3. Use a extensão **Live Server** para abrir o `index.html`
-
-> ⚠️ O projeto usa ES Modules, então precisa ser servido via HTTP (não funciona abrindo diretamente o arquivo).
+Gere o build de produção com `npm run build` (saída em `dist/`) e visualize com `npm run preview`.
 
 ## 🧪 Testes
 
 ```bash
-npm install        # Instalar dependências
-npm test           # Rodar testes (133 passando)
+npm install            # Instalar dependências
+npm test               # Rodar testes
 npm run test:coverage  # Rodar com cobertura
-npm run lint       # Verificar estilo do código
+npm run check          # Type-check (svelte-check)
+npm run lint           # Verificar estilo do código
 ```
 
-Os testes automatizados focam na **lógica central** — o Model (`ShadowModel`), a
-configuração e os componentes de apresentação (`ControlFactory`, `LayerManager`,
-`TabManager`, `NotificationManager`) — cobertos em ~99%. As camadas de DOM/ligação
-(o controller `main.js`, a `ShadowView` e os gerenciadores de gradiente) são
-verificadas manualmente, e não por testes unitários.
+Os testes automatizados focam no **núcleo de lógica puro** (`src/lib/shadow.ts`) — mutações de
+estado e os geradores CSS/Dart/Tailwind — que não dependem de DOM e têm cobertura de ~99%. Os
+componentes Svelte são verificados via `svelte-check` e testes manuais.
 
 ## ⚠️ Limitações Conhecidas
 
