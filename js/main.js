@@ -212,7 +212,7 @@ class ShadowController {
   }
 
   copyToClipboard(mode) {
-    let textToCopy = '';
+    let textToCopy;
     const state = this.model.getState();
     const shadowRule = this.model.getCSS();
     const bgCSS = this.model.getBackgroundCSS();
