@@ -1,9 +1,15 @@
 [build]
-  publish = "."
-  command = "echo 'Static site - no build needed'"
+  publish = "dist"
+  command = "npm run build"
 
 [build.environment]
   NODE_VERSION = "20"
+
+# Vite emits content-hashed assets under /assets/ — safe to cache forever.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
   for = "/*"

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [🇧🇷 Português](docs/pt-BR/CHANGELOG.md)
 
+## [2.0.0] - 2026-07-13
+
+### Changed
+
+- 🚀 **Framework migration**: rewritten from vanilla JS (MVC) to **Svelte 5 + Vite + TypeScript**.
+  - Pure code-generation logic preserved in `src/lib/shadow.ts` (state + CSS/Dart/Tailwind).
+  - Reactive `$state` singleton (`src/lib/state.svelte.ts`) replaces the manual controller wiring.
+  - UI split into Svelte components; global CSS design system reused unchanged.
+  - Typed domain model (`src/lib/types.ts`); `svelte-check` in build and CI.
+  - ~99% coverage on the pure logic core retained (71 tests); production bundle ≈ 23 KB gzip (JS).
+- 🏗️ **Build/deploy**: Netlify now runs `npm run build` → `dist/`; static assets moved to `public/`.
+
 ## [1.2.0] - 2026-07-13
 
 ### Fixed

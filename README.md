@@ -6,7 +6,7 @@ A modern and interactive web tool for generating CSS shadows (`box-shadow`) and 
 
 [![Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://layeredshade.netlify.app/)
 [![CI](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml/badge.svg)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-133%20passing-success)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions)
+[![Tests](https://img.shields.io/badge/Tests-71%20passing-success)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions)
 [![Coverage](https://img.shields.io/badge/Coverage-core%20logic%20~99%25-brightgreen)](https://github.com/Franklyn-R-Silva/Layered-Shade)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Performance](https://img.shields.io/badge/Performance-98%25-success)](https://pagespeed.web.dev/analysis/https-layeredshade-netlify-app/1)
@@ -16,7 +16,7 @@ A modern and interactive web tool for generating CSS shadows (`box-shadow`) and 
 
 ## 🛠️ Technologies
 
-![Skills](https://go-skill-icons.vercel.app/api/icons?i=html,css,js&theme=dark&perline=3)
+![Skills](https://go-skill-icons.vercel.app/api/icons?i=svelte,typescript,vite,css&theme=dark&perline=4)
 
 ## 🚀 Demo
 
@@ -24,11 +24,11 @@ A modern and interactive web tool for generating CSS shadows (`box-shadow`) and 
 
 ### Preview
 
-![Preview](github/tela.png)
+![Preview](public/github/tela.png)
 
 ### Demo Animation
 
-![Demo](github/demo.webp)
+![Demo](public/github/demo.webp)
 
 ## ✨ Features
 
@@ -54,11 +54,13 @@ A modern and interactive web tool for generating CSS shadows (`box-shadow`) and 
 
 ## 📊 Tech Stack
 
-| Technology     | Usage                                                |
-| -------------- | ---------------------------------------------------- |
-| **HTML5**      | Semantic structure                                   |
-| **CSS3**       | Variables, Grid, Flexbox, Animations, Glassmorphism  |
-| **JavaScript** | ES6+, Modules, Classes (Vanilla - zero dependencies) |
+| Technology     | Usage                                               |
+| -------------- | --------------------------------------------------- |
+| **Svelte 5**   | Reactive UI with runes (`$state`, `$derived`)       |
+| **TypeScript** | Typed state, logic and components                   |
+| **Vite**       | Dev server and production build                     |
+| **CSS3**       | Variables, Grid, Flexbox, Animations, Glassmorphism |
+| **Vitest**     | Unit tests for the pure logic core                  |
 
 ## ♿ Accessibility (A11y)
 
@@ -73,22 +75,19 @@ This project was developed with accessibility in mind:
 
 ## 📁 Architecture
 
-The project follows the **MVC (Model-View-Controller)** pattern:
+A **pure, framework-free logic core** with a thin **reactive UI** on top:
 
 ```text
-js/
-├── main.js              # Controller
-├── model/
-│   └── ShadowModel.js   # State and business logic
-├── view/
-│   └── ShadowView.js    # DOM manipulation
-├── components/          # Auxiliary components
-│   ├── LayerManager.js
-│   ├── BackgroundManager.js
-│   ├── GradientManager.js
-│   └── ...
-└── config/
-    └── controlsConfig.js
+src/
+├── App.svelte           # Layout composition
+├── main.ts              # Mounts the app
+└── lib/
+    ├── shadow.ts        # Pure state + code generation (CSS/Dart/Tailwind)
+    ├── shadow.test.ts   # Unit tests (no DOM)
+    ├── state.svelte.ts  # $state singleton + actions
+    ├── types.ts
+    ├── config/controls.ts
+    └── components/       # Control, LayerList, BackgroundPanel, CodeOutput, …
 ```
 
 For complete technical details, see [ARCHITECTURE.md](ARCHITECTURE.md).
@@ -101,32 +100,28 @@ Visit [layeredshade.netlify.app](https://layeredshade.netlify.app/)
 
 ### Locally
 
-1. Clone the repository:
+```bash
+git clone https://github.com/Franklyn-R-Silva/Layered-Shade.git
+cd Layered-Shade
+npm install
+npm run dev      # http://localhost:5173
+```
 
-   ```bash
-   git clone https://github.com/Franklyn-R-Silva/Layered-Shade.git
-   ```
-
-2. Open the folder in VS Code
-
-3. Use the **Live Server** extension to open `index.html`
-
-> ⚠️ The project uses ES Modules, so it needs to be served via HTTP (won't work by opening the file directly).
+Build for production with `npm run build` (output in `dist/`) and preview it with `npm run preview`.
 
 ## 🧪 Testing
 
 ```bash
-npm install        # Install dependencies
-npm test           # Run tests (133 passing)
+npm install            # Install dependencies
+npm test               # Run tests
 npm run test:coverage  # Run with coverage
-npm run lint       # Check code style
+npm run check          # Type-check (svelte-check)
+npm run lint           # Check code style
 ```
 
-Automated tests focus on the **core logic** — the Model (`ShadowModel`), configuration,
-and the presentational components (`ControlFactory`, `LayerManager`, `TabManager`,
-`NotificationManager`) — which are covered at ~99%. The DOM/wiring layers (`main.js`
-controller, `ShadowView`, and the gradient UI managers) are exercised through manual
-verification rather than unit tests.
+Automated tests target the **pure logic core** (`src/lib/shadow.ts`) — state mutations and the
+CSS/Dart/Tailwind generators — which have no DOM dependency and are covered at ~99%. The Svelte
+components are verified via `svelte-check` and manual testing.
 
 ## ⚠️ Known Limitations
 

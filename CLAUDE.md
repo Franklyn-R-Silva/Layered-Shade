@@ -4,52 +4,57 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Layered Shade is a client-side web tool that visually generates multi-layer box shadows and exports them as **CSS**, **Dart/Flutter** (`BoxShadow`/`BoxDecoration`), and **Tailwind** (arbitrary utility classes). It is vanilla JavaScript with ES Modules and **zero runtime dependencies** — everything under `devDependencies` is for testing/linting only. Deployed as a static site to Netlify (`publish = "."`, no build step).
+Layered Shade is a client-side web tool that visually generates multi-layer box shadows and exports them as **CSS**, **Dart/Flutter** (`BoxShadow`/`BoxDecoration`), and **Tailwind** (arbitrary utility classes). Built with **Svelte 5 + Vite + TypeScript**. Deployed to Netlify (`npm run build` → `dist/`).
+
+> History: this was originally vanilla JS (MVC). It was migrated to Svelte 5 — the pure code-generation logic was preserved almost verbatim in `src/lib/shadow.ts`.
 
 ## Commands
 
 ```bash
-npm install              # Install dev dependencies (test/lint only)
-npm test                 # Run all tests once (vitest run)
-npm run test:watch       # Watch mode
-npm run test:coverage    # Coverage report (v8 → coverage/)
-npm run lint             # ESLint over js/
+npm install              # Install dependencies
+npm run dev              # Vite dev server (http://localhost:5173)
+npm run build            # svelte-check + vite build → dist/
+npm run preview          # Serve the production build
+npm run check            # svelte-check (type-check .svelte + .ts)
+npm test                 # Vitest run
+npm run test:coverage    # Coverage (v8 → coverage/)
+npm run lint             # ESLint (flat config) over src/
 npm run lint:fix         # ESLint autofix
 ```
 
 Run a single test file or filter by name:
 
 ```bash
-npx vitest run tests/model/ShadowModel.test.js
-npx vitest run -t "getCSS"
+npx vitest run src/lib/shadow.test.ts
+npx vitest run -t "getTailwind"
 ```
-
-**Running the app locally:** it uses ES Modules loaded via `<script type="module">`, so opening `index.html` from the filesystem will NOT work — it must be served over HTTP (e.g. VS Code Live Server, or `npx serve .`).
 
 ## Architecture
 
-Strict **MVC** with one-directional flow. Full details in `ARCHITECTURE.md`.
+Reactive UI (Svelte 5 runes) over a **pure, framework-free logic core**. This split is the key idea — keep it.
 
-- **Controller — `js/main.js` (`ShadowController`)**: the only place that wires Model ↔ View. Instantiated on `DOMContentLoaded`. Receives all user events through a single `handleEvent(type, value)` dispatcher plus manager callbacks, mutates the Model, then calls `refreshView()` which pulls fresh state + generated code strings and pushes them to the View. The View never touches the Model directly.
-- **Model — `js/model/ShadowModel.js`**: all state and code generation. No DOM access. Holds three independent pieces of state: `layers` (shadow layers, always ≥1), `backgroundLayers` (gradient stack), and `boxProperties` (borderRadius, backgroundColor, canvasColor). `update(key, value)` routes by key: `bgLayer*` keys → active background layer, box-property keys → `boxProperties`, everything else → the currently selected shadow layer. Output generators: `getCSS()`, `getDart()`, `getTailwind()`, `getBackgroundCSS()`.
-- **View — `js/view/ShadowView.js`**: all DOM reads/writes and event binding. Builds sliders dynamically from `js/config/controlsConfig.js` via `ControlFactory`, then delegates sub-areas to component managers.
-- **Components — `js/components/`**: `LayerManager` (shadow layer list), `BackgroundManager` + `GradientManager` (gradient stack + stops), `TabManager` (CSS/Dart/Tailwind output tabs), `NotificationManager` (copy feedback), `ControlFactory` (builds control DOM from config).
+- **`src/lib/shadow.ts` — pure logic (no Svelte).** State factory (`createInitialState`), mutations (`update`, `addLayer`, `reset`, `addBackgroundLayer`, …), presets (`applyPreset`), and all code generation (`getCSS`, `getDart`, `getTailwind`, `getBackgroundCSS`). Everything takes a `ShadowState` and is unit-tested in `src/lib/shadow.test.ts` with no DOM/Svelte. Put new logic here.
+- **`src/lib/state.svelte.ts` — reactive layer.** `export const state = $state(createInitialState())` plus `ui` (`mode`, `sidebar`) and thin `actions` wrappers that call the pure functions on the singleton `state`. Mutating `state` re-renders the UI — this replaces the old manual controller wiring.
+- **`src/lib/types.ts`** — `ShadowLayer`, `BackgroundLayer`, `GradientStop`, `BoxProperties`, `ShadowState`, `CodeMode`.
+- **`src/lib/config/controls.ts`** — declarative slider/color/checkbox config (`shadowControls`).
+- **`src/lib/components/*.svelte`** — `Control` (renders one config-driven control), `ShadowControls`/`ShapeControls`, `LayerList`, `BackgroundPanel`, `PreviewBox`, `CodeOutput` (tabs + copy), `Toolbar`, `Sidebar`, `Footer`. `src/App.svelte` composes the layout; `src/main.ts` mounts it.
+- **`src/styles/`** — global CSS (`styles.css` `@import`s `variables.css` + `modules/*.css`). Imported once in `main.ts`. Components reuse these class names rather than scoped `<style>`.
 
 ### Key conventions & gotchas
 
-- **Two opacity scales**: sliders/UI use `0–100`; the Model stores shadow opacity as `0–1`. The controller divides by 100 in `handleEvent` before calling `model.update('opacity', …)`. Keep this boundary in mind when adding controls.
-- **CSS vs Flutter layer limits**: CSS `box-shadow`/`background` stack all layers. Flutter's `BoxDecoration` accepts only ONE gradient and one color, so `getDart()` emits only `backgroundLayers[0]` (the CSS-topmost) as the gradient — this is intentional, not a bug.
-- **Color handling is hex-only**: helpers (`hexToRgba`, `hexToColorObj`) assume `#RGB`/`#RRGGBB` from color pickers. `rgbaToHex` is a stub returning `#000000`; presets that inject `rgba(...)` background strings won't round-trip to Dart correctly.
-- **Presets** (`soft`, `neumorphism`, `cristal`) live in `ShadowController.applyPreset` and are built by calling `model.update(...)` sequentially — not stored as data objects.
-- **Adding a shadow control**: add an entry to `controlsConfig.js` (the View auto-renders it), then handle its `type` in `ShadowController.handleEvent` if it needs parsing (int/opacity coercion happens there).
+- **Two opacity scales**: the UI uses `0–100`; the model stores shadow opacity as `0–1`. `Control.svelte` converts (`value / 100` on input, `* 100` for display) for the `opacity` control. Keep this boundary when adding controls.
+- **CSS vs Flutter layer limits**: CSS stacks all layers; Flutter's `BoxDecoration` takes one gradient, so `getDart()` emits only `backgroundLayers[0]` (the CSS-topmost) — intentional.
+- **Color handling is hex-only**: `hexToRgba`/`hexToColorObj` assume `#RGB`/`#RRGGBB`. `rgbaToHex` is a stub returning `#000000`.
+- **Naming conflict**: don't name a local `state` in a component that also uses the `$state` rune — it triggers `store_rune_conflict`. `CodeOutput.svelte` imports the store as `state as shadow` for this reason.
+- **Adding a shadow control**: add an entry to `controls.ts`; `ShadowControls`/`ShapeControls` render it via `Control.svelte` automatically. Only `opacity` needs the 0–100↔0–1 conversion already handled in `Control`.
 
 ## Testing & CI
 
-- Vitest with the `happy-dom` environment (`vitest.config.js`). Tests live in `tests/**/*.test.js` mirroring the `js/` layout.
-- Coverage is scoped to Model, config, and components only — `main.js` and `ShadowView.js` are excluded from coverage (heavy DOM wiring).
-- CI (`.github/workflows/ci.yml`) runs on push/PR to `main`: clean `npm install`, `npm test`, then `npm run test:coverage`. Node 20.
+- Vitest + `happy-dom` (config lives in `vite.config.ts` under `test`). Tests are `src/**/*.test.ts`; the core suite is `src/lib/shadow.test.ts` (pure logic). Coverage is scoped to `src/lib/shadow.ts` + `src/lib/config/controls.ts`.
+- Lint uses ESLint 10 flat config (`eslint.config.js`) with `typescript-eslint` + `eslint-plugin-svelte`.
+- CI (`.github/workflows/ci.yml`, Node 20): clean install → lint → test → coverage → **build**.
 
 ## Notes
 
-- Some source strings and `controlsConfig.js` labels are in **Portuguese** (`pt-BR`); DOM IDs mix English and Portuguese (e.g. `#opacidade`, `#insetBox`). Match existing IDs exactly when querying elements. Docs have a Portuguese mirror under `docs/pt-BR/`.
-- CSS is modularized: `css/styles.css` `@import`s `css/variables.css` + `css/modules/*.css`. Add new styles as a module and import it there.
+- UI copy and `controls.ts` labels are **Portuguese (pt-BR)**. Docs have a pt-BR mirror under `docs/pt-BR/`; keep the English README in English.
+- Static assets (`manifest.json`, `sitemap.xml`, `robots.txt`, `icons/`, `github/` preview images) live in `public/` and are served at the site root.
