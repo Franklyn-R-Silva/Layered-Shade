@@ -6,8 +6,8 @@ A modern and interactive web tool for generating CSS shadows (`box-shadow`) and 
 
 [![Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://layeredshade.netlify.app/)
 [![CI](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml/badge.svg)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-125%20passing-success)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions)
-[![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](https://github.com/Franklyn-R-Silva/Layered-Shade)
+[![Tests](https://img.shields.io/badge/Tests-133%20passing-success)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions)
+[![Coverage](https://img.shields.io/badge/Coverage-core%20logic%20~99%25-brightgreen)](https://github.com/Franklyn-R-Silva/Layered-Shade)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Performance](https://img.shields.io/badge/Performance-98%25-success)](https://pagespeed.web.dev/analysis/https-layeredshade-netlify-app/1)
 [![Accessibility](https://img.shields.io/badge/Accessibility-95%25-success)](https://pagespeed.web.dev/analysis/https-layeredshade-netlify-app/1)
@@ -117,10 +117,24 @@ Visit [layeredshade.netlify.app](https://layeredshade.netlify.app/)
 
 ```bash
 npm install        # Install dependencies
-npm test           # Run tests
+npm test           # Run tests (133 passing)
 npm run test:coverage  # Run with coverage
 npm run lint       # Check code style
 ```
+
+Automated tests focus on the **core logic** — the Model (`ShadowModel`), configuration,
+and the presentational components (`ControlFactory`, `LayerManager`, `TabManager`,
+`NotificationManager`) — which are covered at ~99%. The DOM/wiring layers (`main.js`
+controller, `ShadowView`, and the gradient UI managers) are exercised through manual
+verification rather than unit tests.
+
+## ⚠️ Known Limitations
+
+- **Flutter `inset`**: Flutter's native `BoxShadow` has no inset. When "inset" is enabled,
+  the generated Dart emits a note that the [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow)
+  package is required.
+- **Multiple background gradients in Flutter**: `BoxDecoration` accepts only one gradient,
+  so the Dart export uses the top gradient layer. CSS/Tailwind export all layers.
 
 ## 📝 Contributing
 

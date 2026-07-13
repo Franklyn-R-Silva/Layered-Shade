@@ -45,7 +45,12 @@ O CSS foi modularizado para facilitar a manutenção e escalabilidade.
 - **`model/ShadowModel.js`**:
   - `state`: Armazena horizontal, vertical, blur, spread, color, opacity, inset, borderRadius, padding.
   - `getCSS()`: Retorna a string do `box-shadow`.
-  - `getDart()`: Retorna o código Flutter `BoxShadow` (incluindo suporte a `inset` e `BorderRadius`).
+  - `getDart()`: Retorna o código Flutter `BoxShadow` / `BoxDecoration` com suporte a `BorderRadius`.
+    O Flutter não tem sombra inset nativa, então `inset` é emitido como um comentário indicando o
+    pacote [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow); quando
+    há múltiplos gradientes de fundo, apenas a camada do topo é exportada (o `BoxDecoration` aceita
+    um único gradiente).
+  - `getTailwind()`: Retorna classes utilitárias arbitrárias `shadow-[...] bg-[...]`.
 
 #### 3. View
 

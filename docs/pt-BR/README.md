@@ -6,8 +6,8 @@ Uma ferramenta web moderna e interativa para gerar sombras CSS (`box-shadow`) e 
 
 [![Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://layeredshade.netlify.app/)
 [![CI](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml/badge.svg)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-125%20passing-success)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions)
-[![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](https://github.com/Franklyn-R-Silva/Layered-Shade)
+[![Tests](https://img.shields.io/badge/Tests-133%20passing-success)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions)
+[![Coverage](https://img.shields.io/badge/Coverage-core%20logic%20~99%25-brightgreen)](https://github.com/Franklyn-R-Silva/Layered-Shade)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
 
 ## 🛠️ Tecnologias
@@ -91,10 +91,24 @@ Acesse [layeredshade.netlify.app](https://layeredshade.netlify.app/)
 
 ```bash
 npm install        # Instalar dependências
-npm test           # Rodar testes
+npm test           # Rodar testes (133 passando)
 npm run test:coverage  # Rodar com cobertura
 npm run lint       # Verificar estilo do código
 ```
+
+Os testes automatizados focam na **lógica central** — o Model (`ShadowModel`), a
+configuração e os componentes de apresentação (`ControlFactory`, `LayerManager`,
+`TabManager`, `NotificationManager`) — cobertos em ~99%. As camadas de DOM/ligação
+(o controller `main.js`, a `ShadowView` e os gerenciadores de gradiente) são
+verificadas manualmente, e não por testes unitários.
+
+## ⚠️ Limitações Conhecidas
+
+- **`inset` no Flutter**: o `BoxShadow` nativo do Flutter não tem inset. Quando "inset"
+  está ativado, o código Dart gerado indica que o pacote
+  [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow) é necessário.
+- **Múltiplos gradientes de fundo no Flutter**: o `BoxDecoration` aceita apenas um gradiente,
+  então a exportação Dart usa a camada de gradiente do topo. CSS/Tailwind exportam todas.
 
 ## 📝 Como Contribuir
 
