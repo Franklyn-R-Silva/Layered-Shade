@@ -260,9 +260,18 @@
     scrollbar-width: none;
   }
 
-  .stage-bar .bar-label,
   .legend {
     display: none;
+  }
+
+  /* Visually hidden, not display:none: a hidden <label for> stops naming its control. */
+  .stage-bar .bar-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
   }
 
   .stage-bar select {

@@ -5,19 +5,20 @@
   import Icon from './lib/components/Icon.svelte';
   import { actions, historyFlags } from './lib/state.svelte';
 
-  let linkCopied = $state(false);
+  let linkCopied = $state<'idle' | 'copied' | 'address'>('idle');
   let linkTimer: ReturnType<typeof setTimeout> | undefined;
 
   function copyLink() {
     clearTimeout(linkTimer);
     navigator.clipboard
       .writeText(actions.shareUrl())
-      .then(() => {
-        linkCopied = true;
-        linkTimer = setTimeout(() => (linkCopied = false), 2000);
-      })
+      .then(() => (linkCopied = 'copied'))
       // Clipboard blocked: put the link in the address bar so it can be copied by hand.
-      .catch(() => history.replaceState(null, '', actions.shareUrl()));
+      .catch(() => {
+        history.replaceState(null, '', actions.shareUrl());
+        linkCopied = 'address';
+      })
+      .finally(() => (linkTimer = setTimeout(() => (linkCopied = 'idle'), 3000)));
   }
 
   // Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z (or Ctrl+Y); text fields keep their own undo.
@@ -65,10 +66,18 @@
       onclick={actions.redo}><Icon name="redo" size={18} /></button
     >
     <button type="button" class="bar-btn bar-btn-label" onclick={copyLink}>
-      <Icon name={linkCopied ? 'check' : 'link'} size={18} />
-      <span>{linkCopied ? 'Link copiado' : 'Copiar link'}</span>
+      <Icon name={linkCopied === 'copied' ? 'check' : 'link'} size={18} />
+      <span
+        >{linkCopied === 'copied' ? 'Link copiado' : linkCopied === 'address' ? 'Link na barra de endereço' : 'Copiar link'}</span
+      >
     </button>
-    <span class="visually-hidden" role="status">{linkCopied ? 'Link desta sombra copiado.' : ''}</span>
+    <span class="visually-hidden" role="status"
+      >{linkCopied === 'copied'
+        ? 'Link desta sombra copiado.'
+        : linkCopied === 'address'
+          ? 'Não deu para copiar: o link desta sombra está na barra de endereço.'
+          : ''}</span
+    >
   </div>
 
   <nav class="author" aria-label="Autor">

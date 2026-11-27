@@ -156,9 +156,18 @@
   }
 
   .tagline,
-  .author a span,
-  .bar-btn-label span {
+  .author a span {
     display: none;
+  }
+
+  /* Visually hidden, not display:none: the text is the button's accessible name. */
+  .bar-btn-label span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
   }
 
   .workspace {

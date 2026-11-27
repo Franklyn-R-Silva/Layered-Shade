@@ -11,7 +11,7 @@ import { encodeState, decodeState } from './share';
 import { createHistory } from './history';
 import type { CodeMode, PreviewContext, ShadowLayer, ShadowState } from './types';
 
-const STORAGE_KEY = 'layered-shade:v1';
+export const STORAGE_KEY = 'layered-shade:v1';
 
 /** Share link (`#s=…`) wins over the saved session; the hash is dropped so a reload keeps edits. */
 function initialState(): ShadowState {

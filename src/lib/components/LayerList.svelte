@@ -43,9 +43,9 @@
       <button
         type="button"
         class="icon-btn"
-        aria-label={`${layer.hidden ? 'Mostrar' : 'Ocultar'} camada ${i + 1}`}
+        aria-label={`Ocultar camada ${i + 1}`}
         aria-pressed={layer.hidden ? 'true' : 'false'}
-        title={layer.hidden ? 'Mostrar camada' : 'Ocultar camada'}
+        title="Ocultar camada"
         onclick={() => actions.setLayerHidden(i, !layer.hidden)}
       >
         <Icon name={layer.hidden ? 'eyeOff' : 'eye'} />
