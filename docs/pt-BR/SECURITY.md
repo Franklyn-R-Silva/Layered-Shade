@@ -42,4 +42,4 @@ O Layered Shade é uma ferramenta frontend estática, sem backend. Problemas rel
 - O site é servido com uma Content Security Policy que só permite scripts, estilos e fontes do próprio app, além de `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, uma política de referrer restrita e uma permissions policy (veja o `netlify.toml`).
 - As fontes são hospedadas no próprio app; a página não carrega nada de terceiros.
 - No repositório estão ativados os alertas e as atualizações de segurança agrupadas do Dependabot, a varredura de segredos com proteção no push e a análise de código do CodeQL.
-- O CI instala pelo lockfile (`npm ci`) e roda lint, testes e um build com checagem de tipos em todo pull request.
+- O CI instala pelo lockfile (`npm ci`), fixa cada GitHub Action num SHA de commit, roda com token só de leitura e executa lint, testes e um build com checagem de tipos em todo pull request. O Dependabot espera 7 dias antes de propor uma versão nova.

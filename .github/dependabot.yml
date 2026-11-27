@@ -1,7 +1,8 @@
 # Dependabot configuration
 # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
 # One grouped PR per ecosystem per month, and security fixes grouped into one PR,
-# so the repo never piles up a branch per package.
+# so the repo never piles up a branch per package. New releases wait 7 days (cooldown)
+# before Dependabot proposes them, so a bad or malicious publish is usually pulled first.
 
 version: 2
 updates:
@@ -12,6 +13,8 @@ updates:
       interval: 'monthly'
       time: '09:00'
       timezone: 'America/Sao_Paulo'
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 2
     groups:
       npm-security:
@@ -33,6 +36,8 @@ updates:
       interval: 'monthly'
       time: '09:00'
       timezone: 'America/Sao_Paulo'
+    cooldown:
+      default-days: 7
     groups:
       actions-all:
         patterns: ['*']
