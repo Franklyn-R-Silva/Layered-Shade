@@ -26,7 +26,11 @@ describe('plateGeometry', () => {
     expect(g.ray!.label.y).toBeLessThan(0);
     expect(plateGeometry(layer({ horizontal: 0, vertical: 0 }), 0, stage).ray).toBeNull();
     // A phone-sized stage leaves ~45px above the box: the ray shortens instead of vanishing.
-    expect(plateGeometry(layer({ horizontal: 5, vertical: 5 }), 0, { w: 390, h: 290 }).ray).not.toBeNull();
+    const phone = plateGeometry(layer({ horizontal: 5, vertical: 5 }), 0, { w: 390, h: 290 }).ray;
+    expect(phone).not.toBeNull();
+    // No room beside the ray on a 390px stage: the label moves above it instead of off the edge.
+    expect(phone!.label.anchor).toBe('middle');
+    expect(phone!.label.x - 31).toBeGreaterThanOrEqual(-(390 - BOX) / 2);
   });
 
   it('keeps the dimension baselines and labels inside a small stage', () => {
@@ -44,6 +48,12 @@ describe('plateGeometry', () => {
     }
   });
 
+  it('never draws a dimension over the element, even on a cramped stage', () => {
+    const g = plateGeometry(layer({ horizontal: 5, vertical: 5 }), 0, { w: 390, h: 210 });
+    expect(g.dimX.label.y).toBeGreaterThan(BOX);
+    expect(g.dimY.label.x).toBeGreaterThan(BOX);
+  });
+
   it('draws short spans with outside arrows instead of colliding ticks', () => {
     const g = plateGeometry(layer({ horizontal: 5, vertical: 5 }), 0, stage);
     expect(g.dimX.arrows).toHaveLength(2);
@@ -59,5 +69,11 @@ describe('plateGeometry', () => {
     expect(g.reach).toBeNull();
     expect(g.radius).toBeNull();
     expect(plateGeometry(layer({}), 16, stage).radius?.label.text).toBe('R 16');
+  });
+
+  it('measures a non-square element (card, button) from its own edges', () => {
+    const g = plateGeometry(layer({ horizontal: 40, vertical: 30 }), 0, stage, { w: 280, h: 180 });
+    expect(g.dimX.line).toContain('M280 ');
+    expect(g.dimY.label.y).toBeCloseTo(180 + 15 + 4);
   });
 });

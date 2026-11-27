@@ -64,6 +64,13 @@
   position: relative;
 }
 
+.button-row .btn[aria-pressed='true'] {
+  position: relative;
+  border-color: var(--blueline);
+  background: var(--blueline-tint);
+  color: var(--blueline-deep);
+}
+
 .stage {
   display: grid;
   place-items: center;
@@ -89,13 +96,42 @@
 
 .plate {
   position: relative;
-  width: 200px;
-  height: 200px;
 }
 
 #box {
   width: 100%;
   height: 100%;
+}
+
+/* Sample content: only there so the shadow is judged on a real-looking element. */
+.sample-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-1);
+  padding: var(--space-5);
+}
+
+.sample-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.sample-text {
+  font-size: var(--text-sm);
+}
+
+.sample-meta {
+  font-size: var(--text-xs);
+  opacity: 0.75;
+}
+
+.sample-button {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: var(--text-md);
+  font-weight: 700;
 }
 
 .dims {
@@ -211,6 +247,27 @@
   .stage-bar,
   .stage-caption {
     padding-inline: var(--space-4);
+  }
+
+  /* One scrolling row keeps the pinned stage tall enough to measure on a phone. */
+  .stage-bar,
+  .bar-group {
+    flex-wrap: nowrap;
+  }
+
+  .stage-bar {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .stage-bar .bar-label,
+  .legend {
+    display: none;
+  }
+
+  .stage-bar select {
+    flex: none;
+    min-width: 104px;
   }
 
   .stage {

@@ -39,6 +39,11 @@ src/
     shadow.ts             # estado puro + geração de código
     shadow.test.ts        # testes de unidade (sem DOM)
     state.svelte.ts       # singleton $state + actions
+    tabs.ts               # teclado nas abas ARIA
+    importCss.ts          # cola um box-shadow / regra / classe Tailwind → camadas
+    share.ts              # estado ⇄ token base64url (link, sessão salva), validado
+    history.ts            # pilhas de desfazer/refazer com limite
+    dimensions.ts         # geometria das cotas da prancha
     types.ts
     config/controls.ts
     components/
@@ -50,6 +55,7 @@ src/
       Toolbar.svelte      # barra da prancha: presets, cor do fundo, Cotas
       CodeOutput.svelte   # abas CSS/Dart/Tailwind, código como é copiado, copiar + status
       Sidebar.svelte      # painéis Sombra/Fundo + resetar
+      LayerTools.svelte   # importar CSS + gerador de sombra suave (<details> nativo)
       Icon.svelte         # conjunto único de ícones de traço
   styles/                 # CSS global: variables.css (tokens, @font-face) + modules/{base,layout,controls,stage,code}.css
 public/                   # manifest.json, sitemap.xml, robots.txt, icons/, github/

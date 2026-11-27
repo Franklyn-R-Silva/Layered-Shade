@@ -1,7 +1,7 @@
 <script lang="ts">
   import { state as shadow, ui } from '../state.svelte';
   import { getCSS, getBackgroundCSS, isDarkColor } from '../shadow';
-  import { plateGeometry, BOX } from '../dimensions';
+  import { plateGeometry } from '../dimensions';
   import { fmt } from '../format';
   import Toolbar from './Toolbar.svelte';
 
@@ -11,9 +11,16 @@
   const layer = $derived(shadow.layers[shadow.currentLayerIndex]);
   const dark = $derived(isDarkColor(shadow.boxProperties.canvasColor));
 
+  // Element sizes in CSS px, drawn 1:1 so every dimension line reads in real pixels.
+  const SIZES = { box: { w: 200, h: 200 }, card: { w: 280, h: 180 }, button: { w: 168, h: 48 } };
+  const NAMES = { box: 'Caixa', card: 'Card', button: 'Botão' };
+  const size = $derived(SIZES[ui.context]);
+  const ink = $derived(isDarkColor(shadow.boxProperties.backgroundColor) ? '#f6f8f9' : '#23272b');
+  const visible = $derived(shadow.layers.filter((l) => !l.hidden).length);
+
   let stageW = $state(0);
   let stageH = $state(0);
-  const g = $derived(plateGeometry(layer, radius, { w: stageW, h: stageH }));
+  const g = $derived(plateGeometry(layer, radius, { w: stageW, h: stageH }, size));
 
   // The lines draw in only when another layer is selected, never on page load.
   let mounted = false;
@@ -40,18 +47,29 @@
   <Toolbar />
 
   <div class="stage" class:guides={ui.guides} bind:clientWidth={stageW} bind:clientHeight={stageH}>
-    <div class="plate">
+    <div class="plate" style:width={`${size.w}px`} style:height={`${size.h}px`}>
       <div
         id="box"
+        class={`sample sample-${ui.context}`}
         role="img"
-        aria-label={`Caixa de demonstração com ${shadow.layers.length} ${shadow.layers.length === 1 ? 'camada' : 'camadas'} de sombra`}
+        aria-label={`${NAMES[ui.context]} de demonstração com ${visible} ${visible === 1 ? 'camada' : 'camadas'} de sombra`}
         style:box-shadow={css}
         style:background={bg}
         style:border-radius={`${radius}px`}
-      ></div>
+        style:color={ink}
+      >
+        <!-- Sample content (synthetic) so the shadow is judged on a real-looking element. -->
+        {#if ui.context === 'card'}
+          <span class="sample-title" aria-hidden="true">Relatório semanal</span>
+          <span class="sample-text" aria-hidden="true">12 pedidos novos, 3 aguardando envio</span>
+          <span class="sample-meta" aria-hidden="true">Atualizado há 5 min</span>
+        {:else if ui.context === 'button'}
+          <span class="sample-button" aria-hidden="true">Comprar agora</span>
+        {/if}
+      </div>
 
       {#if ui.guides}
-        <svg class="dims" width={BOX} height={BOX} viewBox={`0 0 ${BOX} ${BOX}`} aria-hidden="true">
+        <svg class="dims" width={size.w} height={size.h} viewBox={`0 0 ${size.w} ${size.h}`} aria-hidden="true">
           {#key shadow.currentLayerIndex}
             <g class:draw-in={animate}>
               {#if g.spread}

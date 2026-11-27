@@ -1,6 +1,6 @@
 # Layered Shade
 
-Monte sombras em camadas (box-shadow) visualmente e copie o mesmo resultado em **CSS**, **Flutter/Dart** (`BoxShadow`, `BoxDecoration`) ou **Tailwind**.
+Monte sombras em camadas (box-shadow) visualmente e copie o mesmo resultado em **CSS**, **Tailwind**, **Flutter/Dart**, **Jetpack Compose**, **SwiftUI** ou **React Native**.
 
 [🇺🇸 English](../../README.md)
 
@@ -19,27 +19,37 @@ A maioria dos geradores de sombra para no CSS. O Layered Shade trata o Flutter c
 
 ### Sombras
 
-- **Camadas**: adicione, selecione e remova camadas; cada uma tem deslocamento X/Y, blur, spread, cor, opacidade e inset.
+- **Camadas**: adicione, duplique, reordene, oculte e remova camadas; cada uma tem deslocamento X/Y, blur, spread, cor, opacidade e inset.
+- **Gerador de sombra suave**: escolha quantas camadas, a distância e a intensidade, e ele monta a pilha (deslocamento e blur dobram a cada camada) para a queda suave que uma sombra só não dá.
+- **Importar CSS**: cole um `box-shadow` existente, uma regra CSS inteira ou uma classe `shadow-[…]` do Tailwind e continue editando.
 - **Preview medido**: a caixa é desenhada em escala 1:1 sobre uma grade, e as cotas mostram o deslocamento da camada selecionada, o contorno com spread, até onde o blur chega e de onde vem a luz. Ligue e desligue em **Cotas**.
 - **Presets**: Soft, Neumorph e Glass como ponto de partida.
+- **Desfazer / refazer** (Ctrl+Z, Ctrl+Shift+Z), e a última sessão volta quando você reabre o site.
 
 ### Fundo e forma
 
 - **Gradientes**: empilhe gradientes lineares e radiais, com quantas cores quiser, sobre uma cor base sólida.
 - **Forma**: border radius; a cor do fundo do preview também é ajustável.
+- **Preview numa caixa, num card ou num botão**, em fundo claro ou escuro, sempre em escala 1:1.
 
 ### Exportação
 
 - **CSS**: `box-shadow`, `background` e `border-radius`, uma camada por linha. O painel mostra exatamente o que é copiado, com a camada selecionada destacada.
 - **Dart/Flutter**: `BoxDecoration` com os `BoxShadow`, pronto para colar num `Container`.
-- **Tailwind**: classes de valor arbitrário `shadow-[…]` e `bg-[…]`.
+- **Variável CSS**: a sombra como `--shadow-layered`, para um arquivo de tokens.
+- **Tailwind**: classes de valor arbitrário `shadow-[…]` e `bg-[…]`, ou um token `@theme` da v4 (`shadow-layered`).
+- **Jetpack Compose** (1.9+): `Modifier.dropShadow` / `innerShadow`.
+- **SwiftUI**: uma forma por sombra, sombras internas com `.shadow(.inner)` (iOS 16+).
+- **React Native** (0.76+, nova arquitetura): estilo `boxShadow` com a sintaxe do CSS.
+- **Link compartilhável**: a sombra inteira numa URL, para colar num PR ou num chat.
 - **Copiar**: um botão para o formato ativo, com confirmação anunciada a leitores de tela.
 
 ## Limitações conhecidas
 
 - **`inset` no Flutter**: o `BoxShadow` do Flutter não tem inset. Quando uma camada é interna, a aba Dart avisa e mostra o comando para instalar o [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow).
 - **Vários gradientes no Flutter**: o `BoxDecoration` aceita um gradiente só, então o Dart exporta o do topo (gradiente 1). CSS e Tailwind exportam todos.
-- **Cores só em hexadecimal** (`#RGB` / `#RRGGBB`).
+- **SwiftUI** não tem spread, e o radius dele é cerca de metade do blur do CSS; o código exportado avisa num comentário. Gradientes saem só em CSS, Tailwind e Dart; os outros formatos indicam a API a usar.
+- **Cores só em hexadecimal** no editor (`#RGB` / `#RRGGBB`); a importação de CSS também lê `rgb()`/`rgba()` e hex com alfa.
 
 ## Acessibilidade
 

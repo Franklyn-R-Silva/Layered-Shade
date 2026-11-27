@@ -1,37 +1,67 @@
 <script lang="ts">
   import { state as shadow, ui, TAB_LABELS } from '../state.svelte';
-  import { getDart, getTailwind, getBackgroundCSS, getLayerCSS } from '../shadow';
+  import {
+    getDart,
+    getTailwind,
+    getTailwindTheme,
+    getCSSVariable,
+    getCompose,
+    getSwiftUI,
+    getReactNative,
+    getBackgroundCSS,
+    getLayerCSS,
+  } from '../shadow';
   import { tabKeydown } from '../tabs';
   import type { CodeMode } from '../types';
   import Icon from './Icon.svelte';
 
-  const tabs: CodeMode[] = ['css', 'dart', 'tailwind'];
+  const tabs: CodeMode[] = ['css', 'tailwind', 'dart', 'compose', 'swiftui', 'rn'];
+  // Six tabs share a 400px column: React Native shows as "RN" but keeps its full accessible name.
+  const SHORT: Partial<Record<CodeMode, string>> = { rn: 'RN' };
 
-  // CSS is shown exactly as it is copied: one shadow layer per line.
+  // CSS properties, one visible layer per line, each line tagged with its layer index.
   const cssLines = $derived.by(() => {
-    const n = shadow.layers.length;
-    const lines: { text: string; layer?: number }[] = [{ text: 'box-shadow:' }];
-    shadow.layers.forEach((l, i) =>
-      lines.push({ text: `  ${getLayerCSS(l)}${i < n - 1 ? ',' : ';'}`, layer: i }),
-    );
+    const visible = shadow.layers.map((l, i) => ({ l, i })).filter(({ l }) => !l.hidden);
+    const lines: { text: string; layer?: number }[] = [];
+    if (visible.length) {
+      lines.push({ text: 'box-shadow:' });
+      visible.forEach(({ l, i }, k) =>
+        lines.push({ text: `  ${getLayerCSS(l)}${k < visible.length - 1 ? ',' : ';'}`, layer: i }),
+      );
+    } else lines.push({ text: 'box-shadow: none;' });
     lines.push({ text: `background: ${getBackgroundCSS(shadow)};` });
     if (shadow.boxProperties.borderRadius > 0)
       lines.push({ text: `border-radius: ${shadow.boxProperties.borderRadius}px;` });
     return lines;
   });
-  const css = $derived(cssLines.map((l) => l.text).join('\n'));
-  const dart = $derived(getDart(shadow));
-  const dartLines = $derived(dart.split('\n'));
+
+  const lines = $derived.by(() => {
+    if (ui.mode === 'css' && ui.cssFormat === 'props') return cssLines;
+    const code =
+      ui.mode === 'css'
+        ? getCSSVariable(shadow)
+        : ui.mode === 'tailwind'
+          ? ui.twFormat === 'theme'
+            ? getTailwindTheme(shadow)
+            : getTailwind(shadow)
+          : ui.mode === 'dart'
+            ? getDart(shadow)
+            : ui.mode === 'compose'
+              ? getCompose(shadow)
+              : ui.mode === 'swiftui'
+                ? getSwiftUI(shadow)
+                : getReactNative(shadow);
+    return code.split('\n').map((text) => ({ text, layer: undefined as number | undefined }));
+  });
+  const text = $derived(lines.map((l) => l.text).join('\n'));
   const indentOf = (line: string) => line.length - line.trimStart().length;
-  const tw = $derived(getTailwind(shadow));
-  const anyInset = $derived(shadow.layers.some((l) => l.inset));
+  const anyInset = $derived(shadow.layers.some((l) => l.inset && !l.hidden));
   const extraGradients = $derived(shadow.backgroundLayers.length > 1);
 
   let status = $state<'idle' | 'copied' | 'failed'>('idle');
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   function copy() {
-    const text = ui.mode === 'dart' ? dart : ui.mode === 'tailwind' ? tw : css;
     clearTimeout(timer);
     navigator.clipboard
       .writeText(text)
@@ -40,6 +70,11 @@
         timer = setTimeout(() => (status = 'idle'), 2000);
       })
       .catch(() => (status = 'failed'));
+  }
+
+  function select(tab: CodeMode) {
+    ui.mode = tab;
+    status = 'idle';
   }
 </script>
 
@@ -51,7 +86,7 @@
       role="tablist"
       aria-label="Formato do código"
       tabindex="-1"
-      onkeydown={(e) => tabKeydown(e, tabs, ui.mode, (id) => ((ui.mode = id), (status = 'idle')))}
+      onkeydown={(e) => tabKeydown(e, tabs, ui.mode, select)}
     >
       {#each tabs as tab (tab)}
         <button
@@ -59,38 +94,45 @@
           class="tab-btn"
           role="tab"
           id={`tab-${tab}`}
-          aria-controls={`panel-${tab}`}
+          aria-controls="code-panel"
+          aria-label={SHORT[tab] ? TAB_LABELS[tab] : undefined}
           aria-selected={ui.mode === tab}
           tabindex={ui.mode === tab ? 0 : -1}
-          onclick={() => ((ui.mode = tab), (status = 'idle'))}
+          onclick={() => select(tab)}
         >
-          {TAB_LABELS[tab]}
+          {SHORT[tab] ?? TAB_LABELS[tab]}
         </button>
       {/each}
     </div>
   </div>
 
-  <div class="code-body">
-    <div class="tab-content" role="tabpanel" id="panel-css" aria-labelledby="tab-css" hidden={ui.mode !== 'css'}>
-      <pre class="code" id="rule"><code
-          >{#each cssLines as line, i (i)}<span
-              class="code-line"
-              class:current={line.layer === shadow.currentLayerIndex && shadow.layers.length > 1}
-              style:--indent={indentOf(line.text)}>{line.text}</span
-            >{/each}</code
-        ></pre>
-    </div>
-
-    <div class="tab-content" role="tabpanel" id="panel-dart" aria-labelledby="tab-dart" hidden={ui.mode !== 'dart'}>
-      <pre class="code" id="dart-rule"><code
-          >{#each dartLines as line, i (i)}<span class="code-line" style:--indent={indentOf(line)}>{line}</span
-            >{/each}</code
-        ></pre>
-    </div>
-
-    <div class="tab-content" role="tabpanel" id="panel-tailwind" aria-labelledby="tab-tailwind" hidden={ui.mode !== 'tailwind'}>
-      <pre class="code" id="tailwind-rule"><code>{tw}</code></pre>
-    </div>
+  <div class="code-body" role="tabpanel" id="code-panel" aria-labelledby={`tab-${ui.mode}`}>
+    {#if ui.mode === 'css' || ui.mode === 'tailwind'}
+      <div class="format-switch" role="group" aria-label="Variante">
+        {#if ui.mode === 'css'}
+          <button type="button" aria-pressed={ui.cssFormat === 'props'} onclick={() => (ui.cssFormat = 'props')}
+            >Propriedades</button
+          >
+          <button type="button" aria-pressed={ui.cssFormat === 'var'} onclick={() => (ui.cssFormat = 'var')}
+            >Variável CSS</button
+          >
+        {:else}
+          <button type="button" aria-pressed={ui.twFormat === 'classes'} onclick={() => (ui.twFormat = 'classes')}
+            >Classes</button
+          >
+          <button type="button" aria-pressed={ui.twFormat === 'theme'} onclick={() => (ui.twFormat = 'theme')}
+            >Tema (v4)</button
+          >
+        {/if}
+      </div>
+    {/if}
+    <pre class="code" id={ui.mode === 'css' ? 'rule' : `${ui.mode}-rule`}><code
+        >{#each lines as line, i (i)}<span
+            class="code-line"
+            class:current={line.layer === shadow.currentLayerIndex && shadow.layers.length > 1}
+            style:--indent={indentOf(line.text)}>{line.text}</span
+          >{/each}</code
+      ></pre>
   </div>
 
   <div class="code-foot">

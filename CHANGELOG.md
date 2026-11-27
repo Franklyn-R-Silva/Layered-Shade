@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [🇧🇷 Português](docs/pt-BR/CHANGELOG.md)
 
+## [2.2.0] - 2026-11-27
+
+### Added
+
+- 🔗 **Share link**: the whole state in the URL (`#s=…`), validated and clamped on the way in; the last session is restored from the browser.
+- ↩️ **Undo / redo** with buttons and Ctrl+Z / Ctrl+Shift+Z (a slider drag is one step).
+- 📥 **Import CSS**: paste a `box-shadow`, a CSS rule or a Tailwind `shadow-[…]` class (hex with alpha, `rgb()`/`rgba()`, `rem`).
+- 🌫️ **Smooth shadow generator**: 2–8 layers whose offset and blur double, with a shared intensity.
+- 🧱 **Layer editing**: duplicate, move up/down, hide (hidden layers leave the preview and every export).
+- 📱 **New exports**: Jetpack Compose (`dropShadow`/`innerShadow`), SwiftUI, React Native `boxShadow`, CSS variable and Tailwind v4 `@theme` token.
+- 🖼️ **Preview on a card or a button** as well as the box, on a light or dark ground; the dimension lines follow the element's real size.
+
 ## [2.1.0] - 2026-11-27
 
 ### Changed

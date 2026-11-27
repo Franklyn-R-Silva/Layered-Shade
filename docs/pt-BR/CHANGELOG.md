@@ -7,6 +7,18 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 [🇺🇸 English](../../CHANGELOG.md)
 
+## [2.2.0] - 2026-11-27
+
+### Adicionado
+
+- 🔗 **Link compartilhável**: o estado inteiro na URL (`#s=…`), validado e limitado na entrada; a última sessão volta pelo navegador.
+- ↩️ **Desfazer / refazer** com botões e Ctrl+Z / Ctrl+Shift+Z (arrastar um slider conta como um passo).
+- 📥 **Importar CSS**: cole um `box-shadow`, uma regra CSS ou uma classe `shadow-[…]` do Tailwind (hex com alfa, `rgb()`/`rgba()`, `rem`).
+- 🌫️ **Gerador de sombra suave**: de 2 a 8 camadas cujo deslocamento e blur dobram, com intensidade dividida entre elas.
+- 🧱 **Edição de camadas**: duplicar, subir/descer, ocultar (camadas ocultas saem do preview e de todas as exportações).
+- 📱 **Novas exportações**: Jetpack Compose (`dropShadow`/`innerShadow`), SwiftUI, `boxShadow` do React Native, variável CSS e token `@theme` do Tailwind v4.
+- 🖼️ **Preview num card ou num botão**, além da caixa, em fundo claro ou escuro; as cotas seguem o tamanho real do elemento.
+
 ## [2.1.0] - 2026-11-27
 
 ### Modificado

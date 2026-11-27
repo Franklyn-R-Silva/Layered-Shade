@@ -13,6 +13,8 @@ export interface ShadowLayer {
   /** 0–1. */
   opacity: number;
   inset: boolean;
+  /** Hidden layers stay in the list but are left out of the preview and every export. */
+  hidden?: boolean;
 }
 
 /** A gradient color stop. */
@@ -57,4 +59,7 @@ export interface ShadowState {
 }
 
 /** Output tab / copy mode. */
-export type CodeMode = 'css' | 'dart' | 'tailwind';
+export type CodeMode = 'css' | 'tailwind' | 'dart' | 'compose' | 'swiftui' | 'rn';
+
+/** What the preview draws the shadow on. */
+export type PreviewContext = 'box' | 'card' | 'button';

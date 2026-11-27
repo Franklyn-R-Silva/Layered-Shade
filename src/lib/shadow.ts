@@ -94,6 +94,50 @@ export function removeLayer(state: ShadowState, index: number): void {
   }
 }
 
+/** Inserts a copy of a layer right after it and selects the copy. */
+export function duplicateLayer(state: ShadowState, index: number): void {
+  const layer = state.layers[index];
+  if (!layer) return;
+  state.layers.splice(index + 1, 0, { ...layer });
+  state.currentLayerIndex = index + 1;
+}
+
+/** Moves a layer one step (−1 = up / towards the top of the CSS list); the selection follows it. */
+export function moveLayer(state: ShadowState, index: number, step: -1 | 1): void {
+  const to = index + step;
+  if (!state.layers[index] || to < 0 || to >= state.layers.length) return;
+  const [layer] = state.layers.splice(index, 1);
+  state.layers.splice(to, 0, layer);
+  if (state.currentLayerIndex === index) state.currentLayerIndex = to;
+  else if (state.currentLayerIndex === to) state.currentLayerIndex = index;
+}
+
+/** Shows or hides a layer without deleting it. */
+export function setLayerHidden(state: ShadowState, index: number, hidden: boolean): void {
+  if (state.layers[index]) state.layers[index].hidden = hidden;
+}
+
+/**
+ * "Smooth shadow": `count` layers whose offset and blur double from the closest to the farthest
+ * (…, distance/4, distance/2, distance), each with an equal share of `intensity`. Stacking them
+ * gives the soft falloff a single shadow cannot. Light from above: offsets are vertical.
+ */
+export function smoothLayers(opts: { count: number; distance: number; intensity: number; color: string }): ShadowLayer[] {
+  const count = Math.min(8, Math.max(2, Math.round(opts.count)));
+  const alpha = Math.round((Math.min(100, Math.max(0, opts.intensity)) / 100 / count) * 1000) / 1000;
+  return Array.from({ length: count }, (_, i) => {
+    const d = Math.max(1, Math.round(opts.distance * 2 ** (i + 1 - count)));
+    return { horizontal: 0, vertical: d, blur: d, spread: 0, color: opts.color, opacity: alpha, inset: false };
+  });
+}
+
+/** Replaces the shadow layers (e.g. from an import or the smooth generator) and selects the first. */
+export function setLayers(state: ShadowState, layers: ShadowLayer[]): void {
+  if (!layers.length) return;
+  state.layers = layers;
+  state.currentLayerIndex = 0;
+}
+
 export function selectLayer(state: ShadowState, index: number): void {
   if (index >= 0 && index < state.layers.length) {
     state.currentLayerIndex = index;
@@ -164,7 +208,13 @@ export function getBackgroundCSS(state: ShadowState): string {
 
 /** The `box-shadow` string for all layers. */
 export function getCSS(state: ShadowState): string {
-  return state.layers.map(getLayerCSS).join(', ');
+  const visible = visibleLayers(state);
+  return visible.length ? visible.map(getLayerCSS).join(', ') : 'none';
+}
+
+/** Layers that are drawn and exported (hidden ones are skipped). */
+export function visibleLayers(state: ShadowState): ShadowLayer[] {
+  return state.layers.filter((l) => !l.hidden);
 }
 
 /** CSS `box-shadow` value for one layer. */
@@ -232,7 +282,7 @@ export function getDart(state: ShadowState): string {
     code += `boxShadow: [\n`;
   }
 
-  for (const layer of state.layers) {
+  for (const layer of visibleLayers(state)) {
     const { horizontal, vertical, blur, spread, color, opacity, inset } = layer;
     const r = parseInt(color.slice(1, 3), 16);
     const g = parseInt(color.slice(3, 5), 16);
@@ -253,6 +303,95 @@ export function getDart(state: ShadowState): string {
   if (hasDecoration) {
     code += `)`;
   }
+  return code;
+}
+
+/* ---- More export targets ---- */
+
+/** CSS with the shadow stored in a custom property, ready for a design-token file. */
+export function getCSSVariable(state: ShadowState): string {
+  const radius = state.boxProperties.borderRadius;
+  return (
+    `:root {\n  --shadow-layered: ${getCSS(state)};\n}\n\n.elemento {\n  box-shadow: var(--shadow-layered);\n` +
+    `  background: ${getBackgroundCSS(state)};\n` +
+    (radius > 0 ? `  border-radius: ${radius}px;\n` : '') +
+    `}`
+  );
+}
+
+/** Tailwind v4 theme token: `--shadow-*` becomes a `shadow-*` utility. */
+export function getTailwindTheme(state: ShadowState): string {
+  return `@theme {\n  --shadow-layered: ${getCSS(state)};\n}\n\n/* uso: class="shadow-layered" */`;
+}
+
+const argb = (hex: string, opacity: number) =>
+  Math.round(Math.min(1, Math.max(0, opacity)) * 255)
+    .toString(16)
+    .padStart(2, '0')
+    .toUpperCase() + hexToColorObj(hex).hex;
+const dp = (n: number) => (n < 0 ? `(${n}).dp` : `${n}.dp`);
+
+/** Jetpack Compose (1.9+): `Modifier.dropShadow` / `innerShadow`; inner shadows go after the background. */
+export function getCompose(state: ShadowState): string {
+  const { borderRadius: r, backgroundColor } = state.boxProperties;
+  const shape = r > 0 ? `RoundedCornerShape(${r}.dp)` : 'RectangleShape';
+  const shadow = (l: ShadowLayer, kind: 'dropShadow' | 'innerShadow') =>
+    `    .${kind}(\n        shape = ${shape},\n        shadow = Shadow(\n` +
+    `            radius = ${dp(l.blur)},\n            spread = ${dp(l.spread)},\n` +
+    `            color = Color(0x${argb(l.color, l.opacity)}),\n` +
+    `            offset = DpOffset(x = ${dp(l.horizontal)}, y = ${dp(l.vertical)})\n        )\n    )\n`;
+  const layers = visibleLayers(state);
+  let code = '// Jetpack Compose 1.9+ (Modifier.dropShadow / innerShadow)\nModifier\n';
+  code += layers.filter((l) => !l.inset).map((l) => shadow(l, 'dropShadow')).join('');
+  code += `    .background(color = Color(0xFF${hexToColorObj(backgroundColor).hex}), shape = ${shape})\n`;
+  code += layers.filter((l) => l.inset).map((l) => shadow(l, 'innerShadow')).join('');
+  if (state.backgroundLayers.length) code += '// Gradientes não exportados: use Brush.linearGradient / radialGradient no background.\n';
+  return code.trimEnd();
+}
+
+const swiftColor = (hex: string, opacity: number) => {
+  const c = hexToColorObj(hex).hex;
+  const [r, g, b] = [0, 2, 4].map((i) => +(parseInt(c.slice(i, i + 2), 16) / 255).toFixed(3));
+  return `Color(red: ${r}, green: ${g}, blue: ${b}, opacity: ${+opacity.toFixed(3)})`;
+};
+
+/**
+ * SwiftUI: one shape per drop shadow in a background ZStack (stacked `.shadow` modifiers would
+ * shadow each other), inner shadows as `ShapeStyle.shadow(.inner)` (iOS 16+). SwiftUI's radius is
+ * about half the CSS blur, and SwiftUI has no spread.
+ */
+export function getSwiftUI(state: ShadowState): string {
+  const { borderRadius: r, backgroundColor } = state.boxProperties;
+  const shape = r > 0 ? `RoundedRectangle(cornerRadius: ${r})` : 'Rectangle()';
+  const fill = swiftColor(backgroundColor, 1);
+  const layers = visibleLayers(state);
+  const radius = (l: ShadowLayer) => +(l.blur / 2).toFixed(1);
+  const inner = layers
+    .filter((l) => l.inset)
+    .map((l) => `\n        .shadow(.inner(color: ${swiftColor(l.color, l.opacity)}, radius: ${radius(l)}, x: ${l.horizontal}, y: ${l.vertical}))`)
+    .join('');
+  let code = '// SwiftUI: radius = blur CSS / 2; spread não existe no SwiftUI.\n';
+  code += `${shape}\n    .fill(${fill}${inner})\n`;
+  const drops = layers.filter((l) => !l.inset);
+  if (drops.length) {
+    code += '    .background {\n        ZStack {\n';
+    code += drops
+      .map((l) => `            ${shape}\n                .fill(${fill})\n                .shadow(color: ${swiftColor(l.color, l.opacity)}, radius: ${radius(l)}, x: ${l.horizontal}, y: ${l.vertical})\n`)
+      .join('');
+    code += '        }\n    }\n';
+  }
+  if (state.backgroundLayers.length) code += '// Gradientes não exportados: use LinearGradient / RadialGradient no fill.\n';
+  return code.trimEnd();
+}
+
+/** React Native 0.76+ (New Architecture): `boxShadow` takes the CSS syntax, inset and spread included. */
+export function getReactNative(state: ShadowState): string {
+  const r = state.boxProperties.borderRadius;
+  let code = '// React Native 0.76+ (New Architecture)\nconst styles = StyleSheet.create({\n  box: {\n';
+  code += `    boxShadow: '${getCSS(state)}',\n`;
+  if (r > 0) code += `    borderRadius: ${r},\n`;
+  code += `    backgroundColor: '${state.boxProperties.backgroundColor}',\n  },\n});`;
+  if (state.backgroundLayers.length) code += '\n// Gradientes não exportados: use experimental_backgroundImage ou react-native-linear-gradient.';
   return code;
 }
 

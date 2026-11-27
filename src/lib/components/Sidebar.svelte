@@ -6,6 +6,7 @@
   import ShapeControls from './ShapeControls.svelte';
   import BackgroundPanel from './BackgroundPanel.svelte';
   import Icon from './Icon.svelte';
+  import LayerTools from './LayerTools.svelte';
 
   const panels = [
     { id: 'shadow', label: 'Sombra' },
@@ -44,7 +45,7 @@
     aria-labelledby="tab-shadow"
     hidden={ui.sidebar !== 'shadow'}
   >
-    <section id="layer-controls-container" class="group"><LayerList /></section>
+    <section id="layer-controls-container" class="group"><LayerList /><LayerTools /></section>
 
     <section class="group" aria-labelledby="layer-title">
       <h2 id="layer-title">Camada {state.currentLayerIndex + 1}</h2>

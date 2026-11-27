@@ -90,31 +90,50 @@ function dimension(
   return { line, ext, marks, arrows, label };
 }
 
+const LABEL_W = 62; // ~"luz 45°" at 13px mono
+
+/** Label beside the ray's start; above or below it when the side has no room. */
+function rayLabel(sx0: number, sy0: number, ux: number, uy: number, text: string, b: { l: number; r: number }): Label {
+  if (Math.abs(ux) >= 0.3) {
+    const x = sx0 - Math.sign(ux) * 6;
+    const fits = ux > 0 ? x - LABEL_W >= b.l : x + LABEL_W <= b.r;
+    if (fits) return { x, y: sy0 + 4, anchor: ux > 0 ? 'end' : 'start', text };
+    return { x: sx0, y: uy > 0 ? sy0 - 8 : sy0 + 16, anchor: 'middle', text };
+  }
+  return { x: sx0 + 8, y: sy0 + (uy > 0 ? 4 : 10), anchor: 'start', text };
+}
+
 export function plateGeometry(
   layer: ShadowLayer,
   boxRadius: number,
   stage: { w: number; h: number },
+  box: { w: number; h: number } = { w: BOX, h: BOX },
 ): PlateGeometry {
+  const W = box.w;
+  const H = box.h;
   const { horizontal: x, vertical: y, blur: b, spread: s, inset } = layer;
   const sx: 1 | -1 = x >= 0 ? 1 : -1;
   const sy: 1 | -1 = y >= 0 ? 1 : -1;
 
   // Visible stage in plate coordinates (the plate is centred). Unknown size: no clamping.
-  const mx = stage.w > 0 ? (stage.w - BOX) / 2 : Infinity;
-  const my = stage.h > 0 ? (stage.h - BOX) / 2 : Infinity;
-  const bounds = { l: -mx + EDGE, t: -my + EDGE, r: BOX + mx - EDGE, b: BOX + my - EDGE };
+  const mx = stage.w > 0 ? (stage.w - W) / 2 : Infinity;
+  const my = stage.h > 0 ? (stage.h - H) / 2 : Infinity;
+  const bounds = { l: -mx + EDGE, t: -my + EDGE, r: W + mx - EDGE, b: H + my - EDGE };
 
   const rxS = shadowCornerRadius(boxRadius, s);
-  const S = { l: x - s, t: y - s, r: BOX + x + s, b: BOX + y + s, rx: rxS };
+  const S = { l: x - s, t: y - s, r: W + x + s, b: H + y + s, rx: rxS };
   const outlined = !inset && S.r > S.l && S.b > S.t;
   const spread = outlined ? S : null;
   const reach = outlined && b > 0 ? { l: S.l - b, t: S.t - b, r: S.r + b, b: S.b + b, rx: rxS + b } : null;
-  const far = reach ?? spread ?? { l: 0, t: 0, r: BOX, b: BOX };
+  const far = reach ?? spread ?? { l: 0, t: 0, r: W, b: H };
 
-  const yd = clamp(sy > 0 ? Math.max(BOX, far.b) + GAP : Math.min(0, far.t) - GAP, bounds.t + 12, bounds.b - 18);
-  const xd = clamp(sx > 0 ? Math.max(BOX, far.r) + GAP : Math.min(0, far.l) - GAP, bounds.l + 48, bounds.r - 48);
-  const ax = sx > 0 ? BOX : 0;
-  const ay = sy > 0 ? BOX : 0;
+  // Clamped into the stage, but never drawn over the element itself (a cramped stage clips instead).
+  const ydIn = clamp(sy > 0 ? Math.max(H, far.b) + GAP : Math.min(0, far.t) - GAP, bounds.t + 12, bounds.b - 18);
+  const xdIn = clamp(sx > 0 ? Math.max(W, far.r) + GAP : Math.min(0, far.l) - GAP, bounds.l + 48, bounds.r - 48);
+  const yd = sy > 0 ? Math.max(H + 12, ydIn) : Math.min(-12, ydIn);
+  const xd = sx > 0 ? Math.max(W + 12, xdIn) : Math.min(-12, xdIn);
+  const ax = sx > 0 ? W : 0;
+  const ay = sy > 0 ? H : 0;
   const dimX = dimension('x', ax, ax + x, yd, sy, `x ${fmt(x)}`);
   const dimY = dimension('y', ay, ay + y, xd, sx, `y ${fmt(y)}`);
 
@@ -124,8 +143,8 @@ export function plateGeometry(
   if (len > 0) {
     const ux = x / len;
     const uy = y / len;
-    const cx = x > 0 ? 0 : x < 0 ? BOX : BOX / 2;
-    const cy = y > 0 ? 0 : y < 0 ? BOX : BOX / 2;
+    const cx = x > 0 ? 0 : x < 0 ? W : W / 2;
+    const cy = y > 0 ? 0 : y < 0 ? H : H / 2;
     const room = Math.min(
       ux > 0 ? (cx - bounds.l) / ux : ux < 0 ? (bounds.r - cx) / -ux : Infinity,
       uy > 0 ? (cy - bounds.t) / uy : uy < 0 ? (bounds.b - cy) / -uy : Infinity,
@@ -138,11 +157,7 @@ export function plateGeometry(
       ray = {
         line: `M${cx - ux * L} ${cy - uy * L}L${ex} ${ey}`,
         head: `${ex - ux * 7 - uy * 3.5},${ey - uy * 7 + ux * 3.5} ${ex},${ey} ${ex - ux * 7 + uy * 3.5},${ey - uy * 7 - ux * 3.5}`,
-        // Label beside the ray's start (not beyond it), so it needs almost no room along the ray.
-        label:
-          Math.abs(ux) >= 0.3
-            ? { x: cx - ux * L - Math.sign(ux) * 6, y: cy - uy * L + 4, anchor: ux > 0 ? 'end' : 'start', text: `luz ${deg}°` }
-            : { x: cx + 8, y: cy - uy * L + (uy > 0 ? 4 : 10), anchor: 'start', text: `luz ${deg}°` },
+        label: rayLabel(cx - ux * L, cy - uy * L, ux, uy, `luz ${deg}°`, bounds),
       };
     }
   }
@@ -150,12 +165,12 @@ export function plateGeometry(
   // Radius callout on the corner that neither the dimensions nor the light ray use.
   let radius: PlateGeometry['radius'] = null;
   if (boxRadius > 0) {
-    const r = Math.min(boxRadius, BOX / 2);
+    const r = Math.min(boxRadius, W / 2, H / 2);
     const dx = sx;
     const dy = -sy;
     const k = r * (1 - Math.SQRT1_2);
-    const px = (dx > 0 ? BOX : 0) - dx * k;
-    const py = (dy > 0 ? BOX : 0) - dy * k;
+    const px = (dx > 0 ? W : 0) - dx * k;
+    const py = (dy > 0 ? H : 0) - dy * k;
     const qx = px + dx * 14;
     const qy = py + dy * 14;
     radius = {
