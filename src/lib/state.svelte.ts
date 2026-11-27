@@ -9,6 +9,8 @@
 import * as core from './shadow';
 import { encodeState, decodeState } from './share';
 import { createHistory } from './history';
+import type { ReactVariant } from './frameworks';
+import { fromPolar, reach, toPolar, type Polar } from './light';
 import type { CodeMode, PreviewContext, ShadowLayer, ShadowState, TextProps } from './types';
 
 export const STORAGE_KEY = 'layered-shade:v1';
@@ -41,6 +43,9 @@ export const ui = $state<{
   context: PreviewContext;
   cssFormat: 'props' | 'var';
   twFormat: 'classes' | 'theme';
+  reactFormat: ReactVariant;
+  /** Photoshop's "Use Global Light": turning one layer's light turns every visible layer's. */
+  globalLight: boolean;
 }>({
   mode: 'css',
   sidebar: 'shadow',
@@ -48,7 +53,16 @@ export const ui = $state<{
   context: 'box',
   cssFormat: 'props',
   twFormat: 'classes',
+  reactFormat: 'inline',
+  globalLight: false,
 });
+
+/** Last angle and distance set or shown per layer index; toPolar drops an entry its layer no longer matches. */
+const polars: Polar[] = $state([]);
+
+/** The light angle and shadow distance of layer `i`, as the Angle and Distance fields show them. */
+export const layerPolar = (i: number): Polar =>
+  toPolar(state.layers[i].horizontal, state.layers[i].vertical, polars[i]);
 
 /* ---- Undo / redo and persistence ---- */
 
@@ -128,15 +142,48 @@ export const actions = {
     gesture = false;
     if (burst) commit();
   },
+  /** Remembers what the fields show for layer `i`, so distance 0 keeps its angle (see toPolar). */
+  keepPolar: (i: number, p: Polar) => {
+    if (polars[i]?.angle !== p.angle || polars[i]?.distance !== p.distance) polars[i] = p;
+  },
+  /**
+   * Turns the selected layer's light to `angle` (and sets its `distance` when given); with global
+   * light every visible layer turns too, keeping its own distance. All in one synchronous write, so
+   * it is one undo burst. A distance that would push X or Y past the sliders' ±100 is shortened,
+   * keeping the angle; returns true when that happened.
+   */
+  aimLight: (angle: number, distance?: number): boolean => {
+    let clamped = false;
+    state.layers.forEach((layer, i) => {
+      const selected = i === state.currentLayerIndex;
+      if (!selected && (!ui.globalLight || layer.hidden)) return;
+      const want = selected && distance !== undefined ? distance : layerPolar(i).distance;
+      // shortcut: a layer shortened at ±100 stays shorter when turned back; keep the wanted distance per gesture if >100 px shadows need it.
+      const d = Math.min(want, reach(angle, 100));
+      clamped ||= d < want;
+      polars[i] = { angle, distance: d };
+      const p = fromPolar(angle, d);
+      layer.horizontal = p.x;
+      layer.vertical = p.y;
+    });
+    return clamped;
+  },
   /** Absolute link that reopens exactly this shadow. */
   shareUrl: () => `${location.origin}${location.pathname}#s=${encodeState(state)}`,
 };
 
+/** Export names (product names: the same in every language). */
 export const TAB_LABELS: Record<CodeMode, string> = {
   css: 'CSS',
   tailwind: 'Tailwind',
-  dart: 'Dart',
-  compose: 'Compose',
+  react: 'React / Next.js',
+  vue: 'Vue',
+  svelte: 'Svelte',
+  angular: 'Angular',
+  dart: 'Flutter',
+  compose: 'Jetpack Compose',
   swiftui: 'SwiftUI',
   rn: 'React Native',
+  flet: 'Flet',
+  qt: 'PySide6 / PyQt',
 };

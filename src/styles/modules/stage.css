@@ -141,6 +141,11 @@
   text-align: center;
 }
 
+/* Image mode: block, so no baseline gap makes the plate taller than the measured image. */
+.image-sample {
+  display: block;
+}
+
 .dims {
   position: absolute;
   inset: 0;
@@ -174,6 +179,15 @@
 .dims .dim-arrow {
   stroke-width: 1.25;
   stroke-linejoin: round;
+}
+
+/* Start of the light ray: drag it to turn the light. A 4px dot; the clear stroke makes it a 24px target. */
+.dims .ray-handle {
+  fill: var(--guide);
+  stroke: transparent;
+  stroke-width: 16px;
+  pointer-events: all;
+  cursor: grab;
 }
 
 .dim-label {

@@ -14,7 +14,7 @@
 
 ## Por que o Layered Shade
 
-- **Uma sombra, todas as plataformas.** As mesmas camadas saem para seis formatos, e cada exportação diz com clareza o que a plataforma não suporta, em vez de descartar em silêncio.
+- **Uma sombra, todas as plataformas.** As mesmas camadas saem para doze formatos, e cada exportação diz com clareza o que a plataforma não suporta, em vez de descartar em silêncio.
 - **Medido, não chutado.** O preview é desenhado em escala 1:1 sobre uma grade, com cotas do deslocamento, do spread, do alcance do blur e da direção da luz da camada selecionada.
 - **Grátis, instantâneo e privado.** Sem conta, sem backend, sem analytics. Nada é pedido a terceiros, a não ser que você clique para carregar uma fonte do Google. As fontes que você envia não saem do seu navegador.
 
@@ -23,6 +23,7 @@
 **Montar**
 - Empilhe quantas camadas quiser: deslocamento, blur, spread, cor, opacidade e inset em cada uma; duplique, reordene, oculte ou remova.
 - Arraste no preview para mover a sombra selecionada; desfaça e refaça com Ctrl+Z / Ctrl+Shift+Z.
+- Ajuste o deslocamento também por **ângulo e distância** (a convenção do Photoshop: o ângulo é de onde vem a luz), gire a luz arrastando o início do raio no preview e marque **Luz global** para girar todas as camadas visíveis juntas.
 - Comece de um preset (Soft, Neumorph, Glass), gere uma **sombra suave em várias camadas** ou **importe** um `box-shadow`, uma regra CSS ou uma classe `shadow-[…]` do Tailwind.
 - Fundos em gradiente (linear e radial, com quantas cores quiser) e border radius.
 
@@ -34,18 +35,28 @@
 **Compartilhar**
 - Copie um link que reabre exatamente esta sombra; sua última sessão volta quando você reabre o site.
 
+**O que fica de fora, e por quê:** modo de mesclagem por sombra, ruído e contorno do Photoshop não têm equivalente no `box-shadow` do CSS, no `BoxShadow` do Flutter, no Compose, no SwiftUI nem no React Native, então a ferramenta não os oferece em vez de exportar um código que não os reproduz.
+
 ## O que cada exportação suporta
 
 | Formato | Várias camadas | Spread | Inset | Fundo em gradiente |
 | --- | :---: | :---: | :---: | :---: |
 | CSS (propriedades ou variável) | ✅ | ✅ | ✅ | ✅ |
 | Tailwind (classes ou token `@theme` da v4) | ✅ | ✅ | ✅ | ✅ |
+| React / Next.js (objeto `style` inline ou CSS Modules) | ✅ | ✅ | ✅ | ✅ |
+| Vue 3 (componente de arquivo único, `<style scoped>`) | ✅ | ✅ | ✅ | ✅ |
+| Svelte 5 (componente com `<style>`) | ✅ | ✅ | ✅ | ✅ |
+| Angular (componente standalone) | ✅ | ✅ | ✅ | ✅ |
 | Flutter (`BoxDecoration`) | ✅ | ✅ | com [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow) | só a camada do topo |
 | Jetpack Compose 1.9+ (`dropShadow` / `innerShadow`) | ✅ | ✅ | ✅ | API indicada num comentário |
 | SwiftUI | ✅ | — | ✅ (iOS 16+) | API indicada num comentário |
 | React Native 0.76+ (`boxShadow`) | ✅ | ✅ | ✅ | API indicada num comentário |
+| Flet (`Container.shadow`) | ✅ | ✅ | — (fica de fora, avisado num comentário) | API indicada num comentário |
+| PySide6 / PyQt6 (`QGraphicsDropShadowEffect`) | só a primeira camada externa | — | — | API indicada num comentário |
 
-O **modo texto** exporta `text-shadow` (CSS, Tailwind), `TextStyle.shadows` (Flutter) e `.shadow` (SwiftUI); Compose e React Native aceitam **uma** sombra por texto, então exportam a primeira camada e avisam. Sombra de texto não tem spread nem inset.
+O Vite não precisa de exportação própria: o CSS (ou o componente React, Vue ou Svelte) funciona em qualquer projeto Vite. O Next.js usa a exportação React.
+
+O **modo texto** exporta `text-shadow` (CSS, Tailwind, React, Vue, Svelte, Angular), `TextStyle.shadows` (Flutter), `TextStyle.shadow` (Flet) e `.shadow` (SwiftUI); Compose, React Native e Qt aceitam **uma** sombra por texto, então exportam a primeira camada e avisam. Sombra de texto não tem spread nem inset.
 
 O radius de sombra do SwiftUI é cerca de metade do blur do CSS; a exportação converte e avisa num comentário.
 

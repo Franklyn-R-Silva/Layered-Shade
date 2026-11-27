@@ -8,10 +8,10 @@ export type Lang = 'pt' | 'en';
 const pt = {
   // Top bar
   skipToPreview: 'Pular para o preview',
-  tagline: 'Sombras em camadas para seis plataformas',
-  metaTitle: 'Layered Shade | Gerador de sombras para CSS, Flutter, Compose e SwiftUI',
+  tagline: 'Sombras em camadas para web, mobile e Python',
+  metaTitle: 'Layered Shade | Gerador de sombras para CSS, React, Vue, Flutter e SwiftUI',
   metaDescription:
-    'Monte sombras em camadas para caixas e textos e copie o código em CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI e React Native. Grátis e sem cadastro.',
+    'Monte sombras em camadas para caixas, textos e imagens e copie em CSS, Tailwind, React, Vue, Svelte, Angular, Flutter, Compose, SwiftUI, React Native ou Python.',
   historyAndShare: 'Histórico e compartilhamento',
   undo: 'Desfazer (Ctrl+Z)',
   redo: 'Refazer (Ctrl+Shift+Z)',
@@ -164,7 +164,6 @@ const pt = {
 
   // Code output
   generatedCode: 'Código gerado',
-  codeFormat: 'Formato do código',
   variant: 'Variante',
   properties: 'Propriedades',
   cssVariable: 'Variável CSS',
@@ -178,6 +177,27 @@ const pt = {
   copyTab: 'Copiar {tab}',
   copiedStatus: 'Código {tab} copiado para a área de transferência.',
   copyFailed: 'Não deu para copiar. Selecione o código acima e use Ctrl+C.',
+
+  // Image mode (#75)
+  image: 'Imagem',
+  imageFile: 'Arquivo de imagem',
+  imageHint:
+    'PNG, JPEG, WebP, GIF ou SVG, até 10 MB. A imagem fica só neste navegador; nada é enviado. O link de compartilhamento não leva a imagem.',
+  imageLoaded: 'Imagem {name} carregada.',
+  imageTooBig: 'Arquivo grande demais: o limite é 10 MB.',
+  imageWrongType: 'Formato não aceito: use PNG, JPEG, WebP, GIF ou SVG.',
+  imageUnreadable: 'Não consegui ler esse arquivo de imagem.',
+  imageWidth: 'Largura',
+  imageSample: 'Imagem de exemplo',
+  imageDrops: 'imagem (drop-shadow): sem spread e sem inset',
+  // Exports (#77)
+  exportFormat: 'Formato',
+  inlineStyle: 'Estilo inline',
+  // Technical controls (#76)
+  inDegrees: '{label} em graus',
+  lightClamped: 'X e Y vão até ±100 px: a distância foi encurtada.',
+  globalLight: 'Luz global (camadas visíveis)',
+  lightHandle: 'Arraste para girar a luz',
 };
 
 export type Key = keyof typeof pt;
@@ -185,10 +205,10 @@ export type Key = keyof typeof pt;
 // Typed against `pt`: a missing key fails the type check.
 const en: Record<Key, string> = {
   skipToPreview: 'Skip to preview',
-  tagline: 'Layered shadows for six platforms',
-  metaTitle: 'Layered Shade | Shadow generator for CSS, Flutter, Compose and SwiftUI',
+  tagline: 'Layered shadows for web, mobile and Python',
+  metaTitle: 'Layered Shade | Shadow generator for CSS, React, Vue, Flutter and SwiftUI',
   metaDescription:
-    'Design layered box and text shadows and copy the code as CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI or React Native. Free, no sign-up.',
+    'Design layered shadows for boxes, text and images and copy them as CSS, Tailwind, React, Vue, Svelte, Angular, Flutter, Compose, SwiftUI, React Native or Python.',
   historyAndShare: 'History and sharing',
   undo: 'Undo (Ctrl+Z)',
   redo: 'Redo (Ctrl+Shift+Z)',
@@ -329,7 +349,6 @@ const en: Record<Key, string> = {
   lightRay: 'ray',
 
   generatedCode: 'Generated code',
-  codeFormat: 'Code format',
   variant: 'Variant',
   properties: 'Properties',
   cssVariable: 'CSS variable',
@@ -342,6 +361,27 @@ const en: Record<Key, string> = {
   copyTab: 'Copy {tab}',
   copiedStatus: '{tab} code copied to the clipboard.',
   copyFailed: 'Could not copy. Select the code above and press Ctrl+C.',
+
+  // Image mode (#75)
+  image: 'Image',
+  imageFile: 'Image file',
+  imageHint:
+    'PNG, JPEG, WebP, GIF or SVG, up to 10 MB. The image stays in this browser; nothing is uploaded. Share links do not carry the image.',
+  imageLoaded: 'Image {name} loaded.',
+  imageTooBig: 'File too large: the limit is 10 MB.',
+  imageWrongType: 'Format not accepted: use PNG, JPEG, WebP, GIF or SVG.',
+  imageUnreadable: 'Could not read that image file.',
+  imageWidth: 'Width',
+  imageSample: 'Sample image',
+  imageDrops: 'image (drop-shadow): no spread, no inset',
+  // Exports (#77)
+  exportFormat: 'Format',
+  inlineStyle: 'Inline style',
+  // Technical controls (#76)
+  inDegrees: '{label} in degrees',
+  lightClamped: 'X and Y stop at ±100 px, so the distance was shortened.',
+  globalLight: 'Global light (visible layers)',
+  lightHandle: 'Drag to turn the light',
 };
 
 const dict: Record<Lang, Record<Key, string>> = { pt, en };

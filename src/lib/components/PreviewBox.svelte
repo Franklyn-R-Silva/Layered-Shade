@@ -1,7 +1,10 @@
 <script lang="ts">
-  import { state as shadow, ui, actions } from '../state.svelte';
+  import { state as shadow, ui, actions, layerPolar } from '../state.svelte';
+  import { toPolar } from '../light';
   import { getCSS, getBackgroundCSS, isDarkColor, guideInk, hexToRgba, getTextShadowCSS, fontStack } from '../shadow';
   import { plateGeometry } from '../dimensions';
+  import { getDropShadowFilter } from '../image';
+  import { image, SAMPLE_IMAGE } from '../image.svelte';
   import { fmt } from '../format';
   import Toolbar from './Toolbar.svelte';
   import { t } from '../i18n.svelte';
@@ -14,22 +17,23 @@
 
   // Element sizes in CSS px, drawn 1:1 so every dimension line reads in real pixels.
   const SIZES = { box: { w: 200, h: 200 }, card: { w: 280, h: 180 }, button: { w: 168, h: 48 } };
-  // Text mode measures the rendered text, so the lines start from its box.
-  let textW = $state(0);
-  let textH = $state(0);
+  // Text and image modes measure the rendered element, so the lines start from its box.
+  let elW = $state(0);
+  let elH = $state(0);
   const isText = $derived(ui.context === 'text');
-  const size = $derived(ui.context === 'text' ? { w: textW, h: textH } : SIZES[ui.context]);
+  // Text and image (drop-shadow) have no corners or box outline: no radius callout, no spread/blur rectangles.
+  const measured = $derived(ui.context === 'text' || ui.context === 'image');
+  const size = $derived(ui.context === 'text' || ui.context === 'image' ? { w: elW, h: elH } : SIZES[ui.context]);
   const textShadow = $derived(getTextShadowCSS(shadow));
-  const textDrops = $derived(isText && shadow.layers.some((l) => !l.hidden && (l.inset || l.spread !== 0)));
+  const drops = $derived(measured && shadow.layers.some((l) => !l.hidden && (l.inset || l.spread !== 0)));
   const ink = $derived(isDarkColor(shadow.boxProperties.backgroundColor) ? '#f6f8f9' : '#23272b');
   const visible = $derived(shadow.layers.filter((l) => !l.hidden).length);
 
   let stageW = $state(0);
   let stageH = $state(0);
-  // Text has no corners or box outline: no radius callout, no spread/blur rectangles.
   const g = $derived.by(() => {
-    const geo = plateGeometry(layer, isText ? 0 : radius, { w: stageW, h: stageH }, size, t('lightRay'));
-    return isText ? { ...geo, spread: null, reach: null } : geo;
+    const geo = plateGeometry(layer, measured ? 0 : radius, { w: stageW, h: stageH }, size, t('lightRay'));
+    return measured ? { ...geo, spread: null, reach: null } : geo;
   });
 
   // The lines draw in only when another layer is selected, never on page load.
@@ -52,15 +56,36 @@
     actions.beginGesture();
   }
 
+  // Dragging the light ray's start turns the light around the element's centre, keeping the distance.
+  let aim: { id: number; cx: number; cy: number } | undefined;
+
+  function grabLight(e: PointerEvent) {
+    if (e.button !== 0 || drag || aim) return;
+    e.stopPropagation(); // the stage drag (which moves the offset) must not start
+    const el = e.currentTarget as Element;
+    const r = el.closest('svg')!.getBoundingClientRect();
+    // The stage keeps the pointer: the handle moves, and can vanish, while the light turns.
+    el.closest('.stage')!.setPointerCapture(e.pointerId);
+    aim = { id: e.pointerId, cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
+    actions.beginGesture();
+  }
+
   function move(e: PointerEvent) {
+    if (e.pointerId === aim?.id) {
+      // The light is where the pointer is, so the shadow falls from the pointer through the centre.
+      const prev = layerPolar(shadow.currentLayerIndex);
+      actions.aimLight(toPolar(aim.cx - e.clientX, aim.cy - e.clientY, prev).angle);
+      return;
+    }
     if (e.pointerId !== drag?.id) return;
     actions.update('horizontal', offset(drag.h, e.clientX - drag.x));
     actions.update('vertical', offset(drag.v, e.clientY - drag.y));
   }
 
   function release(e: PointerEvent) {
-    if (e.pointerId !== drag?.id) return;
-    drag = undefined;
+    if (e.pointerId === aim?.id) aim = undefined;
+    else if (e.pointerId === drag?.id) drag = undefined;
+    else return;
     actions.endGesture();
   }
 </script>
@@ -93,20 +118,37 @@
     onpointerup={release}
     onpointercancel={release}
   >
-    <div class="plate" style:width={isText ? undefined : `${size.w}px`} style:height={isText ? undefined : `${size.h}px`}>
+    <div class="plate" style:width={measured ? undefined : `${size.w}px`} style:height={measured ? undefined : `${size.h}px`}>
       {#if ui.context === 'text'}
         <div
           id="text-sample"
           class="text-sample"
           role="img"
           aria-label={t('textSample', { text: shadow.text.content })}
-          bind:clientWidth={textW}
-          bind:clientHeight={textH}
+          bind:clientWidth={elW}
+          bind:clientHeight={elH}
           style:font-family={fontStack(shadow.text.font)}
           style:font-size={`${shadow.text.size}px`}
           style:font-weight={shadow.text.weight}
           style:color={shadow.text.color}
           style:text-shadow={textShadow}>{shadow.text.content}</div>
+      {:else if ui.context === 'image'}
+        <!-- draggable=false: a native image drag would cancel the plate's pointer drag. -->
+        <img
+          id="image-sample"
+          class="image-sample"
+          src={image.src}
+          alt={image.name || t('imageSample')}
+          width={image.width}
+          draggable="false"
+          onerror={() => {
+            // A file of an accepted type that does not decode: say so and show the sample again.
+            if (image.src !== SAMPLE_IMAGE) Object.assign(image, { src: SAMPLE_IMAGE, name: '', broken: true });
+          }}
+          bind:clientWidth={elW}
+          bind:clientHeight={elH}
+          style:filter={getDropShadowFilter(shadow)}
+        />
       {:else}
       <div
         id="box"
@@ -154,6 +196,11 @@
                 <path class="dim-ray" pathLength="1" d={g.ray.line} />
                 <polyline class="dim-arrow" points={g.ray.head} />
                 {@render label(g.ray.label)}
+                <!-- Pointer-only, like the stage drag: the Angle field is its keyboard alternative. -->
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <circle class="ray-handle" cx={g.ray.start.x} cy={g.ray.start.y} r="4" onpointerdown={grabLight}
+                  ><title>{t('lightHandle')}</title></circle
+                >
               {/if}
 
               {#if g.radius}
@@ -185,7 +232,7 @@
         {/if}
       </span>
     {/if}
-    {#if textDrops}<span>{t('textDrops')}</span>{/if}
+    {#if drops}<span>{t(isText ? 'textDrops' : 'imageDrops')}</span>{/if}
     <span class="drag-hint">{t('dragHint')}</span>
   </div>
 </section>

@@ -289,7 +289,7 @@ A full-height application frame: a 56px blueline top bar over a three-column wor
 
 - **Controls** (300–340px, left): Raised Film, 16px top and 20px side padding, hairline on its right edge. A Sombra/Fundo switch, then groups separated by a hairline and 20px. "Resetar tudo" sits at the bottom.
 - **Stage** (flexible, centre, widest): a stage bar (presets "Começar de", plate color, Cotas toggle), the plate with 24px padding and the 200px box centred, and a caption bar (layer n of m, scale 1:1, line legend). The grid is centred so the box edges land on major lines.
-- **Code** (340–400px, right): Graphite Sheet in three rows: head (title + export tabs), scrolling code body, and a foot with notes and the full-width copy button. The foot never scrolls, so the copy button is in view at 1440×900.
+- **Code** (340–400px, right): Graphite Sheet in three rows: head (title + format select), scrolling code body, and a foot with notes and the full-width copy button. The foot never scrolls, so the copy button is in view at 1440×900.
 
 Responsive behavior:
 - **≤1199px:** two columns. Controls span the left; the stage (min 560px tall) sits over the code on the right; the page scrolls instead of the columns.
@@ -351,7 +351,7 @@ Plain, ruled and quick; the copy button is the only filled one.
 
 ### Code sheet
 - **Style:** Graphite Sheet with Sheet Ink code at 0.8125rem/1.75; head, body and foot divided by Sheet Rule.
-- **Export tabs:** CSS, Dart, Tailwind as text tabs in Label weight, Sheet Ink Soft at rest, Sheet Ink with a 2px Sheet Blueline underline when selected; arrow-key ARIA tablist.
+- **Format select:** a native `<select>` labelled Formato, grouped by optgroup (Web, Mobile, Python), on Graphite Sheet with a Sheet Rule border and Sheet Ink label text (`color-scheme: dark`); the per-format variant switch sits above the code.
 - **Current line:** in CSS, the selected layer's line is washed in Current Line when the shadow has more than one layer.
 - **Platform note:** shown in place above the copy button only when it applies: Red Pencil on Sheet text in a box with a 1px border of the same red at 40% and a 7% wash, 4px radius, 12px padding; the install command is selectable in one click.
 

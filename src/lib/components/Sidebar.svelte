@@ -8,6 +8,7 @@
   import Icon from './Icon.svelte';
   import LayerTools from './LayerTools.svelte';
   import TextControls from './TextControls.svelte';
+  import ImageControls from './ImageControls.svelte';
   import { t } from '../i18n.svelte';
 
   // Each id is also the key of its tab label.
@@ -45,7 +46,7 @@
     aria-labelledby="tab-shadow"
     hidden={ui.sidebar !== 'shadow'}
   >
-    {#if ui.context === 'text'}<TextControls />{/if}
+    {#if ui.context === 'text'}<TextControls />{:else if ui.context === 'image'}<ImageControls />{/if}
     <section id="layer-controls-container" class="group"><LayerList /><LayerTools /></section>
 
     <section class="group" aria-labelledby="layer-title">
@@ -53,8 +54,8 @@
       <div id="shadow-controls-container" class="fields"><ShadowControls /></div>
     </section>
 
-    {#if ui.context !== 'text'}
-      <!-- Border radius shapes the element; text has no box to round. -->
+    {#if ui.context !== 'text' && ui.context !== 'image'}
+      <!-- Border radius shapes the element; text has no box to round, an image's drop shadow follows its outline. -->
       <section class="group" aria-labelledby="shape-title">
         <h2 id="shape-title">{t('shape')}</h2>
         <div id="shape-controls-container" class="fields"><ShapeControls /></div>
