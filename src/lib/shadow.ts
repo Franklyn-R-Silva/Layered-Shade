@@ -477,7 +477,10 @@ export function getTextCSS(state: ShadowState): string {
 export function getTextTailwind(state: ShadowState): string {
   const { font, size, weight, color } = state.text;
   // Single quotes keep the class attribute intact; a literal `_` would read as a space.
-  const family = toTailwindArbitrary(fontStack(font).replace(/"/g, "'").replace(/_/g, '\\_'));
+  // Backslashes first, so the `\_` added next cannot be undone by an input backslash.
+  const family = toTailwindArbitrary(
+    fontStack(font).replace(/\\/g, '\\\\').replace(/"/g, "'").replace(/_/g, '\\_'),
+  );
   return `text-shadow-[${toTailwindArbitrary(getTextShadowCSS(state))}] text-[${size}px] text-[${color}] font-[${weight}] [font-family:${family}]`;
 }
 
