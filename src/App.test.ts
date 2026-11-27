@@ -21,6 +21,7 @@ describe('App (integration)', () => {
     ui.sidebar = 'shadow';
     ui.context = 'box';
     ui.cssFormat = 'props';
+    ui.reactFormat = 'inline';
   });
 
   function render() {
@@ -79,28 +80,35 @@ describe('App (integration)', () => {
     expect(text('#layers-title')).toBe('Camadas de sombra');
   });
 
-  it('switches the active code tab reactively', () => {
+  it('picks the export from the grouped Formato select', () => {
     render();
-    ui.mode = 'tailwind';
+    const select = host.querySelector('#code-format') as HTMLSelectElement;
+    expect(host.querySelector('label[for="code-format"]')?.textContent).toBe('Formato');
+    expect([...select.querySelectorAll('optgroup')].map((g) => g.label)).toEqual(['Web', 'Mobile', 'Python']);
+    expect(select.options).toHaveLength(12);
+
+    select.value = 'vue';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
     flushSync();
-    const twTab = [...host.querySelectorAll('.tab-btn')].find(
-      (b) => b.textContent?.trim() === 'Tailwind',
-    );
-    expect(twTab?.getAttribute('aria-selected')).toBe('true');
-    // One shared panel now shows the Tailwind code only.
-    expect(host.querySelector('#tailwind-rule')?.closest('[role="tabpanel"]')).toBeTruthy();
+    expect(ui.mode).toBe('vue');
+    const code = host.querySelector('#vue-rule')?.textContent;
+    expect(code).toContain('<template>');
+    expect(code).toContain('<style scoped>');
     expect(host.querySelector('#rule')).toBeNull();
+    expect(host.querySelector('#copiarTexto')?.textContent?.trim()).toBe('Copiar Vue');
   });
 
-  it('moves between code tabs with the arrow keys', () => {
+  it('offers the React variants, in text mode too', () => {
     render();
-    const list = host.querySelector('.code-tabs') as HTMLElement;
-    list.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    ui.mode = 'react';
+    ui.context = 'text';
     flushSync();
-    expect(ui.mode).toBe('tailwind');
-    list.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+    expect((host.querySelector('#code-format') as HTMLSelectElement).value).toBe('react');
+    const modules = [...host.querySelectorAll('.format-switch button')].find((b) => b.textContent === 'CSS Modules');
+    (modules as HTMLButtonElement).click();
     flushSync();
-    expect(ui.mode).toBe('rn');
+    expect(host.querySelector('#react-rule')?.textContent).toContain('className={styles.text}');
+    expect(host.querySelector('#copiarTexto')?.textContent?.trim()).toBe('Copiar React / Next.js');
   });
 
   it('shows the CSS exactly as it is copied, marking the selected layer', () => {

@@ -14,7 +14,7 @@
 
 ## Why Layered Shade
 
-- **One shadow, every platform.** The same layers export to six targets, and each export says plainly what its platform cannot do instead of silently dropping it.
+- **One shadow, every platform.** The same layers export to twelve targets, and each export says plainly what its platform cannot do instead of silently dropping it.
 - **Measured, not guessed.** The preview is drawn at 1:1 on a grid, with dimension lines for the selected layer's offset, spread, blur reach and light direction.
 - **Free, instant, private.** No account, no backend, no analytics. Nothing is requested from third parties unless you click to load a Google font. Fonts you upload never leave your browser.
 
@@ -40,12 +40,20 @@
 | --- | :---: | :---: | :---: | :---: |
 | CSS (properties or custom property) | ✅ | ✅ | ✅ | ✅ |
 | Tailwind (classes or v4 `@theme` token) | ✅ | ✅ | ✅ | ✅ |
+| React / Next.js (inline `style` object or CSS Modules) | ✅ | ✅ | ✅ | ✅ |
+| Vue 3 (single-file component, `<style scoped>`) | ✅ | ✅ | ✅ | ✅ |
+| Svelte 5 (component with `<style>`) | ✅ | ✅ | ✅ | ✅ |
+| Angular (standalone component) | ✅ | ✅ | ✅ | ✅ |
 | Flutter (`BoxDecoration`) | ✅ | ✅ | via [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow) | top layer only |
 | Jetpack Compose 1.9+ (`dropShadow` / `innerShadow`) | ✅ | ✅ | ✅ | API named in a comment |
 | SwiftUI | ✅ | — | ✅ (iOS 16+) | API named in a comment |
 | React Native 0.76+ (`boxShadow`) | ✅ | ✅ | ✅ | API named in a comment |
+| Flet (`Container.shadow`) | ✅ | ✅ | — (left out, said in a comment) | API named in a comment |
+| PySide6 / PyQt6 (`QGraphicsDropShadowEffect`) | first outer layer only | — | — | API named in a comment |
 
-**Text mode** exports `text-shadow` (CSS, Tailwind), `TextStyle.shadows` (Flutter) and `.shadow` (SwiftUI); Compose and React Native accept **one** shadow per text, so they export the first layer and say so. Text shadows have no spread and no inset.
+Vite needs no export of its own: the CSS (or the React, Vue or Svelte component) works in any Vite project. Next.js uses the React export.
+
+**Text mode** exports `text-shadow` (CSS, Tailwind, React, Vue, Svelte, Angular), `TextStyle.shadows` (Flutter), `TextStyle.shadow` (Flet) and `.shadow` (SwiftUI); Compose, React Native and Qt accept **one** shadow per text, so they export the first layer and say so. Text shadows have no spread and no inset.
 
 SwiftUI's shadow radius is about half the CSS blur; the export converts it and says so in a comment.
 

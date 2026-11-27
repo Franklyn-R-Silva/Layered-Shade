@@ -21,7 +21,7 @@ One shadow model, three exports that agree: the Dart output is a first-class tar
 ## Operating Context
 
 - Used beside a code editor, often on a laptop screen; some visits come from phones.
-- The session is short and task-shaped: pick a preset or start from the default, adjust layers, switch the export tab, copy.
+- The session is short and task-shaped: pick a preset or start from the default, adjust layers, pick the export format, copy.
 - Free, client-side only, deployed on Netlify at https://layeredshade.netlify.app/.
 
 ## Capabilities and Constraints
@@ -31,7 +31,7 @@ One shadow model, three exports that agree: the Dart output is a first-class tar
 - Shape: border radius. Canvas (preview background) color and a solid base color for the box. Preview element: box, card or button.
 - Background: stacked linear/radial gradient layers with 2+ color stops, angle, radial position and size.
 - Presets: Soft, Neumorphism, Glass.
-- Export tabs: CSS (properties or variable), Tailwind (classes or v4 theme), Dart, Jetpack Compose, SwiftUI, React Native; one copy button for the active tab. The panel shows exactly what is copied (the obsolete -webkit/-moz lines were display-only and were dropped in 2.1.0).
+- Export formats, picked in a grouped select: Web (CSS properties or variable, Tailwind classes or v4 theme, React / Next.js inline style or CSS Modules, Vue, Svelte, Angular), Mobile (Flutter, Jetpack Compose, SwiftUI, React Native), Python (Flet, PySide6 / PyQt); one copy button for the active format. The panel shows exactly what is copied (the obsolete -webkit/-moz lines were display-only and were dropped in 2.1.0).
 - Flutter limits are intentional: inset needs the `flutter_inset_box_shadow` package; Dart exports only the top gradient layer.
 - Colors are hex-only (`#RGB` / `#RRGGBB`).
 - Stack: Svelte 5 + Vite + TypeScript. The pure logic core (`src/lib/shadow.ts`) stays framework-free and unit-tested.
