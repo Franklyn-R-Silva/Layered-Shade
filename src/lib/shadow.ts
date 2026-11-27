@@ -9,6 +9,7 @@ import type {
   BoxProperties,
   ShadowLayer,
   ShadowState,
+  TextProps,
 } from './types';
 
 /** Template for a new shadow layer. */
@@ -31,6 +32,11 @@ export function defaultBoxProperties(): BoxProperties {
   };
 }
 
+/** Default text for the text preview. */
+export function defaultText(): TextProps {
+  return { content: 'LOVE', font: 'Overpass', size: 120, weight: 800, color: '#23272b' };
+}
+
 /** Creates a fresh state with one shadow layer and no background gradients. */
 export function createInitialState(): ShadowState {
   return {
@@ -39,6 +45,7 @@ export function createInitialState(): ShadowState {
     backgroundLayers: [],
     currentBgLayerIndex: -1,
     boxProperties: defaultBoxProperties(),
+    text: defaultText(),
   };
 }
 
@@ -77,6 +84,7 @@ export function reset(state: ShadowState): void {
   state.backgroundLayers = [];
   state.currentBgLayerIndex = -1;
   state.boxProperties = defaultBoxProperties();
+  state.text = defaultText();
 }
 
 export function addLayer(state: ShadowState): void {
@@ -92,6 +100,50 @@ export function removeLayer(state: ShadowState, index: number): void {
   if (state.currentLayerIndex >= state.layers.length) {
     state.currentLayerIndex = state.layers.length - 1;
   }
+}
+
+/** Inserts a copy of a layer right after it and selects the copy. */
+export function duplicateLayer(state: ShadowState, index: number): void {
+  const layer = state.layers[index];
+  if (!layer) return;
+  state.layers.splice(index + 1, 0, { ...layer });
+  state.currentLayerIndex = index + 1;
+}
+
+/** Moves a layer one step (−1 = up / towards the top of the CSS list); the selection follows it. */
+export function moveLayer(state: ShadowState, index: number, step: -1 | 1): void {
+  const to = index + step;
+  if (!state.layers[index] || to < 0 || to >= state.layers.length) return;
+  const [layer] = state.layers.splice(index, 1);
+  state.layers.splice(to, 0, layer);
+  if (state.currentLayerIndex === index) state.currentLayerIndex = to;
+  else if (state.currentLayerIndex === to) state.currentLayerIndex = index;
+}
+
+/** Shows or hides a layer without deleting it. */
+export function setLayerHidden(state: ShadowState, index: number, hidden: boolean): void {
+  if (state.layers[index]) state.layers[index].hidden = hidden;
+}
+
+/**
+ * "Smooth shadow": `count` layers whose offset and blur double from the closest to the farthest
+ * (…, distance/4, distance/2, distance), each with an equal share of `intensity`. Stacking them
+ * gives the soft falloff a single shadow cannot. Light from above: offsets are vertical.
+ */
+export function smoothLayers(opts: { count: number; distance: number; intensity: number; color: string }): ShadowLayer[] {
+  const count = Math.min(8, Math.max(2, Math.round(opts.count)));
+  const alpha = Math.round((Math.min(100, Math.max(0, opts.intensity)) / 100 / count) * 1000) / 1000;
+  return Array.from({ length: count }, (_, i) => {
+    const d = Math.max(1, Math.round(opts.distance * 2 ** (i + 1 - count)));
+    return { horizontal: 0, vertical: d, blur: d, spread: 0, color: opts.color, opacity: alpha, inset: false };
+  });
+}
+
+/** Replaces the shadow layers (e.g. from an import or the smooth generator) and selects the first. */
+export function setLayers(state: ShadowState, layers: ShadowLayer[]): void {
+  if (!layers.length) return;
+  state.layers = layers;
+  state.currentLayerIndex = 0;
 }
 
 export function selectLayer(state: ShadowState, index: number): void {
@@ -164,7 +216,13 @@ export function getBackgroundCSS(state: ShadowState): string {
 
 /** The `box-shadow` string for all layers. */
 export function getCSS(state: ShadowState): string {
-  return state.layers.map(getLayerCSS).join(', ');
+  const visible = visibleLayers(state);
+  return visible.length ? visible.map(getLayerCSS).join(', ') : 'none';
+}
+
+/** Layers that are drawn and exported (hidden ones are skipped). */
+export function visibleLayers(state: ShadowState): ShadowLayer[] {
+  return state.layers.filter((l) => !l.hidden);
 }
 
 /** CSS `box-shadow` value for one layer. */
@@ -232,7 +290,7 @@ export function getDart(state: ShadowState): string {
     code += `boxShadow: [\n`;
   }
 
-  for (const layer of state.layers) {
+  for (const layer of visibleLayers(state)) {
     const { horizontal, vertical, blur, spread, color, opacity, inset } = layer;
     const r = parseInt(color.slice(1, 3), 16);
     const g = parseInt(color.slice(3, 5), 16);
@@ -256,6 +314,95 @@ export function getDart(state: ShadowState): string {
   return code;
 }
 
+/* ---- More export targets ---- */
+
+/** CSS with the shadow stored in a custom property, ready for a design-token file. */
+export function getCSSVariable(state: ShadowState): string {
+  const radius = state.boxProperties.borderRadius;
+  return (
+    `:root {\n  --shadow-layered: ${getCSS(state)};\n}\n\n.elemento {\n  box-shadow: var(--shadow-layered);\n` +
+    `  background: ${getBackgroundCSS(state)};\n` +
+    (radius > 0 ? `  border-radius: ${radius}px;\n` : '') +
+    `}`
+  );
+}
+
+/** Tailwind v4 theme token: `--shadow-*` becomes a `shadow-*` utility. */
+export function getTailwindTheme(state: ShadowState): string {
+  return `@theme {\n  --shadow-layered: ${getCSS(state)};\n}\n\n/* uso: class="shadow-layered" */`;
+}
+
+const argb = (hex: string, opacity: number) =>
+  Math.round(Math.min(1, Math.max(0, opacity)) * 255)
+    .toString(16)
+    .padStart(2, '0')
+    .toUpperCase() + hexToColorObj(hex).hex;
+const dp = (n: number) => (n < 0 ? `(${n}).dp` : `${n}.dp`);
+
+/** Jetpack Compose (1.9+): `Modifier.dropShadow` / `innerShadow`; inner shadows go after the background. */
+export function getCompose(state: ShadowState): string {
+  const { borderRadius: r, backgroundColor } = state.boxProperties;
+  const shape = r > 0 ? `RoundedCornerShape(${r}.dp)` : 'RectangleShape';
+  const shadow = (l: ShadowLayer, kind: 'dropShadow' | 'innerShadow') =>
+    `    .${kind}(\n        shape = ${shape},\n        shadow = Shadow(\n` +
+    `            radius = ${dp(l.blur)},\n            spread = ${dp(l.spread)},\n` +
+    `            color = Color(0x${argb(l.color, l.opacity)}),\n` +
+    `            offset = DpOffset(x = ${dp(l.horizontal)}, y = ${dp(l.vertical)})\n        )\n    )\n`;
+  const layers = visibleLayers(state);
+  let code = '// Jetpack Compose 1.9+ (Modifier.dropShadow / innerShadow)\nModifier\n';
+  code += layers.filter((l) => !l.inset).map((l) => shadow(l, 'dropShadow')).join('');
+  code += `    .background(color = Color(0xFF${hexToColorObj(backgroundColor).hex}), shape = ${shape})\n`;
+  code += layers.filter((l) => l.inset).map((l) => shadow(l, 'innerShadow')).join('');
+  if (state.backgroundLayers.length) code += '// Gradientes não exportados: use Brush.linearGradient / radialGradient no background.\n';
+  return code.trimEnd();
+}
+
+const swiftColor = (hex: string, opacity: number) => {
+  const c = hexToColorObj(hex).hex;
+  const [r, g, b] = [0, 2, 4].map((i) => +(parseInt(c.slice(i, i + 2), 16) / 255).toFixed(3));
+  return `Color(red: ${r}, green: ${g}, blue: ${b}, opacity: ${+opacity.toFixed(3)})`;
+};
+
+/**
+ * SwiftUI: one shape per drop shadow in a background ZStack (stacked `.shadow` modifiers would
+ * shadow each other), inner shadows as `ShapeStyle.shadow(.inner)` (iOS 16+). SwiftUI's radius is
+ * about half the CSS blur, and SwiftUI has no spread.
+ */
+export function getSwiftUI(state: ShadowState): string {
+  const { borderRadius: r, backgroundColor } = state.boxProperties;
+  const shape = r > 0 ? `RoundedRectangle(cornerRadius: ${r})` : 'Rectangle()';
+  const fill = swiftColor(backgroundColor, 1);
+  const layers = visibleLayers(state);
+  const radius = (l: ShadowLayer) => +(l.blur / 2).toFixed(1);
+  const inner = layers
+    .filter((l) => l.inset)
+    .map((l) => `\n        .shadow(.inner(color: ${swiftColor(l.color, l.opacity)}, radius: ${radius(l)}, x: ${l.horizontal}, y: ${l.vertical}))`)
+    .join('');
+  let code = '// SwiftUI: radius = blur CSS / 2; spread não existe no SwiftUI.\n';
+  code += `${shape}\n    .fill(${fill}${inner})\n`;
+  const drops = layers.filter((l) => !l.inset);
+  if (drops.length) {
+    code += '    .background {\n        ZStack {\n';
+    code += drops
+      .map((l) => `            ${shape}\n                .fill(${fill})\n                .shadow(color: ${swiftColor(l.color, l.opacity)}, radius: ${radius(l)}, x: ${l.horizontal}, y: ${l.vertical})\n`)
+      .join('');
+    code += '        }\n    }\n';
+  }
+  if (state.backgroundLayers.length) code += '// Gradientes não exportados: use LinearGradient / RadialGradient no fill.\n';
+  return code.trimEnd();
+}
+
+/** React Native 0.76+ (New Architecture): `boxShadow` takes the CSS syntax, inset and spread included. */
+export function getReactNative(state: ShadowState): string {
+  const r = state.boxProperties.borderRadius;
+  let code = '// React Native 0.76+ (New Architecture)\nconst styles = StyleSheet.create({\n  box: {\n';
+  code += `    boxShadow: '${getCSS(state)}',\n`;
+  if (r > 0) code += `    borderRadius: ${r},\n`;
+  code += `    backgroundColor: '${state.boxProperties.backgroundColor}',\n  },\n});`;
+  if (state.backgroundLayers.length) code += '\n// Gradientes não exportados: use experimental_backgroundImage ou react-native-linear-gradient.';
+  return code;
+}
+
 /** Normalizes a CSS value into a Tailwind arbitrary-value token. */
 export function toTailwindArbitrary(value: string): string {
   return value.replace(/,\s+/g, ',').replace(/\s+/g, '_');
@@ -273,13 +420,160 @@ export function getLayerTailwind(layer: BackgroundLayer): string {
   return `bg-[${toTailwindArbitrary(getBackgroundCSSForLayer(layer))}]`;
 }
 
+/* ---- Text exports: the same layers as `text-shadow` (no inset, no spread) ---- */
+
+/** Generic families stay bare in CSS: quoted, they would name a font. */
+export const GENERIC_FONTS = ['serif', 'sans-serif', 'monospace', 'cursive', 'fantasy', 'system-ui'];
+
+/** CSS `font-family` value for the text. */
+export function fontStack(font: string): string {
+  return GENERIC_FONTS.includes(font.toLowerCase()) ? font : `"${font}", sans-serif`;
+}
+
+/** A font family name reduced to what share links accept (letters, digits, space, `_`, `-`; 60 max). */
+export function cleanFontName(name: string): string {
+  return [...name.replace(/[^\p{L}\p{N} _-]/gu, '')].slice(0, 60).join('').trim();
+}
+
+/** Layers a text shadow can draw: visible and not inset. */
+const textLayers = (state: ShadowState) => visibleLayers(state).filter((l) => !l.inset);
+const textLayerCSS = (l: ShadowLayer) =>
+  `${l.horizontal}px ${l.vertical}px ${l.blur}px ${hexToRgba(l.color, l.opacity)}`;
+
+/** Comment line saying what the text export left out (inset layers, spread); empty when nothing is. */
+function droppedNote(state: ShadowState, open = '//', close = ''): string {
+  const v = visibleLayers(state);
+  const parts: string[] = [];
+  if (v.some((l) => l.inset)) parts.push('camadas internas (inset) ignoradas');
+  if (v.some((l) => !l.inset && l.spread !== 0)) parts.push('spread ignorado');
+  return parts.length ? `${open} Sombra de texto não tem inset nem spread: ${parts.join(', ')}.${close}\n` : '';
+}
+
+/** The user's text as a string literal: backslash, the quote and any `special` character escaped. */
+const literal = (s: string, quote: string, special: RegExp) => quote + s.replace(special, (c) => `\\${c}`) + quote;
+const dartString = (s: string) => literal(s, "'", /[\\'$]/g);
+const kotlinString = (s: string) => literal(s, '"', /[\\"$]/g);
+const swiftString = (s: string) => literal(s, '"', /[\\"]/g);
+const jsString = (s: string) => literal(s, "'", /[\\']/g);
+
+/** The `text-shadow` value. */
+export function getTextShadowCSS(state: ShadowState): string {
+  const layers = textLayers(state);
+  return layers.length ? layers.map(textLayerCSS).join(', ') : 'none';
+}
+
+/** CSS properties for the text, one shadow layer per indented line. */
+export function getTextCSS(state: ShadowState): string {
+  const { font, size, weight, color } = state.text;
+  const layers = textLayers(state);
+  const shadow = layers.length ? `\n${layers.map((l) => `  ${textLayerCSS(l)}`).join(',\n')};` : ' none;';
+  return (
+    droppedNote(state, '/*', ' */') +
+    `font-family: ${fontStack(font)};\nfont-size: ${size}px;\nfont-weight: ${weight};\ncolor: ${color};\ntext-shadow:${shadow}`
+  );
+}
+
+/** Tailwind v4.1 classes (a class list has no room for the dropped-layers comment). */
+export function getTextTailwind(state: ShadowState): string {
+  const { font, size, weight, color } = state.text;
+  // Single quotes keep the class attribute intact; a literal `_` would read as a space.
+  // Backslashes first, so the `\_` added next cannot be undone by an input backslash.
+  const family = toTailwindArbitrary(
+    fontStack(font).replace(/\\/g, '\\\\').replace(/"/g, "'").replace(/_/g, '\\_'),
+  );
+  return `text-shadow-[${toTailwindArbitrary(getTextShadowCSS(state))}] text-[${size}px] text-[${color}] font-[${weight}] [font-family:${family}]`;
+}
+
+/** Flutter `Text` with every layer in `TextStyle.shadows` (`Shadow` has no spread). */
+export function getTextDart(state: ShadowState): string {
+  const { content, font, size, weight, color } = state.text;
+  const shadows = textLayers(state)
+    .map((l) => {
+      const [r, g, b] = [1, 3, 5].map((i) => parseInt(l.color.slice(i, i + 2), 16));
+      return (
+        `      Shadow(\n        color: Color.fromRGBO(${r}, ${g}, ${b}, ${l.opacity}),\n` +
+        `        offset: Offset(${l.horizontal}, ${l.vertical}),\n        blurRadius: ${l.blur},\n      ),\n`
+      );
+    })
+    .join('');
+  return (
+    droppedNote(state) +
+    `Text(\n  ${dartString(content)},\n  style: TextStyle(\n    fontFamily: ${dartString(font)},\n` +
+    `    fontSize: ${size},\n    fontWeight: FontWeight.w${weight},\n    color: Color(0xFF${hexToColorObj(color).hex}),\n` +
+    `    shadows: [\n${shadows}    ],\n  ),\n)`
+  );
+}
+
+/** Jetpack Compose: `TextStyle` takes one `Shadow` (px floats), so only the first text layer goes. */
+export function getTextCompose(state: ShadowState): string {
+  const { content, font, size, weight, color } = state.text;
+  const l = textLayers(state)[0];
+  const shadow = l
+    ? `,\n        shadow = Shadow(\n            color = Color(0x${argb(l.color, l.opacity)}),\n` +
+      `            offset = Offset(${l.horizontal}f, ${l.vertical}f),\n            blurRadius = ${l.blur}f\n        )`
+    : '';
+  return (
+    '// Jetpack Compose: TextStyle aceita uma sombra só; exportada a primeira camada visível (offset e blur em px).\n' +
+    droppedNote(state) +
+    `Text(\n    text = ${kotlinString(content)},\n    style = TextStyle(\n` +
+    `        fontFamily = FontFamily.Default, // fonte "${font}": adicione em res/font\n` +
+    `        fontSize = ${size}.sp,\n        fontWeight = FontWeight.W${weight},\n` +
+    `        color = Color(0xFF${hexToColorObj(color).hex})${shadow}\n    )\n)`
+  );
+}
+
+const SWIFT_WEIGHTS: Record<number, string> = {
+  100: 'ultraLight',
+  200: 'thin',
+  300: 'light',
+  400: 'regular',
+  500: 'medium',
+  600: 'semibold',
+  700: 'bold',
+  800: 'heavy',
+  900: 'black',
+};
+
+/** SwiftUI `Text` with one `.shadow` per layer (radius = blur / 2, as in `getSwiftUI`). */
+export function getTextSwiftUI(state: ShadowState): string {
+  const { content, font, size, weight, color } = state.text;
+  const shadows = textLayers(state)
+    .map((l) => `\n    .shadow(color: ${swiftColor(l.color, l.opacity)}, radius: ${+(l.blur / 2).toFixed(1)}, x: ${l.horizontal}, y: ${l.vertical})`)
+    .join('');
+  return (
+    '// SwiftUI: radius = blur CSS / 2; cada .shadow empilhado também sombreia as sombras anteriores.\n' +
+    droppedNote(state) +
+    `Text(${swiftString(content)})\n    .font(.custom(${swiftString(font)}, size: ${size}))\n` +
+    `    .fontWeight(.${SWIFT_WEIGHTS[weight] ?? 'regular'})\n    .foregroundStyle(${swiftColor(color, 1)})${shadows}`
+  );
+}
+
+/** React Native: one text shadow (`textShadow*`), so only the first text layer goes. */
+export function getTextReactNative(state: ShadowState): string {
+  const { content, font, size, weight, color } = state.text;
+  const l = textLayers(state)[0];
+  const shadow = l
+    ? `    textShadowColor: '${hexToRgba(l.color, l.opacity)}',\n` +
+      `    textShadowOffset: { width: ${l.horizontal}, height: ${l.vertical} },\n    textShadowRadius: ${l.blur},\n`
+    : '';
+  return (
+    '// React Native: uma sombra de texto só; exportada a primeira camada visível.\n' +
+    droppedNote(state) +
+    `<Text style={styles.text}>{${jsString(content)}}</Text>\n\nconst styles = StyleSheet.create({\n  text: {\n` +
+    `    fontFamily: ${jsString(font)},\n    fontSize: ${size},\n    fontWeight: '${weight}',\n    color: '${color}',\n` +
+    `${shadow}  },\n});`
+  );
+}
+
 /* ---- Presets ---- */
 
 export type PresetName = 'soft' | 'neumorphism' | 'cristal';
 
 /** Applies a named preset, mutating the state. */
 export function applyPreset(state: ShadowState, presetName: PresetName): void {
+  const text = state.text; // a preset restyles the shadow, not the user's text
   reset(state);
+  state.text = text;
 
   if (presetName === 'soft') {
     update(state, 'blur', 10);
@@ -317,7 +611,9 @@ export function applyPreset(state: ShadowState, presetName: PresetName): void {
     update(state, 'color', '#ffffff');
     update(state, 'opacity', 0.18);
     update(state, 'inset', true);
-    update(state, 'backgroundColor', 'rgba(255, 255, 255, 0.15)');
+    // White at 15% over the #0891b2 canvas, pre-mixed: the model is hex-only (a rgba() here broke
+    // the saved session, undo, the color input and the Dart export).
+    update(state, 'backgroundColor', '#2da2be');
     update(state, 'canvasColor', '#0891b2');
     state.backgroundLayers = [];
   }
@@ -350,15 +646,35 @@ export function shadowCornerRadius(radius: number, spread: number): number {
   return radius + spread * (1 + (radius / spread - 1) ** 3);
 }
 
-/** True when a hex color is dark enough that light ink reads better on it (WCAG relative luminance). */
-export function isDarkColor(hex: string): boolean {
+/** WCAG relative luminance of a hex color (0–1); unparseable input reads as white. */
+function luminance(hex: string): number {
   const c = hexToColorObj(hex).hex;
-  if (!/^[0-9A-F]{6}$/.test(c)) return false;
+  if (!/^[0-9A-F]{6}$/.test(c)) return 1;
   const [r, g, b] = [0, 2, 4].map((i) => {
     const v = parseInt(c.slice(i, i + 2), 16) / 255;
     return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
   });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.18;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** True when a hex color is dark enough that light ink reads better on it (WCAG relative luminance). */
+export function isDarkColor(hex: string): boolean {
+  return luminance(hex) < 0.18;
+}
+
+/** WCAG 2 contrast ratio between two hex colors, 1 to 21. */
+export function contrastRatio(a: string, b: string): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((m, n) => n - m);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/**
+ * Ink for the dimension lines and grid on a plate color: blueline while it reaches 3:1 (WCAG
+ * non-text contrast), else graphite or film, whichever contrasts more (one always reaches 4:1).
+ */
+export function guideInk(canvas: string): string {
+  if (contrastRatio('#2747c9', canvas) >= 3) return '#2747c9';
+  return contrastRatio('#16181d', canvas) >= contrastRatio('#f6f8f9', canvas) ? '#16181d' : '#f6f8f9';
 }
 
 /** Fallback for non-hex colors. TODO: parse rgba() if stops ever store rgba strings. */

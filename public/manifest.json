@@ -1,14 +1,18 @@
 {
-  "name": "Layered Shade - Box Shadow Generator",
+  "name": "Layered Shade: shadow generator",
   "short_name": "Layered Shade",
-  "description": "Generate CSS box-shadows and Dart/Flutter code visually, with real-time preview and export to CSS, Dart and Tailwind.",
+  "description": "Design layered box and text shadows and copy them as CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI or React Native.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",
   "theme_color": "#2747c9",
   "background_color": "#e9eef0",
-  "categories": ["design", "developer", "productivity"],
+  "categories": [
+    "design",
+    "developer",
+    "productivity"
+  ],
   "lang": "pt-BR",
   "icons": [
     {

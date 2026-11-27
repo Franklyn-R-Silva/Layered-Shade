@@ -1,17 +1,7 @@
-# Robots.txt for Layered Shade
-# https://layeredshade.netlify.app/
-
+# Layered Shade — https://layeredshade.netlify.app/
+# Everything is public. Share links keep the shadow in the URL hash (#s=…),
+# which is never sent to the server, so there is nothing to keep out of the index.
 User-agent: *
 Allow: /
 
-# Sitemap
 Sitemap: https://layeredshade.netlify.app/sitemap.xml
-
-# Crawl-delay for polite crawling
-Crawl-delay: 1
-
-# Disallow development/test files
-Disallow: /coverage/
-Disallow: /node_modules/
-Disallow: /.github/
-Disallow: /tests/

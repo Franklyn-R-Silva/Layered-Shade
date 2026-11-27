@@ -2,7 +2,39 @@
   import Sidebar from './lib/components/Sidebar.svelte';
   import PreviewBox from './lib/components/PreviewBox.svelte';
   import CodeOutput from './lib/components/CodeOutput.svelte';
+  import Icon from './lib/components/Icon.svelte';
+  import { actions, historyFlags } from './lib/state.svelte';
+
+  let linkCopied = $state<'idle' | 'copied' | 'address'>('idle');
+  let linkTimer: ReturnType<typeof setTimeout> | undefined;
+
+  function copyLink() {
+    clearTimeout(linkTimer);
+    navigator.clipboard
+      .writeText(actions.shareUrl())
+      .then(() => (linkCopied = 'copied'))
+      // Clipboard blocked: put the link in the address bar so it can be copied by hand.
+      .catch(() => {
+        history.replaceState(null, '', actions.shareUrl());
+        linkCopied = 'address';
+      })
+      .finally(() => (linkTimer = setTimeout(() => (linkCopied = 'idle'), 3000)));
+  }
+
+  // Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z (or Ctrl+Y); text fields keep their own undo.
+  function onKey(e: KeyboardEvent) {
+    if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+    const t = e.target as HTMLElement;
+    if (t.matches('textarea, input[type="text"], input[type="number"]')) return;
+    const key = e.key.toLowerCase();
+    if (key === 'z' && !e.shiftKey) actions.undo();
+    else if ((key === 'z' && e.shiftKey) || key === 'y') actions.redo();
+    else return;
+    e.preventDefault();
+  }
 </script>
+
+<svelte:window onkeydown={onKey} />
 
 <a href="#preview" class="skip-link">Pular para o preview</a>
 
@@ -14,6 +46,38 @@
     </svg>
     <h1>Layered Shade</h1>
     <p class="tagline">Sombras em camadas para CSS, Flutter e Tailwind</p>
+  </div>
+
+  <div class="app-actions" role="group" aria-label="Histórico e compartilhamento">
+    <button
+      type="button"
+      class="bar-btn"
+      aria-label="Desfazer (Ctrl+Z)"
+      title="Desfazer (Ctrl+Z)"
+      disabled={!historyFlags.canUndo}
+      onclick={actions.undo}><Icon name="undo" size={18} /></button
+    >
+    <button
+      type="button"
+      class="bar-btn"
+      aria-label="Refazer (Ctrl+Shift+Z)"
+      title="Refazer (Ctrl+Shift+Z)"
+      disabled={!historyFlags.canRedo}
+      onclick={actions.redo}><Icon name="redo" size={18} /></button
+    >
+    <button type="button" class="bar-btn bar-btn-label" onclick={copyLink}>
+      <Icon name={linkCopied === 'copied' ? 'check' : 'link'} size={18} />
+      <span
+        >{linkCopied === 'copied' ? 'Link copiado' : linkCopied === 'address' ? 'Link na barra de endereço' : 'Copiar link'}</span
+      >
+    </button>
+    <span class="visually-hidden" role="status"
+      >{linkCopied === 'copied'
+        ? 'Link desta sombra copiado.'
+        : linkCopied === 'address'
+          ? 'Não deu para copiar: o link desta sombra está na barra de endereço.'
+          : ''}</span
+    >
   </div>
 
   <nav class="author" aria-label="Autor">

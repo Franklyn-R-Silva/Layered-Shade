@@ -6,7 +6,8 @@ Briefly describe the changes made in this PR.
 
 ## 🔗 Related Issue
 
-Fixes #(issue number)
+<!-- Every PR starts from an issue. Keep the keyword so merging closes it. -->
+Closes #
 
 ## 🧪 Type of Change
 
@@ -26,7 +27,8 @@ Fixes #(issue number)
 - [ ] I have updated documentation (if applicable)
 - [ ] I have added tests that prove my fix/feature works
 - [ ] New and existing tests pass locally (`npm test`)
-- [ ] ESLint reports no new warnings (`npm run lint`)
+- [ ] ESLint reports no warnings (`npm run lint`)
+- [ ] Type-check passes with no warnings (`npm run check`)
 
 ## 📸 Screenshots (if applicable)
 

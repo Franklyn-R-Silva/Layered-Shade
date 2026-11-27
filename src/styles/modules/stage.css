@@ -1,19 +1,11 @@
 /* Stage: the drafting plate. Grid and dimension lines measure the selected layer at 1:1. */
 
+/* --guide, --grid-minor and --grid-major are set inline from the plate color (guideInk). */
 .column-stage {
-  --guide: var(--blueline);
-  --grid-minor: rgba(39, 71, 201, 0.07);
-  --grid-major: rgba(39, 71, 201, 0.15);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   overflow: hidden;
   background-color: var(--canvas);
-}
-
-.column-stage.dark {
-  --guide: #c3cfff;
-  --grid-minor: rgba(233, 238, 240, 0.07);
-  --grid-major: rgba(233, 238, 240, 0.15);
 }
 
 .stage-bar {
@@ -64,11 +56,25 @@
   position: relative;
 }
 
+.button-row .btn[aria-pressed='true'] {
+  position: relative;
+  border-color: var(--blueline);
+  background: var(--blueline-tint);
+  color: var(--blueline-deep);
+}
+
 .stage {
   display: grid;
   place-items: center;
   overflow: hidden;
   padding: var(--space-6);
+  cursor: grab;
+  touch-action: none; /* a touch drag moves the shadow instead of scrolling */
+  user-select: none; /* dragging across the card's sample text must not select it */
+}
+
+.stage:active {
+  cursor: grabbing;
 }
 
 /* Lines are spaced so the 200px box edges land on major lines (stage centred on a tile). */
@@ -89,13 +95,50 @@
 
 .plate {
   position: relative;
-  width: 200px;
-  height: 200px;
 }
 
 #box {
   width: 100%;
   height: 100%;
+}
+
+/* Sample content: only there so the shadow is judged on a real-looking element. */
+.sample-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-1);
+  padding: var(--space-5);
+}
+
+.sample-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.sample-text {
+  font-size: var(--text-sm);
+}
+
+.sample-meta {
+  font-size: var(--text-xs);
+  opacity: 0.75;
+}
+
+.sample-button {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+/* Text mode: the user's text at 1:1; the dimension lines measure its line box. Long text wraps. */
+.text-sample {
+  line-height: 1;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
 
 .dims {
@@ -207,10 +250,50 @@
   border-top-style: dashed;
 }
 
+.drag-hint {
+  display: none;
+}
+
+@media (pointer: fine) {
+  .drag-hint {
+    display: inline;
+  }
+}
+
 @media (max-width: 759px) {
   .stage-bar,
   .stage-caption {
     padding-inline: var(--space-4);
+  }
+
+  /* One scrolling row keeps the pinned stage tall enough to measure on a phone. */
+  .stage-bar,
+  .bar-group {
+    flex-wrap: nowrap;
+  }
+
+  .stage-bar {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .legend {
+    display: none;
+  }
+
+  /* Visually hidden, not display:none: a hidden <label for> stops naming its control. */
+  .stage-bar .bar-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .stage-bar select {
+    flex: none;
+    min-width: 104px;
   }
 
   .stage {

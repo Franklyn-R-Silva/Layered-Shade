@@ -1,124 +1,96 @@
 # Layered Shade
 
-Build multi-layer box shadows visually and copy the same result as **CSS**, **Flutter/Dart** (`BoxShadow`, `BoxDecoration`) or **Tailwind**.
+**Design layered box and text shadows visually, then copy the same shadow as CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI or React Native.**
 
-[🇧🇷 Português](docs/pt-BR/README.md)
+[🇧🇷 Português](docs/pt-BR/README.md) · [Open the app](https://layeredshade.netlify.app/) · [Report a bug](https://github.com/Franklyn-R-Silva/Layered-Shade/issues/new?template=bug_report.md) · [Request a feature](https://github.com/Franklyn-R-Silva/Layered-Shade/issues/new?template=feature_request.md)
 
-[![Demo](https://img.shields.io/badge/Demo-layeredshade.netlify.app-2747c9)](https://layeredshade.netlify.app/)
 [![CI](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml/badge.svg)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/17195/badge)](https://www.bestpractices.dev/projects/17195)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-2747c9.svg)](CONTRIBUTING.md)
+[![Good first issues](https://img.shields.io/github/issues/Franklyn-R-Silva/Layered-Shade/good%20first%20issue?label=good%20first%20issues&color=2747c9)](https://github.com/Franklyn-R-Silva/Layered-Shade/labels/good%20first%20issue)
 
-![Layered Shade: layer controls on the left, the preview plate with dimension lines in the centre, generated CSS on the right](public/github/tela.png)
+![Layered Shade: layer controls on the left, the 1:1 preview plate with dimension lines in the centre, generated code on the right](public/github/tela.png)
 
-## Why
+## Why Layered Shade
 
-Most shadow generators stop at CSS. Layered Shade treats Flutter as a first-class target: one shadow model, three exports that agree, and the Flutter limits stated where they apply instead of being hidden.
+- **One shadow, every platform.** The same layers export to six targets, and each export says plainly what its platform cannot do instead of silently dropping it.
+- **Measured, not guessed.** The preview is drawn at 1:1 on a grid, with dimension lines for the selected layer's offset, spread, blur reach and light direction.
+- **Free, instant, private.** No account, no backend, no analytics, no third-party requests. Fonts you upload never leave your browser.
 
 ## Features
 
-### Shadows
+**Build**
+- Stack as many shadow layers as you need: offset, blur, spread, color, opacity and inset per layer; duplicate, reorder, hide or remove them.
+- Drag on the preview to move the selected shadow; undo and redo with Ctrl+Z / Ctrl+Shift+Z.
+- Start from a preset (Soft, Neumorph, Glass), generate a **smooth multi-layer shadow**, or **import** an existing `box-shadow`, CSS rule or Tailwind `shadow-[…]` class.
+- Gradient backgrounds (linear and radial, any number of stops) and border radius.
 
-- **Layers**: add, select and remove shadow layers; each has X/Y offset, blur, spread, color, opacity and inset.
-- **Measured preview**: the box is drawn 1:1 on a grid, and dimension lines show the selected layer's offset, its spread outline, how far the blur reaches and where the light comes from. Toggle them with **Cotas**.
-- **Presets**: Soft, Neumorph and Glass as starting points.
+**Preview**
+- On a box, a card, a button or **your own text**, in any installed font or a font file you upload.
+- On a light or dark ground, or any canvas color; the guide lines keep at least 3:1 contrast on it.
 
-### Background and shape
+**Share**
+- Copy a link that reopens exactly this shadow; your last session is restored when you come back.
 
-- **Gradients**: stack linear and radial gradients with any number of color stops, over a solid base color.
-- **Shape**: border radius; the preview canvas color is adjustable too.
+## Export support
 
-### Export
+| Target | Multiple layers | Spread | Inset | Gradient background |
+| --- | :---: | :---: | :---: | :---: |
+| CSS (properties or custom property) | ✅ | ✅ | ✅ | ✅ |
+| Tailwind (classes or v4 `@theme` token) | ✅ | ✅ | ✅ | ✅ |
+| Flutter (`BoxDecoration`) | ✅ | ✅ | via [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow) | top layer only |
+| Jetpack Compose 1.9+ (`dropShadow` / `innerShadow`) | ✅ | ✅ | ✅ | API named in a comment |
+| SwiftUI | ✅ | — | ✅ (iOS 16+) | API named in a comment |
+| React Native 0.76+ (`boxShadow`) | ✅ | ✅ | ✅ | API named in a comment |
 
-- **CSS**: `box-shadow`, `background` and `border-radius`, one layer per line. The panel shows exactly what is copied, with the selected layer highlighted.
-- **Dart/Flutter**: `BoxDecoration` with `BoxShadow` entries, ready to paste into a `Container`.
-- **Tailwind**: `shadow-[…]` and `bg-[…]` arbitrary-value classes.
-- **Copy**: one button for the active format, with a confirmation that screen readers announce.
+**Text mode** exports `text-shadow` (CSS, Tailwind), `TextStyle.shadows` (Flutter) and `.shadow` (SwiftUI); Compose and React Native accept **one** shadow per text, so they export the first layer and say so. Text shadows have no spread and no inset.
 
-## Known limitations
+SwiftUI's shadow radius is about half the CSS blur; the export converts it and says so in a comment.
 
-- **Flutter `inset`**: Flutter's `BoxShadow` has no inset. When a layer is inset, the Dart tab says so and gives the [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow) install command.
-- **Several gradients in Flutter**: `BoxDecoration` takes one gradient, so the Dart export uses the top one (gradient 1). CSS and Tailwind export all of them.
-- **Colors are hex only** (`#RGB` / `#RRGGBB`).
+## Quick start
 
-## Accessibility
-
-- Every control has a visible label; number fields and sliders stay in sync and are clamped to valid values.
-- The panel switch and the export tabs follow the WAI-ARIA tabs pattern (arrow keys, Home, End).
-- Visible focus everywhere, a skip link to the preview, and `prefers-reduced-motion` respected.
-- Copy success and failure are announced through a live region.
-
-## Tech stack
-
-| Technology     | Usage                                                     |
-| -------------- | --------------------------------------------------------- |
-| **Svelte 5**   | Reactive UI with runes (`$state`, `$derived`)             |
-| **TypeScript** | Typed state, logic and components                         |
-| **Vite**       | Dev server and production build                           |
-| **CSS**        | Custom properties, Grid; self-hosted Overpass fonts       |
-| **Vitest**     | Unit tests for the logic core and integration tests (DOM) |
-
-## Architecture
-
-A **pure, framework-free logic core** with a thin **reactive UI** on top:
-
-```text
-src/
-├── App.svelte           # Top bar + the three working columns
-├── main.ts              # Mounts the app
-├── App.test.ts          # Integration tests (happy-dom)
-└── lib/
-    ├── shadow.ts        # Pure state + code generation (CSS/Dart/Tailwind)
-    ├── shadow.test.ts   # Unit tests (no DOM)
-    ├── state.svelte.ts  # $state singleton + actions + UI flags
-    ├── tabs.ts          # Keyboard support for ARIA tabs
-    ├── types.ts
-    ├── config/controls.ts
-    └── components/      # Control, LayerList, BackgroundPanel, PreviewBox, CodeOutput, …
-```
-
-See [ARCHITECTURE.md](ARCHITECTURE.md) for details and [DESIGN.md](DESIGN.md) for the visual system.
-
-## Getting started
-
-Use it online at [layeredshade.netlify.app](https://layeredshade.netlify.app/), or run it locally (Node 20.19+):
+Use it online at **[layeredshade.netlify.app](https://layeredshade.netlify.app/)**, or run it locally (Node 20.19+):
 
 ```bash
 git clone https://github.com/Franklyn-R-Silva/Layered-Shade.git
 cd Layered-Shade
 npm ci
-npm run dev      # http://localhost:5173
+npm run dev          # http://localhost:5173
 ```
 
-Build with `npm run build` (output in `dist/`) and serve the build with `npm run preview`.
+| Command | What it does |
+| --- | --- |
+| `npm test` | Unit and integration tests (Vitest) |
+| `npm run lint` | ESLint, zero warnings allowed |
+| `npm run check` | Type-check with svelte-check, zero warnings allowed |
+| `npm run build` | Production build in `dist/` |
 
-## Testing
+## Contributing: anyone can help
 
-```bash
-npm test               # Unit + integration tests
-npm run test:coverage  # Coverage of the logic core
-npm run check          # Type-check (svelte-check)
-npm run lint           # ESLint
-```
+You do not need to know the codebase, Svelte or shadows in depth to contribute. Issues labelled **[good first issue](https://github.com/Franklyn-R-Silva/Layered-Shade/labels/good%20first%20issue)** are small, name the exact files to touch, and say when they are done.
 
-The logic core (`src/lib/shadow.ts`: state mutations and the CSS/Dart/Tailwind generators) is covered by unit tests with no DOM. `src/App.test.ts` mounts the real component tree to check that the UI follows the state.
+1. Pick an issue (or [open one](https://github.com/Franklyn-R-Silva/Layered-Shade/issues/new/choose)) and comment that you are on it.
+2. Fork the repository, create a branch and run `npm ci`.
+3. Make the change with a test; run `npm test`, `npm run lint` and `npm run check`.
+4. Open a pull request with `Closes #<issue>`. CI runs the same checks and you will get a review.
 
-## Contributing
+Bug reports, translations, documentation fixes and ideas are as welcome as code. See [CONTRIBUTING.md](CONTRIBUTING.md) for the details and the [Code of Conduct](CODE_OF_CONDUCT.md) for how we treat each other.
 
-1. Fork the project
-2. Create a branch (`git checkout -b feature/new-feature`)
-3. Commit your changes (`git commit -m 'Add new feature'`)
-4. Push the branch (`git push origin feature/new-feature`)
-5. Open a pull request
+## Security and quality
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the guidelines and [SECURITY.md](SECURITY.md) to report a vulnerability.
+- Self-assessed against the [OpenSSF Best Practices](https://www.bestpractices.dev/projects/17195) criteria; the badge above shows the live status.
+- CodeQL scans every pull request. Dependabot alerts and grouped security updates, secret scanning with push protection, lockfile-only installs and SHA-pinned actions protect the supply chain.
+- The site ships a strict Content Security Policy and loads nothing from third parties.
+- Found a vulnerability? Report it privately as described in [SECURITY.md](SECURITY.md).
+
+## Architecture
+
+A pure, framework-free logic core (`src/lib/shadow.ts` and the modules next to it) with a thin Svelte 5 UI on top, so every generator is unit-tested without a browser. See [ARCHITECTURE.md](ARCHITECTURE.md), the visual system in [DESIGN.md](DESIGN.md) and the product context in [PRODUCT.md](PRODUCT.md).
 
 ## Author
 
-Franklyn R. Silva
-
-- GitHub: [@Franklyn-R-Silva](https://github.com/Franklyn-R-Silva)
-- LinkedIn: [franklyn-roberto-dev](https://www.linkedin.com/in/franklyn-roberto-dev/)
+Made by **Franklyn R. Silva** · [GitHub](https://github.com/Franklyn-R-Silva) · [LinkedIn](https://www.linkedin.com/in/franklyn-roberto-dev/)
 
 ## License
 

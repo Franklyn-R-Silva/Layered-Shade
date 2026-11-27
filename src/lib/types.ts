@@ -13,6 +13,8 @@ export interface ShadowLayer {
   /** 0–1. */
   opacity: number;
   inset: boolean;
+  /** Hidden layers stay in the list but are left out of the preview and every export. */
+  hidden?: boolean;
 }
 
 /** A gradient color stop. */
@@ -46,6 +48,17 @@ export interface BoxProperties {
   canvasColor: string;
 }
 
+/** The user's text for the text preview (the shadow layers become its `text-shadow`). */
+export interface TextProps {
+  content: string;
+  /** Family name only: letters, digits, space, `_`, `-` (it goes into CSS and generated code). */
+  font: string;
+  size: number;
+  /** 100–900, step 100. */
+  weight: number;
+  color: string;
+}
+
 /** The full generator state. */
 export interface ShadowState {
   layers: ShadowLayer[];
@@ -54,7 +67,11 @@ export interface ShadowState {
   /** -1 = base color selected. */
   currentBgLayerIndex: number;
   boxProperties: BoxProperties;
+  text: TextProps;
 }
 
 /** Output tab / copy mode. */
-export type CodeMode = 'css' | 'dart' | 'tailwind';
+export type CodeMode = 'css' | 'tailwind' | 'dart' | 'compose' | 'swiftui' | 'rn';
+
+/** What the preview draws the shadow on. */
+export type PreviewContext = 'box' | 'card' | 'button' | 'text';

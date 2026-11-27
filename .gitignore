@@ -1,7 +1,51 @@
+# This repository is public: keep secrets, local settings and machine state out of it.
+
 # Dependencies
 node_modules/
 
-# IDE
+# Build output and caches
+dist/
+build/
+.cache/
+.temp/
+.vite/
+*.tsbuildinfo
+.eslintcache
+
+# Tests
+coverage/
+test-results/
+playwright-report/
+
+# Secrets and environment (commit a sanitized .env.example instead)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.crt
+
+# Deploy tooling state (Netlify CLI keeps the site id and auth here)
+.netlify/
+
+# Claude Code: local settings and agent worktrees (the shared .claude/settings.json is committed)
+.claude/settings.local.json
+.claude/worktrees/
+CLAUDE.local.md
+
+# Impeccable: local config and runtime state (PRODUCT.md, DESIGN.md, design.json and surfaces are committed)
+.impeccable/config.local.json
+.impeccable/mocks/
+.impeccable/questions/
+.impeccable/review/
+.impeccable/build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editors (the shared .vscode/settings.json is committed)
 .idea/
 *.swp
 *.swo
@@ -11,23 +55,3 @@ node_modules/
 .DS_Store
 Thumbs.db
 Desktop.ini
-
-# Logs
-*.log
-npm-debug.log*
-
-# Build output (if using bundlers in future)
-dist/
-build/
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Cache
-.cache/
-.temp/
-
-# Test Coverage
-coverage/

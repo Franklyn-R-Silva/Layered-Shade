@@ -378,21 +378,6 @@
           "oklch(82% 0.105 267)",
           "oklch(95% 0.029 267)"
         ]
-      },
-      "guide-night": {
-        "role": "primary",
-        "displayName": "Guide on Dark",
-        "canonical": "#c3cfff",
-        "tonalRamp": [
-          "oklch(15% 0.029 274)",
-          "oklch(26% 0.051 274)",
-          "oklch(37% 0.068 274)",
-          "oklch(48% 0.068 274)",
-          "oklch(59% 0.068 274)",
-          "oklch(70% 0.058 274)",
-          "oklch(82% 0.035 274)",
-          "oklch(95% 0.010 274)"
-        ]
       }
     },
     "typographyMeta": {

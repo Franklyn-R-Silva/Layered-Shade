@@ -1,6 +1,6 @@
 {
   "name": "layered-shade",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Layered Shade - Box Shadow Generator for CSS & Flutter (Svelte 5 + Vite + TypeScript)",
   "type": "module",
   "scripts": {

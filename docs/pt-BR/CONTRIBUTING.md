@@ -1,6 +1,14 @@
 # Guia de Contribuição
 
-Obrigado por considerar contribuir com o **Layered Shade**! 🎉
+Obrigado por considerar contribuir com o **Layered Shade**! 🎉 Todo mundo é bem-vindo: quem vai contribuir pela primeira vez, designers, tradutores e quem só quer reportar um bug.
+
+## 🌱 Sua primeira contribuição
+
+- **Sem código:** reporte um bug, sugira um recurso, melhore uma frase da documentação ou corrija uma tradução. [Abra uma issue](https://github.com/Franklyn-R-Silva/Layered-Shade/issues/new/choose).
+- **Mudança pequena de código:** escolha uma issue marcada como [good first issue](https://github.com/Franklyn-R-Silva/Layered-Shade/labels/good%20first%20issue). Cada uma diz quais arquivos mexer e quando está pronta.
+- **Não sabe por onde começar?** Comente em qualquer issue e pergunte; você vai ter resposta.
+
+Todo pull request começa de uma issue, para combinar a mudança antes do trabalho. Comente na issue que vai pegá-la e ponha `Closes #<issue>` no pull request.
 
 [🇺🇸 English](../../CONTRIBUTING.md)
 

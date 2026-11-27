@@ -48,6 +48,45 @@
   border-left: 1px solid rgba(255, 255, 255, 0.28);
 }
 
+.app-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-left: auto;
+}
+
+.bar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  min-width: 36px;
+  justify-content: center;
+  padding: 0 var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--on-blueline);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--fast) var(--ease-out);
+}
+
+.bar-btn:hover:not(:disabled) {
+  background: var(--blueline-deep);
+}
+
+.bar-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.bar-btn-label {
+  border-color: rgba(255, 255, 255, 0.4);
+  padding-inline: var(--space-3);
+}
+
 .author {
   display: flex;
   align-items: center;
@@ -119,6 +158,16 @@
   .tagline,
   .author a span {
     display: none;
+  }
+
+  /* Visually hidden, not display:none: the text is the button's accessible name. */
+  .bar-btn-label span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
   }
 
   .workspace {

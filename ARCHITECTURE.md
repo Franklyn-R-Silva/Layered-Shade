@@ -18,7 +18,8 @@ components stay declarative.
     `selectLayer()`, `addBackgroundLayer()`, `removeBackgroundLayer()`, `applyPreset()`.
   - Generators: `getCSS()`, `getDart()` (Flutter `BoxShadow`/`BoxDecoration`), `getTailwind()`,
     `getBackgroundCSS()`, `getLayerCSS()`, `getLayerDart()`, `getLayerTailwind()`.
-  - Helpers: `hexToRgba()`, `hexToColorObj()`, `isDarkColor()` (guide ink on dark canvases),
+  - Helpers: `hexToRgba()`, `hexToColorObj()`, `isDarkColor()` (sample text ink), `contrastRatio()` and
+    `guideInk()` (dimension-line ink that keeps 3:1 on any plate color),
     `shadowCornerRadius()` (the spec's spread/radius rule, used by the preview's dimension lines).
 - **Reactive state (`src/lib/state.svelte.ts`)** — a Svelte 5 `$state` singleton wrapping the
   pure core: `state` (the `ShadowState`), `ui` (`mode`, `sidebar`, `guides`) and `actions` (thin wrappers).
@@ -40,6 +41,10 @@ src/
     shadow.test.ts        # unit tests (no DOM)
     state.svelte.ts       # $state singleton + actions
     tabs.ts               # keyboard support for ARIA tabs
+    importCss.ts          # paste a box-shadow / rule / Tailwind class → layers
+    share.ts              # state ⇄ base64url token (share link, saved session), validated
+    history.ts            # bounded undo/redo stacks
+    dimensions.ts         # dimension-line geometry for the preview plate
     format.ts             # display number formatting (typographic minus)
     types.ts
     config/controls.ts
@@ -52,6 +57,7 @@ src/
       Toolbar.svelte      # stage bar: presets, canvas color, Cotas toggle
       CodeOutput.svelte   # CSS/Dart/Tailwind tabs, code as copied, copy + live status
       Sidebar.svelte      # Sombra/Fundo panels + reset
+      LayerTools.svelte   # CSS import + smooth-shadow generator (native <details>)
       Icon.svelte         # one stroke icon set
   styles/                 # global CSS: variables.css (tokens, @font-face) + modules/{base,layout,controls,stage,code}.css
 public/                   # manifest.json, sitemap.xml, robots.txt, icons/, github/
