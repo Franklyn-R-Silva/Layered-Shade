@@ -164,7 +164,6 @@ const pt = {
 
   // Code output
   generatedCode: 'Código gerado',
-  codeFormat: 'Formato do código',
   variant: 'Variante',
   properties: 'Propriedades',
   cssVariable: 'Variável CSS',
@@ -191,6 +190,9 @@ const pt = {
   imageWidth: 'Largura',
   imageSample: 'Imagem de exemplo',
   imageDrops: 'imagem (drop-shadow): sem spread e sem inset',
+  // Exports (#77)
+  exportFormat: 'Formato',
+  inlineStyle: 'Estilo inline',
 };
 
 export type Key = keyof typeof pt;
@@ -342,7 +344,6 @@ const en: Record<Key, string> = {
   lightRay: 'ray',
 
   generatedCode: 'Generated code',
-  codeFormat: 'Code format',
   variant: 'Variant',
   properties: 'Properties',
   cssVariable: 'CSS variable',
@@ -368,6 +369,9 @@ const en: Record<Key, string> = {
   imageWidth: 'Width',
   imageSample: 'Sample image',
   imageDrops: 'image (drop-shadow): no spread, no inset',
+  // Exports (#77)
+  exportFormat: 'Format',
+  inlineStyle: 'Inline style',
 };
 
 const dict: Record<Lang, Record<Key, string>> = { pt, en };

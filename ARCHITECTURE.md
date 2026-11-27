@@ -38,6 +38,7 @@ src/
   App.svelte              # top bar (name, author links) + three columns: controls, stage, code
   lib/
     shadow.ts             # pure state + code generation
+    frameworks.ts         # React/Vue/Svelte/Angular and Flet/Qt exports (pure)
     shadow.test.ts        # unit tests (no DOM)
     state.svelte.ts       # $state singleton + actions
     tabs.ts               # keyboard support for ARIA tabs
@@ -55,7 +56,7 @@ src/
       BackgroundPanel.svelte   # gradient layers + stops
       PreviewBox.svelte   # 1:1 stage: box, grid, dimension lines (SVG)
       Toolbar.svelte      # stage bar: presets, canvas color, Cotas toggle
-      CodeOutput.svelte   # CSS/Dart/Tailwind tabs, code as copied, copy + live status
+      CodeOutput.svelte   # grouped format select + variants, code as copied, copy + live status
       Sidebar.svelte      # Sombra/Fundo panels + reset
       LayerTools.svelte   # CSS import + smooth-shadow generator (native <details>)
       Icon.svelte         # one stroke icon set

@@ -70,8 +70,20 @@ export interface ShadowState {
   text: TextProps;
 }
 
-/** Output tab / copy mode. */
-export type CodeMode = 'css' | 'tailwind' | 'dart' | 'compose' | 'swiftui' | 'rn';
+/** Export format / copy mode (`dart` is the Flutter export). */
+export type CodeMode =
+  | 'css'
+  | 'tailwind'
+  | 'react'
+  | 'vue'
+  | 'svelte'
+  | 'angular'
+  | 'dart'
+  | 'compose'
+  | 'swiftui'
+  | 'rn'
+  | 'flet'
+  | 'qt';
 
 /** What the preview draws the shadow on. */
 export type PreviewContext = 'box' | 'card' | 'button' | 'text' | 'image';

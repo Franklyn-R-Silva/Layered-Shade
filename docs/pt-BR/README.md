@@ -14,7 +14,7 @@
 
 ## Por que o Layered Shade
 
-- **Uma sombra, todas as plataformas.** As mesmas camadas saem para seis formatos, e cada exportação diz com clareza o que a plataforma não suporta, em vez de descartar em silêncio.
+- **Uma sombra, todas as plataformas.** As mesmas camadas saem para doze formatos, e cada exportação diz com clareza o que a plataforma não suporta, em vez de descartar em silêncio.
 - **Medido, não chutado.** O preview é desenhado em escala 1:1 sobre uma grade, com cotas do deslocamento, do spread, do alcance do blur e da direção da luz da camada selecionada.
 - **Grátis, instantâneo e privado.** Sem conta, sem backend, sem analytics. Nada é pedido a terceiros, a não ser que você clique para carregar uma fonte do Google. As fontes que você envia não saem do seu navegador.
 
@@ -40,12 +40,20 @@
 | --- | :---: | :---: | :---: | :---: |
 | CSS (propriedades ou variável) | ✅ | ✅ | ✅ | ✅ |
 | Tailwind (classes ou token `@theme` da v4) | ✅ | ✅ | ✅ | ✅ |
+| React / Next.js (objeto `style` inline ou CSS Modules) | ✅ | ✅ | ✅ | ✅ |
+| Vue 3 (componente de arquivo único, `<style scoped>`) | ✅ | ✅ | ✅ | ✅ |
+| Svelte 5 (componente com `<style>`) | ✅ | ✅ | ✅ | ✅ |
+| Angular (componente standalone) | ✅ | ✅ | ✅ | ✅ |
 | Flutter (`BoxDecoration`) | ✅ | ✅ | com [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow) | só a camada do topo |
 | Jetpack Compose 1.9+ (`dropShadow` / `innerShadow`) | ✅ | ✅ | ✅ | API indicada num comentário |
 | SwiftUI | ✅ | — | ✅ (iOS 16+) | API indicada num comentário |
 | React Native 0.76+ (`boxShadow`) | ✅ | ✅ | ✅ | API indicada num comentário |
+| Flet (`Container.shadow`) | ✅ | ✅ | — (fica de fora, avisado num comentário) | API indicada num comentário |
+| PySide6 / PyQt6 (`QGraphicsDropShadowEffect`) | só a primeira camada externa | — | — | API indicada num comentário |
 
-O **modo texto** exporta `text-shadow` (CSS, Tailwind), `TextStyle.shadows` (Flutter) e `.shadow` (SwiftUI); Compose e React Native aceitam **uma** sombra por texto, então exportam a primeira camada e avisam. Sombra de texto não tem spread nem inset.
+O Vite não precisa de exportação própria: o CSS (ou o componente React, Vue ou Svelte) funciona em qualquer projeto Vite. O Next.js usa a exportação React.
+
+O **modo texto** exporta `text-shadow` (CSS, Tailwind, React, Vue, Svelte, Angular), `TextStyle.shadows` (Flutter), `TextStyle.shadow` (Flet) e `.shadow` (SwiftUI); Compose, React Native e Qt aceitam **uma** sombra por texto, então exportam a primeira camada e avisam. Sombra de texto não tem spread nem inset.
 
 O radius de sombra do SwiftUI é cerca de metade do blur do CSS; a exportação converte e avisa num comentário.
 

@@ -38,6 +38,7 @@ src/
   App.svelte              # barra superior (nome, links do autor) + três colunas: controles, prancha, código
   lib/
     shadow.ts             # estado puro + geração de código
+    frameworks.ts         # exportações React/Vue/Svelte/Angular e Flet/Qt (puras)
     shadow.test.ts        # testes de unidade (sem DOM)
     state.svelte.ts       # singleton $state + actions
     tabs.ts               # teclado nas abas ARIA
@@ -54,7 +55,7 @@ src/
       BackgroundPanel.svelte   # camadas de gradiente + stops
       PreviewBox.svelte   # prancha 1:1: caixa, grade e cotas (SVG)
       Toolbar.svelte      # barra da prancha: presets, cor do fundo, Cotas
-      CodeOutput.svelte   # abas CSS/Dart/Tailwind, código como é copiado, copiar + status
+      CodeOutput.svelte   # select de formato agrupado + variantes, código como é copiado, copiar + status
       Sidebar.svelte      # painéis Sombra/Fundo + resetar
       LayerTools.svelte   # importar CSS + gerador de sombra suave (<details> nativo)
       Icon.svelte         # conjunto único de ícones de traço

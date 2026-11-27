@@ -9,6 +9,7 @@
 import * as core from './shadow';
 import { encodeState, decodeState } from './share';
 import { createHistory } from './history';
+import type { ReactVariant } from './frameworks';
 import type { CodeMode, PreviewContext, ShadowLayer, ShadowState, TextProps } from './types';
 
 export const STORAGE_KEY = 'layered-shade:v1';
@@ -41,6 +42,7 @@ export const ui = $state<{
   context: PreviewContext;
   cssFormat: 'props' | 'var';
   twFormat: 'classes' | 'theme';
+  reactFormat: ReactVariant;
 }>({
   mode: 'css',
   sidebar: 'shadow',
@@ -48,6 +50,7 @@ export const ui = $state<{
   context: 'box',
   cssFormat: 'props',
   twFormat: 'classes',
+  reactFormat: 'inline',
 });
 
 /* ---- Undo / redo and persistence ---- */
@@ -132,11 +135,18 @@ export const actions = {
   shareUrl: () => `${location.origin}${location.pathname}#s=${encodeState(state)}`,
 };
 
+/** Export names (product names: the same in every language). */
 export const TAB_LABELS: Record<CodeMode, string> = {
   css: 'CSS',
   tailwind: 'Tailwind',
-  dart: 'Dart',
-  compose: 'Compose',
+  react: 'React / Next.js',
+  vue: 'Vue',
+  svelte: 'Svelte',
+  angular: 'Angular',
+  dart: 'Flutter',
+  compose: 'Jetpack Compose',
   swiftui: 'SwiftUI',
   rn: 'React Native',
+  flet: 'Flet',
+  qt: 'PySide6 / PyQt',
 };

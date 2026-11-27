@@ -436,12 +436,12 @@ export function cleanFontName(name: string): string {
 }
 
 /** Layers a text shadow can draw: visible and not inset. */
-const textLayers = (state: ShadowState) => visibleLayers(state).filter((l) => !l.inset);
+export const textLayers = (state: ShadowState) => visibleLayers(state).filter((l) => !l.inset);
 const textLayerCSS = (l: ShadowLayer) =>
   `${l.horizontal}px ${l.vertical}px ${l.blur}px ${hexToRgba(l.color, l.opacity)}`;
 
 /** Comment line saying what the text export left out (inset layers, spread); empty when nothing is. */
-function droppedNote(state: ShadowState, open = '//', close = ''): string {
+export function droppedNote(state: ShadowState, open = '//', close = ''): string {
   const v = visibleLayers(state);
   const parts: string[] = [];
   if (v.some((l) => l.inset)) parts.push('inset layers ignored');
