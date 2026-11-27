@@ -26,8 +26,8 @@ export const DEFAULT_LAYER: ShadowLayer = {
 export function defaultBoxProperties(): BoxProperties {
   return {
     borderRadius: 0,
-    backgroundColor: '#ffdd00',
-    canvasColor: '#ffffff',
+    backgroundColor: '#ffffff',
+    canvasColor: '#e9eef0',
   };
 }
 
@@ -87,6 +87,8 @@ export function addLayer(state: ShadowState): void {
 export function removeLayer(state: ShadowState, index: number): void {
   if (state.layers.length <= 1) return;
   state.layers.splice(index, 1);
+  // Keep the same layer selected when one before it is removed.
+  if (index < state.currentLayerIndex) state.currentLayerIndex--;
   if (state.currentLayerIndex >= state.layers.length) {
     state.currentLayerIndex = state.layers.length - 1;
   }
@@ -162,13 +164,14 @@ export function getBackgroundCSS(state: ShadowState): string {
 
 /** The `box-shadow` string for all layers. */
 export function getCSS(state: ShadowState): string {
-  return state.layers
-    .map((layer) => {
-      const insetValue = layer.inset ? 'inset' : '';
-      const color = hexToRgba(layer.color, layer.opacity);
-      return `${layer.horizontal}px ${layer.vertical}px ${layer.blur}px ${layer.spread}px ${color} ${insetValue}`.trim();
-    })
-    .join(', ');
+  return state.layers.map(getLayerCSS).join(', ');
+}
+
+/** CSS `box-shadow` value for one layer. */
+export function getLayerCSS(layer: ShadowLayer): string {
+  const insetValue = layer.inset ? 'inset' : '';
+  const color = hexToRgba(layer.color, layer.opacity);
+  return `${layer.horizontal}px ${layer.vertical}px ${layer.blur}px ${layer.spread}px ${color} ${insetValue}`.trim();
 }
 
 /** Flutter gradient code for a single layer. */
@@ -207,9 +210,11 @@ export function getLayerDart(layer: BackgroundLayer): string {
 /** Flutter `BoxShadow`/`BoxDecoration` code. */
 export function getDart(state: ShadowState): string {
   const { borderRadius } = state.boxProperties;
+  const hasDecoration =
+    borderRadius > 0 || state.backgroundLayers.length > 0 || !!state.boxProperties.backgroundColor;
   let code = '';
 
-  if (borderRadius > 0 || state.backgroundLayers.length > 0 || state.boxProperties.backgroundColor) {
+  if (hasDecoration) {
     code += `// Container decoration\n`;
     code += `decoration: BoxDecoration(\n`;
     if (borderRadius > 0) code += `  borderRadius: BorderRadius.circular(${borderRadius}),\n`;
@@ -245,7 +250,7 @@ export function getDart(state: ShadowState): string {
   }
 
   code += `  ],\n`;
-  if (borderRadius > 0 || state.backgroundLayers.length > 0) {
+  if (hasDecoration) {
     code += `)`;
   }
   return code;
@@ -332,6 +337,28 @@ export function hexToRgba(hex: string, alpha: number): string {
   const g = parseInt(result[2], 16);
   const b = parseInt(result[3], 16);
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+/**
+ * Corner radius of an outer shadow's shape after `spread` (CSS Backgrounds 3, "Shadow shape"):
+ * radius + spread, except that a radius smaller than the spread grows by spread·(1 + (r/spread − 1)³),
+ * so a square box keeps square shadow corners. Negative spread shrinks it, floored at 0.
+ */
+export function shadowCornerRadius(radius: number, spread: number): number {
+  if (spread <= 0) return Math.max(0, radius + spread);
+  if (radius >= spread) return radius + spread;
+  return radius + spread * (1 + (radius / spread - 1) ** 3);
+}
+
+/** True when a hex color is dark enough that light ink reads better on it (WCAG relative luminance). */
+export function isDarkColor(hex: string): boolean {
+  const c = hexToColorObj(hex).hex;
+  if (!/^[0-9A-F]{6}$/.test(c)) return false;
+  const [r, g, b] = [0, 2, 4].map((i) => {
+    const v = parseInt(c.slice(i, i + 2), 16) / 255;
+    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.18;
 }
 
 /** Fallback for non-hex colors. TODO: parse rgba() if stops ever store rgba strings. */

@@ -6,8 +6,8 @@
   "scope": "/",
   "display": "standalone",
   "orientation": "any",
-  "theme_color": "#1a1b2e",
-  "background_color": "#f1f5f9",
+  "theme_color": "#2747c9",
+  "background_color": "#e9eef0",
   "categories": ["design", "developer", "productivity"],
   "lang": "pt-BR",
   "icons": [

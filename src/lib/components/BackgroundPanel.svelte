@@ -1,6 +1,7 @@
 <script lang="ts">
   import { state, actions } from '../state.svelte';
   import type { BackgroundLayer } from '../types';
+  import Icon from './Icon.svelte';
 
   const activeLayer = $derived(
     state.currentBgLayerIndex >= 0 ? state.backgroundLayers[state.currentBgLayerIndex] : null,
@@ -14,184 +15,194 @@
       : `radial-gradient(circle, ${first}, ${last})`;
   }
 
-  function selectKey(e: KeyboardEvent, i: number) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      actions.selectBackgroundLayer(i);
-    }
-  }
-
   function addStop() {
     activeLayer?.stops.push({ color: '#888888', position: 100 });
   }
 
   function removeStop(i: number) {
-    if (!activeLayer) return;
-    if (activeLayer.stops.length <= 2) {
-      alert('Mínimo 2 cores necessárias.');
-      return;
-    }
-    activeLayer.stops.splice(i, 1);
+    if (activeLayer && activeLayer.stops.length > 2) activeLayer.stops.splice(i, 1);
   }
 </script>
 
-<h2>Camadas de Fundo:</h2>
-
-<div id="background-layers-container">
-  <div class="layer-controls-header">
-    <h3>Gradientes ({state.backgroundLayers.length})</h3>
-    <button
-      class="layer-btn add"
-      title="Adicionar Gradiente"
-      onclick={() => actions.addBackgroundLayer('linear')}>+</button
-    >
+<section class="group" aria-labelledby="base-title">
+  <h2 id="base-title">Cor base</h2>
+  <div class="field field-inline">
+    <label for="base-bg-picker">Cor sólida da caixa</label>
+    <span class="color-pair">
+      <input
+        type="color"
+        id="base-bg-picker"
+        value={state.boxProperties.backgroundColor}
+        oninput={(e) => actions.update('backgroundColor', (e.target as HTMLInputElement).value)}
+      />
+      <code class="hex hex-static">{state.boxProperties.backgroundColor}</code>
+    </span>
   </div>
-  <div class="layers-list">
-    {#each state.backgroundLayers as layer, i (i)}
-      <div
-        class="layer-item {i === state.currentBgLayerIndex ? 'active' : ''}"
-        role="button"
-        tabindex="0"
-        onclick={() => actions.selectBackgroundLayer(i)}
-        onkeydown={(e) => selectKey(e, i)}
-      >
-        <div class="bg-preview-wrapper">
-          <div class="bg-preview-swatch" style:background={miniPreview(layer)}></div>
-          <span class="layer-name">{layer.type === 'linear' ? 'Linear' : 'Radial'}</span>
-        </div>
-        <button
-          class="remove-layer-btn"
-          onclick={(e) => {
-            e.stopPropagation();
-            actions.removeBackgroundLayer(i);
-          }}>×</button
+</section>
+
+<section id="background-layers-container" class="group">
+  <div class="panel-head">
+    <h2 id="gradients-title">Gradientes</h2>
+    <button type="button" class="btn btn-quiet" onclick={() => actions.addBackgroundLayer('linear')}>
+      <Icon name="plus" /> Adicionar
+    </button>
+  </div>
+
+  {#if state.backgroundLayers.length === 0}
+    <p class="empty">Sem gradientes: a caixa usa só a cor base. Adicione um para empilhar gradientes sobre ela.</p>
+  {:else}
+    <ol class="layer-list" aria-labelledby="gradients-title">
+      {#each state.backgroundLayers as layer, i (i)}
+        <li class="layer-item" class:active={i === state.currentBgLayerIndex}>
+          <button
+            type="button"
+            class="layer-select"
+            aria-current={i === state.currentBgLayerIndex ? 'true' : undefined}
+            onclick={() => actions.selectBackgroundLayer(i)}
+          >
+            <span class="layer-index" aria-hidden="true">{i + 1}</span>
+            <span class="layer-name">{layer.type === 'linear' ? 'Linear' : 'Radial'}</span>
+            <span class="gradient-swatch" aria-hidden="true" style:background={miniPreview(layer)}></span>
+          </button>
+          <button
+            type="button"
+            class="icon-btn"
+            aria-label={`Remover gradiente ${i + 1}`}
+            title="Remover gradiente"
+            onclick={() => actions.removeBackgroundLayer(i)}
+          >
+            <Icon name="close" />
+          </button>
+        </li>
+      {/each}
+    </ol>
+  {/if}
+</section>
+
+{#if activeLayer}
+  <section class="group" aria-labelledby="gradient-title">
+    <h2 id="gradient-title">Gradiente {state.currentBgLayerIndex + 1}</h2>
+    <div class="fields">
+      <div class="field field-inline">
+        <label for="bg-type-select">Tipo</label>
+        <select
+          id="bg-type-select"
+          value={activeLayer.type}
+          onchange={(e) => {
+            if (activeLayer)
+              activeLayer.type = (e.target as HTMLSelectElement).value as 'linear' | 'radial';
+          }}
         >
+          <option value="linear">Linear</option>
+          <option value="radial">Radial</option>
+        </select>
       </div>
-    {/each}
-  </div>
-</div>
-
-<div id="bg-controls-wrapper">
-  {#if activeLayer}
-    <div class="bg-controls-group">
-      <div class="control-header"><label for="bg-type-select">Tipo</label></div>
-      <select
-        id="bg-type-select"
-        class="form-select bg-select-input"
-        value={activeLayer.type}
-        onchange={(e) => {
-          if (activeLayer)
-            activeLayer.type = (e.target as HTMLSelectElement).value as 'linear' | 'radial';
-        }}
-      >
-        <option value="linear">Linear</option>
-        <option value="radial">Radial</option>
-      </select>
 
       {#if activeLayer.type === 'linear'}
-        <div class="control-header control-header-margin">
-          <label for="bg-angle-range">Ângulo: {activeLayer.angle}°</label>
+        <div class="field">
+          <div class="field-head">
+            <label for="bg-angle-range">Ângulo</label>
+            <output class="readout" for="bg-angle-range">{activeLayer.angle}°</output>
+          </div>
+          <input
+            type="range"
+            id="bg-angle-range"
+            min="0"
+            max="360"
+            value={activeLayer.angle}
+            oninput={(e) => {
+              if (activeLayer) activeLayer.angle = Number((e.target as HTMLInputElement).value);
+            }}
+          />
         </div>
-        <input
-          type="range"
-          id="bg-angle-range"
-          min="0"
-          max="360"
-          value={activeLayer.angle}
-          oninput={(e) => {
-            if (activeLayer) activeLayer.angle = Number((e.target as HTMLInputElement).value);
-          }}
-        />
       {:else}
-        <div class="bg-position-controls">
-          <div class="bg-position-control">
-            <label for="bg-pos-x">Posição X ({activeLayer.posX ?? 50}%)</label>
-            <input
-              type="range"
-              id="bg-pos-x"
-              min="0"
-              max="100"
-              value={activeLayer.posX ?? 50}
-              oninput={(e) => {
-                if (activeLayer) activeLayer.posX = Number((e.target as HTMLInputElement).value);
-              }}
-            />
+        <div class="field">
+          <div class="field-head">
+            <label for="bg-pos-x">Posição X</label>
+            <output class="readout" for="bg-pos-x">{activeLayer.posX ?? 50}%</output>
           </div>
-          <div class="bg-position-control">
-            <label for="bg-pos-y">Posição Y ({activeLayer.posY ?? 50}%)</label>
-            <input
-              type="range"
-              id="bg-pos-y"
-              min="0"
-              max="100"
-              value={activeLayer.posY ?? 50}
-              oninput={(e) => {
-                if (activeLayer) activeLayer.posY = Number((e.target as HTMLInputElement).value);
-              }}
-            />
+          <input
+            type="range"
+            id="bg-pos-x"
+            min="0"
+            max="100"
+            value={activeLayer.posX ?? 50}
+            oninput={(e) => {
+              if (activeLayer) activeLayer.posX = Number((e.target as HTMLInputElement).value);
+            }}
+          />
+        </div>
+        <div class="field">
+          <div class="field-head">
+            <label for="bg-pos-y">Posição Y</label>
+            <output class="readout" for="bg-pos-y">{activeLayer.posY ?? 50}%</output>
           </div>
+          <input
+            type="range"
+            id="bg-pos-y"
+            min="0"
+            max="100"
+            value={activeLayer.posY ?? 50}
+            oninput={(e) => {
+              if (activeLayer) activeLayer.posY = Number((e.target as HTMLInputElement).value);
+            }}
+          />
         </div>
-        <div class="control-header control-header-margin">
-          <label for="bg-radial-size">Tamanho (Radial)</label>
+        <div class="field field-inline">
+          <label for="bg-radial-size">Tamanho</label>
+          <select
+            id="bg-radial-size"
+            value={activeLayer.size ?? 'farthest-corner'}
+            onchange={(e) => {
+              if (activeLayer) activeLayer.size = (e.target as HTMLSelectElement).value;
+            }}
+          >
+            <option value="farthest-corner">Canto distante (padrão)</option>
+            <option value="closest-side">Lado próximo</option>
+            <option value="closest-corner">Canto próximo</option>
+            <option value="farthest-side">Lado distante</option>
+          </select>
         </div>
-        <select
-          id="bg-radial-size"
-          class="form-select bg-select-input"
-          value={activeLayer.size ?? 'farthest-corner'}
-          onchange={(e) => {
-            if (activeLayer) activeLayer.size = (e.target as HTMLSelectElement).value;
-          }}
-        >
-          <option value="farthest-corner">Farthest Corner (Padrão)</option>
-          <option value="closest-side">Closest Side</option>
-          <option value="closest-corner">Closest Corner</option>
-          <option value="farthest-side">Farthest Side</option>
-        </select>
       {/if}
-
-      <div class="bg-stops-header">
-        <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label>Cores (Stops)</label>
-        <button class="bg-add-stop-btn" onclick={addStop}>+ Add Cor</button>
-      </div>
-      <div class="bg-stops-list">
-        {#each activeLayer.stops as stop, i (i)}
-          <div class="bg-stop-row">
-            <input
-              type="color"
-              class="bg-stop-input"
-              value={stop.color}
-              title="Cor do Stop"
-              oninput={(e) => (stop.color = (e.target as HTMLInputElement).value)}
-            />
-            <input
-              type="range"
-              class="bg-stop-slider"
-              min="0"
-              max="100"
-              value={stop.position}
-              title={`Posição: ${stop.position}%`}
-              oninput={(e) => (stop.position = Number((e.target as HTMLInputElement).value))}
-            />
-            <button class="bg-remove-stop-btn" title="Remover cor" onclick={() => removeStop(i)}
-              >×</button
-            >
-          </div>
-        {/each}
-      </div>
     </div>
-  {:else}
-    <p class="bg-empty-state">Adicione uma camada de gradiente acima ou edite a cor base.</p>
-  {/if}
-</div>
 
-<div class="color-mode-section">
-  <label for="base-bg-picker">Cor Base (Sólida):</label>
-  <input
-    type="color"
-    id="base-bg-picker"
-    value={state.boxProperties.backgroundColor}
-    aria-label="Selecionar cor base sólida"
-    oninput={(e) => actions.update('backgroundColor', (e.target as HTMLInputElement).value)}
-  />
-</div>
+    <div class="panel-head stops-head">
+      <h3 id="stops-title">Cores</h3>
+      <button type="button" class="btn btn-quiet" onclick={addStop}>
+        <Icon name="plus" /> Cor
+      </button>
+    </div>
+    <ol class="stop-list" aria-labelledby="stops-title">
+      {#each activeLayer.stops as stop, i (i)}
+        <li class="stop-row">
+          <input
+            type="color"
+            value={stop.color}
+            aria-label={`Cor ${i + 1}`}
+            oninput={(e) => (stop.color = (e.target as HTMLInputElement).value)}
+          />
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={stop.position}
+            aria-label={`Posição da cor ${i + 1}`}
+            aria-valuetext={`${stop.position}%`}
+            oninput={(e) => (stop.position = Number((e.target as HTMLInputElement).value))}
+          />
+          <span class="readout" aria-hidden="true">{stop.position}%</span>
+          <button
+            type="button"
+            class="icon-btn"
+            aria-label={`Remover cor ${i + 1}`}
+            title={activeLayer.stops.length <= 2 ? 'Um gradiente precisa de pelo menos 2 cores' : 'Remover cor'}
+            disabled={activeLayer.stops.length <= 2}
+            onclick={() => removeStop(i)}
+          >
+            <Icon name="close" />
+          </button>
+        </li>
+      {/each}
+    </ol>
+  </section>
+{/if}

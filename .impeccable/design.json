@@ -1,0 +1,636 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-27T13:30:47Z",
+  "title": "Design System: Layered Shade",
+  "extensions": {
+    "colorMeta": {
+      "blueline": {
+        "role": "primary",
+        "displayName": "Blueline",
+        "canonical": "#2747c9",
+        "tonalRamp": [
+          "oklch(15% 0.087 267)",
+          "oklch(26% 0.152 267)",
+          "oklch(37% 0.204 267)",
+          "oklch(48% 0.204 267)",
+          "oklch(59% 0.204 267)",
+          "oklch(70% 0.175 267)",
+          "oklch(82% 0.105 267)",
+          "oklch(95% 0.029 267)"
+        ]
+      },
+      "blueline-deep": {
+        "role": "primary",
+        "displayName": "Blueline Deep",
+        "canonical": "#1c3599",
+        "tonalRamp": [
+          "oklch(15% 0.071 267)",
+          "oklch(26% 0.123 267)",
+          "oklch(37% 0.165 267)",
+          "oklch(48% 0.165 267)",
+          "oklch(59% 0.165 267)",
+          "oklch(70% 0.142 267)",
+          "oklch(82% 0.085 267)",
+          "oklch(95% 0.024 267)"
+        ]
+      },
+      "blueline-night": {
+        "role": "primary",
+        "displayName": "Blueline Night",
+        "canonical": "#142a7a",
+        "tonalRamp": [
+          "oklch(15% 0.059 266)",
+          "oklch(26% 0.103 266)",
+          "oklch(37% 0.139 266)",
+          "oklch(48% 0.139 266)",
+          "oklch(59% 0.139 266)",
+          "oklch(70% 0.119 266)",
+          "oklch(82% 0.071 266)",
+          "oklch(95% 0.020 266)"
+        ]
+      },
+      "blueline-tint": {
+        "role": "primary",
+        "displayName": "Blueline Tint",
+        "canonical": "#e1e7fa",
+        "tonalRamp": [
+          "oklch(15% 0.011 272)",
+          "oklch(26% 0.020 272)",
+          "oklch(37% 0.027 272)",
+          "oklch(48% 0.027 272)",
+          "oklch(59% 0.027 272)",
+          "oklch(70% 0.023 272)",
+          "oklch(82% 0.014 272)",
+          "oklch(95% 0.004 272)"
+        ]
+      },
+      "blueline-ring": {
+        "role": "primary",
+        "displayName": "Blueline Ring",
+        "canonical": "rgba(39, 71, 201, 0.22)",
+        "tonalRamp": [
+          "oklch(15% 0.087 267)",
+          "oklch(26% 0.152 267)",
+          "oklch(37% 0.204 267)",
+          "oklch(48% 0.204 267)",
+          "oklch(59% 0.204 267)",
+          "oklch(70% 0.175 267)",
+          "oklch(82% 0.105 267)",
+          "oklch(95% 0.029 267)"
+        ]
+      },
+      "on-blueline": {
+        "role": "primary",
+        "displayName": "On Blueline",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(59% 0 0)",
+          "oklch(70% 0 0)",
+          "oklch(82% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "on-blueline-2": {
+        "role": "primary",
+        "displayName": "On Blueline Soft",
+        "canonical": "#d5dcf7",
+        "tonalRamp": [
+          "oklch(15% 0.016 274)",
+          "oklch(26% 0.028 274)",
+          "oklch(37% 0.038 274)",
+          "oklch(48% 0.038 274)",
+          "oklch(59% 0.038 274)",
+          "oklch(70% 0.032 274)",
+          "oklch(82% 0.019 274)",
+          "oklch(95% 0.005 274)"
+        ]
+      },
+      "pencil": {
+        "role": "secondary",
+        "displayName": "Red Pencil",
+        "canonical": "#b3311e",
+        "tonalRamp": [
+          "oklch(15% 0.073 31)",
+          "oklch(26% 0.126 31)",
+          "oklch(37% 0.170 31)",
+          "oklch(48% 0.170 31)",
+          "oklch(59% 0.170 31)",
+          "oklch(70% 0.145 31)",
+          "oklch(82% 0.087 31)",
+          "oklch(95% 0.024 31)"
+        ]
+      },
+      "sheet-pencil": {
+        "role": "secondary",
+        "displayName": "Red Pencil on Sheet",
+        "canonical": "#f2a493",
+        "tonalRamp": [
+          "oklch(15% 0.041 33)",
+          "oklch(26% 0.072 33)",
+          "oklch(37% 0.096 33)",
+          "oklch(48% 0.096 33)",
+          "oklch(59% 0.096 33)",
+          "oklch(70% 0.083 33)",
+          "oklch(82% 0.050 33)",
+          "oklch(95% 0.014 33)"
+        ]
+      },
+      "film": {
+        "role": "neutral",
+        "displayName": "Drafting Film",
+        "canonical": "#e9eef0",
+        "tonalRamp": [
+          "oklch(15% 0.003 223)",
+          "oklch(26% 0.004 223)",
+          "oklch(37% 0.006 223)",
+          "oklch(48% 0.006 223)",
+          "oklch(59% 0.006 223)",
+          "oklch(70% 0.005 223)",
+          "oklch(82% 0.003 223)",
+          "oklch(95% 0.001 223)"
+        ]
+      },
+      "film-raised": {
+        "role": "neutral",
+        "displayName": "Raised Film",
+        "canonical": "#f6f8f9",
+        "tonalRamp": [
+          "oklch(15% 0.001 229)",
+          "oklch(26% 0.002 229)",
+          "oklch(37% 0.003 229)",
+          "oklch(48% 0.003 229)",
+          "oklch(59% 0.003 229)",
+          "oklch(70% 0.002 229)",
+          "oklch(82% 0.001 229)",
+          "oklch(95% 0.000 229)"
+        ]
+      },
+      "film-sunk": {
+        "role": "neutral",
+        "displayName": "Sunk Film",
+        "canonical": "#dfe6e9",
+        "tonalRamp": [
+          "oklch(15% 0.004 225)",
+          "oklch(26% 0.006 225)",
+          "oklch(37% 0.009 225)",
+          "oklch(48% 0.009 225)",
+          "oklch(59% 0.009 225)",
+          "oklch(70% 0.007 225)",
+          "oklch(82% 0.004 225)",
+          "oklch(95% 0.001 225)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(59% 0 0)",
+          "oklch(70% 0 0)",
+          "oklch(82% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#c5ced3",
+        "tonalRamp": [
+          "oklch(15% 0.005 232)",
+          "oklch(26% 0.009 232)",
+          "oklch(37% 0.012 232)",
+          "oklch(48% 0.012 232)",
+          "oklch(59% 0.012 232)",
+          "oklch(70% 0.010 232)",
+          "oklch(82% 0.006 232)",
+          "oklch(95% 0.002 232)"
+        ]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Strong Hairline",
+        "canonical": "#78858d",
+        "tonalRamp": [
+          "oklch(15% 0.008 235)",
+          "oklch(26% 0.014 235)",
+          "oklch(37% 0.019 235)",
+          "oklch(48% 0.019 235)",
+          "oklch(59% 0.019 235)",
+          "oklch(70% 0.016 235)",
+          "oklch(82% 0.010 235)",
+          "oklch(95% 0.003 235)"
+        ]
+      },
+      "graphite": {
+        "role": "neutral",
+        "displayName": "Graphite",
+        "canonical": "#23272b",
+        "tonalRamp": [
+          "oklch(15% 0.004 248)",
+          "oklch(26% 0.007 248)",
+          "oklch(37% 0.009 248)",
+          "oklch(48% 0.009 248)",
+          "oklch(59% 0.009 248)",
+          "oklch(70% 0.008 248)",
+          "oklch(82% 0.005 248)",
+          "oklch(95% 0.001 248)"
+        ]
+      },
+      "graphite-2": {
+        "role": "neutral",
+        "displayName": "Graphite Soft",
+        "canonical": "#4a535a",
+        "tonalRamp": [
+          "oklch(15% 0.007 241)",
+          "oklch(26% 0.012 241)",
+          "oklch(37% 0.016 241)",
+          "oklch(48% 0.016 241)",
+          "oklch(59% 0.016 241)",
+          "oklch(70% 0.014 241)",
+          "oklch(82% 0.008 241)",
+          "oklch(95% 0.002 241)"
+        ]
+      },
+      "sheet": {
+        "role": "neutral",
+        "displayName": "Graphite Sheet",
+        "canonical": "#1f2327",
+        "tonalRamp": [
+          "oklch(15% 0.004 248)",
+          "oklch(26% 0.007 248)",
+          "oklch(37% 0.010 248)",
+          "oklch(48% 0.010 248)",
+          "oklch(59% 0.010 248)",
+          "oklch(70% 0.008 248)",
+          "oklch(82% 0.005 248)",
+          "oklch(95% 0.001 248)"
+        ]
+      },
+      "sheet-rule": {
+        "role": "neutral",
+        "displayName": "Sheet Rule",
+        "canonical": "#353b41",
+        "tonalRamp": [
+          "oklch(15% 0.006 248)",
+          "oklch(26% 0.010 248)",
+          "oklch(37% 0.013 248)",
+          "oklch(48% 0.013 248)",
+          "oklch(59% 0.013 248)",
+          "oklch(70% 0.011 248)",
+          "oklch(82% 0.007 248)",
+          "oklch(95% 0.002 248)"
+        ]
+      },
+      "sheet-ink": {
+        "role": "neutral",
+        "displayName": "Sheet Ink",
+        "canonical": "#e4e9ec",
+        "tonalRamp": [
+          "oklch(15% 0.003 234)",
+          "oklch(26% 0.005 234)",
+          "oklch(37% 0.007 234)",
+          "oklch(48% 0.007 234)",
+          "oklch(59% 0.007 234)",
+          "oklch(70% 0.006 234)",
+          "oklch(82% 0.003 234)",
+          "oklch(95% 0.001 234)"
+        ]
+      },
+      "sheet-ink-2": {
+        "role": "neutral",
+        "displayName": "Sheet Ink Soft",
+        "canonical": "#a3aeb5",
+        "tonalRamp": [
+          "oklch(15% 0.007 235)",
+          "oklch(26% 0.012 235)",
+          "oklch(37% 0.016 235)",
+          "oklch(48% 0.016 235)",
+          "oklch(59% 0.016 235)",
+          "oklch(70% 0.014 235)",
+          "oklch(82% 0.008 235)",
+          "oklch(95% 0.002 235)"
+        ]
+      },
+      "sheet-blueline": {
+        "role": "primary",
+        "displayName": "Sheet Blueline",
+        "canonical": "#8fa3ff",
+        "tonalRamp": [
+          "oklch(15% 0.058 273)",
+          "oklch(26% 0.100 273)",
+          "oklch(37% 0.135 273)",
+          "oklch(48% 0.135 273)",
+          "oklch(59% 0.135 273)",
+          "oklch(70% 0.116 273)",
+          "oklch(82% 0.069 273)",
+          "oklch(95% 0.019 273)"
+        ]
+      },
+      "sheet-current": {
+        "role": "primary",
+        "displayName": "Current Line",
+        "canonical": "rgba(39, 71, 201, 0.6)",
+        "tonalRamp": [
+          "oklch(15% 0.087 267)",
+          "oklch(26% 0.152 267)",
+          "oklch(37% 0.204 267)",
+          "oklch(48% 0.204 267)",
+          "oklch(59% 0.204 267)",
+          "oklch(70% 0.175 267)",
+          "oklch(82% 0.105 267)",
+          "oklch(95% 0.029 267)"
+        ]
+      },
+      "grid-minor": {
+        "role": "primary",
+        "displayName": "Grid Minor",
+        "canonical": "rgba(39, 71, 201, 0.07)",
+        "tonalRamp": [
+          "oklch(15% 0.087 267)",
+          "oklch(26% 0.152 267)",
+          "oklch(37% 0.204 267)",
+          "oklch(48% 0.204 267)",
+          "oklch(59% 0.204 267)",
+          "oklch(70% 0.175 267)",
+          "oklch(82% 0.105 267)",
+          "oklch(95% 0.029 267)"
+        ]
+      },
+      "grid-major": {
+        "role": "primary",
+        "displayName": "Grid Major",
+        "canonical": "rgba(39, 71, 201, 0.15)",
+        "tonalRamp": [
+          "oklch(15% 0.087 267)",
+          "oklch(26% 0.152 267)",
+          "oklch(37% 0.204 267)",
+          "oklch(48% 0.204 267)",
+          "oklch(59% 0.204 267)",
+          "oklch(70% 0.175 267)",
+          "oklch(82% 0.105 267)",
+          "oklch(95% 0.029 267)"
+        ]
+      },
+      "guide-night": {
+        "role": "primary",
+        "displayName": "Guide on Dark",
+        "canonical": "#c3cfff",
+        "tonalRamp": [
+          "oklch(15% 0.029 274)",
+          "oklch(26% 0.051 274)",
+          "oklch(37% 0.068 274)",
+          "oklch(48% 0.068 274)",
+          "oklch(59% 0.068 274)",
+          "oklch(70% 0.058 274)",
+          "oklch(82% 0.035 274)",
+          "oklch(95% 0.010 274)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "The product name in the top bar; the largest type in the tool."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section headings in the controls and code columns."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "The gradient stops heading."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Base text; segmented tabs use it at 600."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Buttons, export tabs, layer names."
+      },
+      "field-label": {
+        "displayName": "Field Label",
+        "purpose": "The label of every control."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Tagline, bar labels, stage caption, platform notes."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Exported code on the graphite sheet; wrapped lines hang 4ch."
+      },
+      "readout": {
+        "displayName": "Readout",
+        "purpose": "Units, slider readouts, layer spec line, layer index digits."
+      },
+      "dimension": {
+        "displayName": "Dimension",
+        "purpose": "Labels on the plate, with a 3px halo in the plate color."
+      }
+    },
+    "shadows": [
+      {
+        "name": "tab-lift",
+        "value": "0 0 0 1px var(--rule), 0 1px 2px rgba(35, 39, 43, 0.12)",
+        "purpose": "Selected tab of the Sombra/Fundo switch, one step out of its sunk track."
+      },
+      {
+        "name": "field-halo",
+        "value": "0 0 0 3px var(--blueline-ring)",
+        "purpose": "Focus on number and hex fields, with a blueline border."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Every transition and the dimension draw-in."
+      },
+      {
+        "name": "fast",
+        "value": "160ms",
+        "purpose": "State changes: color, border, background, the skip link."
+      },
+      {
+        "name": "dim-draw",
+        "value": "260ms",
+        "purpose": "Dimension lines draw in and labels fade in once when another layer is selected; never on load."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0.001ms",
+        "purpose": "Under prefers-reduced-motion every animation and transition collapses to an instant change."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "two-column",
+        "value": "1199px",
+        "purpose": "max-width: controls left, stage over code right, page scrolls."
+      },
+      {
+        "name": "one-column",
+        "value": "759px",
+        "purpose": "max-width: stage first and sticky at clamp(380px, 52dvh, 460px), controls scroll under it."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Top Bar",
+      "kind": "nav",
+      "refersTo": "topbar",
+      "description": "Blueline shell bar: brand mark, name, tagline, author links.",
+      "html": "<header class=\"ds-topbar\"><div class=\"ds-brand\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 22 22\" aria-hidden=\"true\"><rect x=\"6\" y=\"6\" width=\"14\" height=\"14\" rx=\"2\" fill=\"#142a7a\"/><rect x=\"2\" y=\"2\" width=\"14\" height=\"14\" rx=\"2\" fill=\"#ffffff\"/></svg><h1>Layered Shade</h1><p class=\"ds-tagline\">Sombras em camadas para CSS, Flutter e Tailwind</p></div><nav class=\"ds-author\"><span>por Franklyn R. Silva</span><a href=\"#\">GitHub</a></nav></header>",
+      "css": ".ds-topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; padding: 8px 20px; background: var(--blueline); color: var(--on-blueline); font-family: var(--font-ui); } .ds-brand { display: flex; align-items: center; gap: 12px; } .ds-brand h1 { margin: 0; font-size: 1.125rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; white-space: nowrap; } .ds-tagline { margin: 0; padding-left: 12px; border-left: 1px solid rgba(255, 255, 255, 0.28); font-size: 0.8125rem; color: var(--on-blueline-2); } .ds-author { display: flex; align-items: center; gap: 16px; font-size: 0.8125rem; color: var(--on-blueline-2); } .ds-author a { color: var(--on-blueline); text-decoration: none; text-underline-offset: 3px; } .ds-author a:hover { text-decoration: underline; } .ds-author a:focus-visible { outline: 2px solid var(--on-blueline); outline-offset: 2px; }"
+    },
+    {
+      "name": "Copy Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one filled button: copies the active export; label names the format.",
+      "html": "<button type=\"button\" class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 9h10v10H9zM5 15V5h10\"/></svg> Copiar CSS</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--blueline); border-radius: var(--radius); background: var(--blueline); color: var(--on-blueline); font-family: var(--font-ui); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: background-color var(--fast) var(--ease-out), border-color var(--fast) var(--ease-out); } .ds-btn-primary:hover { background: var(--blueline-deep); border-color: var(--blueline-deep); } .ds-btn-primary:active { translate: 0 1px; } .ds-btn-primary:focus-visible { outline: 2px solid var(--sheet-blueline); outline-offset: 2px; }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Ruled transparent button for add, presets and reset; fills with paper on hover.",
+      "html": "<button type=\"button\" class=\"ds-btn-quiet\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg> Adicionar</button>",
+      "css": ".ds-btn-quiet { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border: 1px solid var(--rule); border-radius: var(--radius); background: transparent; color: var(--graphite); font-family: var(--font-ui); font-size: 0.8125rem; font-weight: 600; cursor: pointer; transition: background-color var(--fast) var(--ease-out), border-color var(--fast) var(--ease-out); } .ds-btn-quiet:hover { background: var(--paper); border-color: var(--graphite-2); } .ds-btn-quiet:active { translate: 0 1px; } .ds-btn-quiet:focus-visible { outline: 2px solid var(--blueline); outline-offset: 2px; }"
+    },
+    {
+      "name": "Remove Icon Button",
+      "kind": "button",
+      "refersTo": "icon-button",
+      "description": "32px remove control; turns red pencil under the pointer.",
+      "html": "<button type=\"button\" class=\"ds-icon-btn\" aria-label=\"Remover camada 1\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6L6 18\"/></svg></button>",
+      "css": ".ds-icon-btn { display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: var(--radius); background: transparent; color: var(--graphite-2); cursor: pointer; transition: background-color var(--fast) var(--ease-out), color var(--fast) var(--ease-out); } .ds-icon-btn:hover:not(:disabled) { background: var(--film-sunk); color: var(--pencil); } .ds-icon-btn:disabled { opacity: 0.35; cursor: not-allowed; } .ds-icon-btn:focus-visible { outline: 2px solid var(--blueline); outline-offset: 2px; }"
+    },
+    {
+      "name": "Panel Switch",
+      "kind": "nav",
+      "refersTo": "segmented-tab-selected",
+      "description": "Sombra/Fundo tablist: sunk track, selected tab lifted on paper with a blueline label.",
+      "html": "<div class=\"ds-segmented\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\">Sombra</button><button role=\"tab\" aria-selected=\"false\">Fundo</button></div>",
+      "css": ".ds-segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 3px; background: var(--film-sunk); border: 1px solid var(--rule); border-radius: var(--radius); font-family: var(--font-ui); } .ds-segmented button { min-height: 32px; border: 0; border-radius: 3px; background: transparent; font-family: inherit; font-size: 0.875rem; font-weight: 600; color: var(--graphite-2); cursor: pointer; transition: background-color var(--fast) var(--ease-out), color var(--fast) var(--ease-out); } .ds-segmented button:hover { color: var(--graphite); } .ds-segmented [aria-selected=\"true\"] { background: var(--paper); color: var(--blueline); box-shadow: 0 0 0 1px var(--rule), 0 1px 2px rgba(35, 39, 43, 0.12); } .ds-segmented button:focus-visible { outline: 2px solid var(--blueline); outline-offset: 2px; }"
+    },
+    {
+      "name": "Layer Row",
+      "kind": "custom",
+      "refersTo": "layer-row-active",
+      "description": "Selectable shadow layer: index chip, name, mono value spec, color swatch; active row tinted blueline.",
+      "html": "<div class=\"ds-layer is-active\"><button type=\"button\" class=\"ds-layer-select\"><span class=\"ds-layer-index\">1</span><span class=\"ds-layer-text\"><span class=\"ds-layer-name\">Camada 1</span><span class=\"ds-layer-spec\">5 5 10 3 · 20%</span></span><span class=\"ds-layer-swatch\"></span></button></div>",
+      "css": ".ds-layer { border: 1px solid var(--rule); border-radius: var(--radius); background: var(--paper); font-family: var(--font-ui); color: var(--graphite); transition: border-color var(--fast) var(--ease-out), background-color var(--fast) var(--ease-out); } .ds-layer:hover { border-color: var(--rule-strong); } .ds-layer.is-active { border-color: var(--blueline); background: var(--blueline-tint); } .ds-layer:has(.ds-layer-select:focus-visible) { outline: 2px solid var(--blueline); outline-offset: 2px; } .ds-layer-select { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 8px; width: 100%; min-height: 48px; padding: 4px 8px; border: 0; background: transparent; font: inherit; color: inherit; text-align: left; cursor: pointer; } .ds-layer-select:focus-visible { outline: none; } .ds-layer-index { display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid var(--rule-strong); border-radius: 3px; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; } .is-active .ds-layer-index { border-color: var(--blueline); background: var(--blueline); color: var(--on-blueline); } .ds-layer-text { display: flex; flex-direction: column; } .ds-layer-name { font-weight: 600; font-size: 0.875rem; } .is-active .ds-layer-name { color: var(--blueline-deep); } .ds-layer-spec { font-family: var(--font-mono); font-size: 0.75rem; font-variant-numeric: tabular-nums; color: var(--graphite-2); } .ds-layer-swatch { width: 18px; height: 18px; border-radius: 2px; outline: 1px solid var(--rule); background: rgba(0, 0, 0, 0.2); }"
+    },
+    {
+      "name": "Number Field with Slider",
+      "kind": "input",
+      "refersTo": "input-number",
+      "description": "Every numeric control: label, right-aligned mono field with unit, and a blueline range slider.",
+      "html": "<div class=\"ds-field\"><div class=\"ds-field-head\"><label for=\"ds-blur\">Desfoque (Blur)</label><span class=\"ds-num\"><input id=\"ds-blur\" type=\"number\" value=\"10\"><span class=\"ds-unit\">px</span></span></div><input type=\"range\" class=\"ds-range\" min=\"0\" max=\"100\" value=\"10\" aria-label=\"Desfoque\"></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; font-family: var(--font-ui); color: var(--graphite); } .ds-field-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; } .ds-field label { font-size: 0.8125rem; font-weight: 500; } .ds-num { display: inline-flex; align-items: center; padding-right: 8px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--paper); transition: border-color var(--fast) var(--ease-out); } .ds-num:hover { border-color: var(--rule-strong); } .ds-num:focus-within { border-color: var(--blueline); box-shadow: 0 0 0 3px var(--blueline-ring); } .ds-num input { width: 52px; padding: 4px 4px 4px 8px; border: 0; background: transparent; text-align: right; font-family: var(--font-mono); font-size: 0.8125rem; font-variant-numeric: tabular-nums; color: inherit; appearance: textfield; } .ds-num input:focus-visible { outline: none; } .ds-unit { font-family: var(--font-mono); font-size: 0.75rem; color: var(--graphite-2); } .ds-range { width: 100%; height: 20px; margin: 0; accent-color: var(--blueline); cursor: pointer; } .ds-range:focus-visible { outline: 2px solid var(--blueline); outline-offset: 2px; }"
+    },
+    {
+      "name": "Code Sheet",
+      "kind": "custom",
+      "refersTo": "code-sheet",
+      "description": "Dark export column: text tabs with a sheet-blueline underline, code as copied, selected layer line washed blue.",
+      "html": "<section class=\"ds-sheet\"><div class=\"ds-sheet-head\"><h2>Código gerado</h2><div class=\"ds-sheet-tabs\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\">CSS</button><button role=\"tab\" aria-selected=\"false\">Dart</button><button role=\"tab\" aria-selected=\"false\">Tailwind</button></div></div><pre class=\"ds-code\"><code><span class=\"ds-line\">box-shadow:</span><span class=\"ds-line\">  5px 5px 10px 3px rgba(0, 0, 0, 0.2),</span><span class=\"ds-line is-current\">  0px 2px 4px 0px rgba(0, 0, 0, 0.1);</span><span class=\"ds-line\">background: #ffffff;</span></code></pre></section>",
+      "css": ".ds-sheet { background: var(--sheet); color: var(--sheet-ink); font-family: var(--font-ui); } .ds-sheet-head { display: flex; flex-direction: column; gap: 12px; padding: 16px 20px 0; border-bottom: 1px solid var(--sheet-rule); } .ds-sheet-head h2 { margin: 0; font-size: 0.875rem; font-weight: 700; } .ds-sheet-tabs { display: flex; gap: 4px; } .ds-sheet-tabs button { margin-bottom: -1px; padding: 8px 12px 10px; border: 0; border-bottom: 2px solid transparent; background: transparent; font-family: inherit; font-size: 0.8125rem; font-weight: 600; color: var(--sheet-ink-2); cursor: pointer; transition: color var(--fast) var(--ease-out), border-color var(--fast) var(--ease-out); } .ds-sheet-tabs button:hover { color: var(--sheet-ink); } .ds-sheet-tabs [aria-selected=\"true\"] { color: var(--sheet-ink); border-bottom-color: var(--sheet-blueline); } .ds-sheet-tabs button:focus-visible { outline: 2px solid var(--sheet-blueline); outline-offset: 2px; } .ds-code { margin: 0; padding: 16px 20px; font-family: var(--font-mono); font-size: 0.8125rem; line-height: 1.75; font-variant-numeric: tabular-nums; font-variant-ligatures: none; white-space: pre-wrap; } .ds-code ::selection { background: var(--sheet-blueline); color: var(--sheet); } .ds-line { display: block; margin-inline: -20px; padding-inline: calc(20px + 4ch) 20px; text-indent: -4ch; } .ds-line.is-current { background: var(--sheet-current); color: #ffffff; }"
+    },
+    {
+      "name": "Platform Limit Note",
+      "kind": "custom",
+      "refersTo": "platform-note",
+      "description": "Red-pencil note shown in place on the code sheet only while a Flutter limit applies.",
+      "html": "<div class=\"ds-note-wrap\"><div class=\"ds-note\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 8l8-4 8 4v8l-8 4-8-4zM4 8l8 4 8-4M12 12v8\"/></svg><p>O <code>BoxShadow</code> do Flutter não tem inset. Para as camadas internas, instale o pacote: <code class=\"ds-cmd\">flutter pub add flutter_inset_box_shadow</code></p></div></div>",
+      "css": ".ds-note-wrap { padding: 16px 20px; background: var(--sheet); } .ds-note { display: flex; gap: 12px; padding: 12px; border: 1px solid rgba(242, 164, 147, 0.4); border-radius: var(--radius); background: rgba(242, 164, 147, 0.07); font-family: var(--font-ui); font-size: 0.8125rem; color: var(--sheet-pencil); } .ds-note svg { flex: none; margin-top: 2px; } .ds-note p { margin: 0; } .ds-note code { font-family: var(--font-mono); font-variant-ligatures: none; color: var(--sheet-ink); } .ds-cmd { display: block; margin-top: 8px; user-select: all; }"
+    },
+    {
+      "name": "Stage Plate",
+      "kind": "custom",
+      "description": "Signature: the 200px box at 1:1 on an 8px/40px blueline grid, with dimension lines measuring the selected layer.",
+      "html": "<div class=\"ds-stage\"><div class=\"ds-plate\"><div class=\"ds-box\"></div><svg class=\"ds-dims\" width=\"200\" height=\"200\" viewBox=\"0 0 200 200\" aria-hidden=\"true\"><rect class=\"ds-outline\" x=\"2\" y=\"2\" width=\"206\" height=\"206\"/><rect class=\"ds-reach\" x=\"-8\" y=\"-8\" width=\"226\" height=\"226\" rx=\"10\"/><path d=\"M200 230L200 244M205 230L205 244\"/><path class=\"ds-line\" d=\"M186 240L200 240M205 240L219 240\"/><text class=\"ds-label\" x=\"202\" y=\"258\" text-anchor=\"middle\">x 5</text><path class=\"ds-line\" d=\"M-40 -40L-4 -4\"/><text class=\"ds-label\" x=\"-50\" y=\"-46\" text-anchor=\"middle\">luz 45°</text></svg></div></div>",
+      "css": ".ds-stage { display: grid; place-items: center; height: 340px; overflow: hidden; background-color: var(--film); background-image: linear-gradient(rgba(39, 71, 201, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(39, 71, 201, 0.15) 1px, transparent 1px), linear-gradient(rgba(39, 71, 201, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(39, 71, 201, 0.07) 1px, transparent 1px); background-size: 40px 40px, 40px 40px, 8px 8px, 8px 8px; background-position: center; } .ds-plate { position: relative; width: 200px; height: 200px; } .ds-box { width: 100%; height: 100%; background: #ffffff; box-shadow: 5px 5px 10px 3px rgba(0, 0, 0, 0.2); } .ds-dims { position: absolute; inset: 0; overflow: visible; pointer-events: none; } .ds-dims path, .ds-dims rect { fill: none; stroke: var(--blueline); stroke-width: 1; } .ds-outline { stroke-opacity: 0.8; } .ds-reach { stroke-dasharray: 4 3; stroke-opacity: 0.6; } .ds-label { fill: var(--blueline); stroke: var(--film); stroke-width: 3px; paint-order: stroke; font-family: var(--font-mono); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; } .ds-line { animation: ds-draw 260ms cubic-bezier(0.16, 1, 0.3, 1) both; stroke-dasharray: 400; } @keyframes ds-draw { from { stroke-dashoffset: 400; } to { stroke-dashoffset: 0; } } @media (prefers-reduced-motion: reduce) { .ds-line { animation: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Sciagraphy Plate",
+    "overview": "Sciagraphy is the drafting art of casting shadows by construction. Layered Shade's interface is that plate: a cool drafting-film ground, graphite ink, hairline rules, and one blue pencil line that carries the shell, the selection, focus, the dimension lines and the copy action. The box in the middle is drawn at 1:1, and when Cotas is on, the selected shadow layer is measured on the plate rather than guessed: its x and y offsets, the outline its spread produces, how far its blur reaches, and the light ray that would cast it.\n\nThe tool is dense and quiet because it is used beside a code editor. Three working columns share one screen (controls, plate, code), every value is editable as a number and as a slider, and the code column is a dark graphite sheet that shows character for character what the copy button puts on the clipboard. Depth comes from tone and 1px rules, never from floating panels; the only real shadow on screen is the one the person is building.\n\nThe redesign replaced a glassmorphism look with blurred blobs and translucent cards. That look is the anti-reference: the tool's own chrome is opaque, ruled and flat.",
+    "keyCharacteristics": [
+      "Drafting-film neutrals (cool blue-grey) with graphite ink and a single committed blue, blueline.",
+      "Red pencil appears only where something is limited or failed.",
+      "Overpass for every UI word; Overpass Mono, tabular and ligature-free, for every code character and measured number.",
+      "Flat tonal layering: film, raised film, paper, plus a graphite code sheet, divided by 1px hairlines.",
+      "Small, consistent corners (4px) and a 4px spacing base.",
+      "One signature motion: dimension lines draw in when the selected layer changes."
+    ],
+    "rules": [
+      {
+        "name": "The Blueline Rule",
+        "body": "Blueline is the committed field: the top bar, selection, focus, the dimension lines and the copy action. Nothing decorative is ever blue.",
+        "section": "colors"
+      },
+      {
+        "name": "The Red Pencil Rule",
+        "body": "Red marks a limit or a failure: platform-limit notes, a failed copy, a remove action under the pointer. Never emphasis, never decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Content Owns Color Rule",
+        "body": "The person's colors live on the plate and in swatches. The chrome stays film, graphite and blueline whatever the person picks.",
+        "section": "colors"
+      },
+      {
+        "name": "The Measured Figure Rule",
+        "body": "Any number the person reads as a value (code, px, %, layer specs, dimension labels) is Overpass Mono with tabular figures and ligatures off. Words are Overpass.",
+        "section": "typography"
+      },
+      {
+        "name": "The Weight-Not-Size Rule",
+        "body": "Hierarchy inside the columns comes from weight (400/500/600/700) at 12–14px, not from bigger type. Only the product name reaches 18px.",
+        "section": "typography"
+      },
+      {
+        "name": "The Copy In View Rule",
+        "body": "The copy action is pinned at the foot of the code column; on desktop it is always visible without scrolling.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Film Rule",
+        "body": "Panels never float. If a surface needs separation, change its tone or draw a hairline; the only chrome shadows are the tab lift and the focus halo.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep Blueline (#2747c9) to the shell, selection, focus, the dimension lines and the copy action; everything else is Graphite on film.",
+      "Do set every value a person reads as a number in Overpass Mono with tabular figures and ligatures off.",
+      "Do separate regions and groups with 1px Hairline rules and spacing (20px between groups), not boxes.",
+      "Do state platform limits in place, in red pencil on the code sheet, next to the export they affect and only while they apply.",
+      "Do theme the browser's own surfaces: selection and caret in Blueline, `accent-color` Blueline, scrollbar thumbs in Strong Hairline (Sheet Rule on the code sheet).",
+      "Do give every control a visible focus: 2px Blueline outline at 2px offset, On Blueline in the top bar, Sheet Blueline on the code sheet, the 3px halo on text fields.",
+      "Do keep state transitions at 160ms on the expo ease-out and keep the draw-in as the only authored animation.",
+      "Do keep the plate at 1:1 with the grid aligned so the box edges land on 40px lines."
+    ],
+    "donts": [
+      "Don't use glass, backdrop blur, blurred blobs or translucent floating panels in the tool's chrome; \"Glass\" is a preset the person builds, not a style for the interface.",
+      "Don't lift panels with drop shadows; depth is tone and hairlines, and the only chrome shadows are the tab lift and the field focus halo.",
+      "Don't use red pencil for emphasis, branding or decoration.",
+      "Don't add accent colors beyond Blueline and red pencil, or tint the chrome with the person's colors.",
+      "Don't round controls past 4px; large radii belong to the person's box.",
+      "Don't set headings, labels or prose in Overpass Mono; mono is for code and measurements.",
+      "Don't use glyphs or emoji as icons; draw them on the 24px, 1.75-stroke set."
+    ]
+  }
+}

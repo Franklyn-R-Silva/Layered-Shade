@@ -26,7 +26,7 @@ We as members, contributors, and leaders pledge to make participation in our com
 
 ## Enforcement
 
-Instances of abusive behavior may be reported to `franklyn.mobile.dev@gmail.com`.
+Instances of abusive behavior may be reported to `franklyn.dev.mobile@gmail.com`.
 
 All complaints will be reviewed and investigated fairly.
 

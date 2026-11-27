@@ -1,53 +1,73 @@
 <script lang="ts">
-  import { ui, actions } from '../state.svelte';
+  import { state, ui, actions } from '../state.svelte';
+  import { tabKeydown } from '../tabs';
   import LayerList from './LayerList.svelte';
   import ShadowControls from './ShadowControls.svelte';
   import ShapeControls from './ShapeControls.svelte';
   import BackgroundPanel from './BackgroundPanel.svelte';
+  import Icon from './Icon.svelte';
+
+  const panels = [
+    { id: 'shadow', label: 'Sombra' },
+    { id: 'background', label: 'Fundo' },
+  ] as const;
+  const ids = panels.map((p) => p.id);
 </script>
 
-<aside id="controls" aria-label="Controles de sombra">
-  <div class="sidebar-tabs" role="tablist" aria-label="Painéis de configuração">
-    <button
-      class="sidebar-tab {ui.sidebar === 'shadow' ? 'active' : ''}"
-      role="tab"
-      aria-selected={ui.sidebar === 'shadow'}
-      onclick={() => (ui.sidebar = 'shadow')}
-    >
-      Sombra
-    </button>
-    <button
-      class="sidebar-tab {ui.sidebar === 'background' ? 'active' : ''}"
-      role="tab"
-      aria-selected={ui.sidebar === 'background'}
-      onclick={() => (ui.sidebar = 'background')}
-    >
-      Fundo
-    </button>
+<aside id="controls" class="column column-controls" aria-label="Controles">
+  <div
+    class="segmented"
+    role="tablist"
+    aria-label="Painéis de configuração"
+    tabindex="-1"
+    onkeydown={(e) => tabKeydown(e, ids, ui.sidebar, (id) => (ui.sidebar = id))}
+  >
+    {#each panels as p (p.id)}
+      <button
+        type="button"
+        role="tab"
+        id={`tab-${p.id}`}
+        aria-controls={`panel-${p.id}`}
+        aria-selected={ui.sidebar === p.id}
+        tabindex={ui.sidebar === p.id ? 0 : -1}
+        onclick={() => (ui.sidebar = p.id)}
+      >
+        {p.label}
+      </button>
+    {/each}
   </div>
 
-  <div class="sidebar-content {ui.sidebar === 'shadow' ? 'active' : ''}" role="tabpanel">
-    <h2>Configurações da Sombra:</h2>
-    <div id="layer-controls-container"><LayerList /></div>
-    <div id="shadow-controls-container"><ShadowControls /></div>
+  <div
+    class="tabpanel"
+    role="tabpanel"
+    id="panel-shadow"
+    aria-labelledby="tab-shadow"
+    hidden={ui.sidebar !== 'shadow'}
+  >
+    <section id="layer-controls-container" class="group"><LayerList /></section>
 
-    <h2 class="section-title-secondary">Forma &amp; Tamanho</h2>
-    <div id="shape-controls-container"><ShapeControls /></div>
+    <section class="group" aria-labelledby="layer-title">
+      <h2 id="layer-title">Camada {state.currentLayerIndex + 1}</h2>
+      <div id="shadow-controls-container" class="fields"><ShadowControls /></div>
+    </section>
+
+    <section class="group" aria-labelledby="shape-title">
+      <h2 id="shape-title">Forma</h2>
+      <div id="shape-controls-container" class="fields"><ShapeControls /></div>
+    </section>
   </div>
 
-  <div class="sidebar-content {ui.sidebar === 'background' ? 'active' : ''}" role="tabpanel">
+  <div
+    class="tabpanel"
+    role="tabpanel"
+    id="panel-background"
+    aria-labelledby="tab-background"
+    hidden={ui.sidebar !== 'background'}
+  >
     <BackgroundPanel />
   </div>
 
-  <div class="form-control button-control">
-    <button
-      type="button"
-      id="resetButton"
-      class="reset-btn"
-      aria-label="Resetar todas as configurações para valores padrão"
-      onclick={() => actions.reset()}
-    >
-      ↺ Resetar Tudo
-    </button>
-  </div>
+  <button type="button" id="resetButton" class="btn btn-quiet btn-block" onclick={() => actions.reset()}>
+    <Icon name="reset" /> Resetar tudo
+  </button>
 </aside>

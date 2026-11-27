@@ -1,134 +1,125 @@
-# 🎨 Layered Shade - Gerador de Box Shadow
+# Layered Shade
 
-Uma ferramenta web moderna e interativa para gerar sombras CSS (`box-shadow`) e código Dart/Flutter (`BoxShadow`) visualmente.
+Monte sombras em camadas (box-shadow) visualmente e copie o mesmo resultado em **CSS**, **Flutter/Dart** (`BoxShadow`, `BoxDecoration`) ou **Tailwind**.
 
 [🇺🇸 English](../../README.md)
 
-[![Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://layeredshade.netlify.app/)
+[![Demo](https://img.shields.io/badge/Demo-layeredshade.netlify.app-2747c9)](https://layeredshade.netlify.app/)
 [![CI](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml/badge.svg)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-71%20passing-success)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions)
-[![Coverage](https://img.shields.io/badge/Coverage-core%20logic%20~99%25-brightgreen)](https://github.com/Franklyn-R-Silva/Layered-Shade)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
+[![Licença](https://img.shields.io/badge/Licen%C3%A7a-MIT-blue.svg)](../../LICENSE)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/17195/badge)](https://www.bestpractices.dev/projects/17195)
 
-## 🛠️ Tecnologias
+![Layered Shade: controles das camadas à esquerda, a prancha do preview com cotas no centro e o CSS gerado à direita](../../public/github/tela.png)
 
-![Skills](https://go-skill-icons.vercel.app/api/icons?i=svelte,typescript,vite,css&theme=dark&perline=4)
+## Por quê
 
-## 🚀 Demo
+A maioria dos geradores de sombra para no CSS. O Layered Shade trata o Flutter como alvo de primeira classe: um só modelo de sombra, três exportações que batem entre si, e os limites do Flutter avisados onde eles se aplicam, em vez de escondidos.
 
-[👉 Acesse a ferramenta online](https://layeredshade.netlify.app/)
-
-### Preview
-
-![Preview](../../public/github/tela.png)
-
-### Demo Animado
-
-![Demo](../../public/github/demo.webp)
-
-## ✨ Funcionalidades
+## Funcionalidades
 
 ### Sombras
 
-- **Visualização em Tempo Real**: Preview instantâneo das alterações
-- **Múltiplas Camadas**: Crie sombras complexas com várias camadas
-- **Controle Completo**: Ajuste X, Y, blur, spread, cor e opacidade
-- **Suporte a Inset**: Sombras internas com sugestão automática de pacote Flutter
+- **Camadas**: adicione, selecione e remova camadas; cada uma tem deslocamento X/Y, blur, spread, cor, opacidade e inset.
+- **Preview medido**: a caixa é desenhada em escala 1:1 sobre uma grade, e as cotas mostram o deslocamento da camada selecionada, o contorno com spread, até onde o blur chega e de onde vem a luz. Ligue e desligue em **Cotas**.
+- **Presets**: Soft, Neumorph e Glass como ponto de partida.
 
-### Fundo & Forma
+### Fundo e forma
 
-- **Gradientes**: Linear e radial com múltiplos color stops
-- **Forma Personalizada**: Ajuste border-radius e padding
-- **Presets**: Templates prontos (Soft, Neumorphism, Glass)
+- **Gradientes**: empilhe gradientes lineares e radiais, com quantas cores quiser, sobre uma cor base sólida.
+- **Forma**: border radius; a cor do fundo do preview também é ajustável.
 
 ### Exportação
 
-- **CSS**: Código pronto com prefixos (-webkit, -moz)
-- **Dart/Flutter**: BoxShadow e BoxDecoration formatados
-- **Tailwind**: Classes utilitárias arbitrárias
-- **Cópia Inteligente**: Botão sensível ao contexto (CSS/Dart/Tailwind)
+- **CSS**: `box-shadow`, `background` e `border-radius`, uma camada por linha. O painel mostra exatamente o que é copiado, com a camada selecionada destacada.
+- **Dart/Flutter**: `BoxDecoration` com os `BoxShadow`, pronto para colar num `Container`.
+- **Tailwind**: classes de valor arbitrário `shadow-[…]` e `bg-[…]`.
+- **Copiar**: um botão para o formato ativo, com confirmação anunciada a leitores de tela.
 
-## 📊 Stack Técnica
+## Limitações conhecidas
 
-| Tecnologia     | Uso                                                 |
-| -------------- | --------------------------------------------------- |
-| **Svelte 5**   | UI reativa com runes (`$state`, `$derived`)         |
-| **TypeScript** | Estado, lógica e componentes tipados                |
-| **Vite**       | Servidor de dev e build de produção                 |
-| **CSS3**       | Variables, Grid, Flexbox, Animations, Glassmorphism |
-| **Vitest**     | Testes de unidade do núcleo de lógica puro          |
+- **`inset` no Flutter**: o `BoxShadow` do Flutter não tem inset. Quando uma camada é interna, a aba Dart avisa e mostra o comando para instalar o [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow).
+- **Vários gradientes no Flutter**: o `BoxDecoration` aceita um gradiente só, então o Dart exporta o do topo (gradiente 1). CSS e Tailwind exportam todos.
+- **Cores só em hexadecimal** (`#RGB` / `#RRGGBB`).
 
-## ♿ Acessibilidade (A11y)
+## Acessibilidade
 
-Este projeto foi desenvolvido com foco em acessibilidade:
+- Todo controle tem rótulo visível; campo numérico e slider andam juntos e são limitados a valores válidos.
+- A troca de painel e as abas de exportação seguem o padrão de abas do WAI-ARIA (setas, Home, End).
+- Foco visível em tudo, link para pular direto ao preview e respeito a `prefers-reduced-motion`.
+- Sucesso e falha ao copiar são anunciados numa região live.
 
-- **Skip Link**: Navegação rápida para usuários de teclado
-- **Landmarks Semânticos**: `main`, `header`, `footer`, `nav`, `aside`
-- **ARIA Roles**: Tabs com `role="tablist"` e `role="tabpanel"`
-- **Labels Descritivos**: Todos os botões e links com `aria-label`
-- **Focus Visible**: Indicadores de foco aprimorados
-- **Decorativos Ocultos**: `aria-hidden="true"` em elementos visuais
+## Stack técnica
 
-## 🚀 Como Usar
+| Tecnologia     | Uso                                                        |
+| -------------- | ---------------------------------------------------------- |
+| **Svelte 5**   | UI reativa com runes (`$state`, `$derived`)                |
+| **TypeScript** | Estado, lógica e componentes tipados                       |
+| **Vite**       | Servidor de dev e build de produção                        |
+| **CSS**        | Custom properties, Grid; fontes Overpass hospedadas no app |
+| **Vitest**     | Testes de unidade do núcleo e de integração (DOM)          |
 
-### Online
+## Arquitetura
 
-Acesse [layeredshade.netlify.app](https://layeredshade.netlify.app/)
+Um **núcleo de lógica puro, sem framework**, com uma **UI reativa** fina por cima:
 
-### Localmente
+```text
+src/
+├── App.svelte           # Barra superior + as três colunas de trabalho
+├── main.ts              # Monta o app
+├── App.test.ts          # Testes de integração (happy-dom)
+└── lib/
+    ├── shadow.ts        # Estado puro + geração de código (CSS/Dart/Tailwind)
+    ├── shadow.test.ts   # Testes de unidade (sem DOM)
+    ├── state.svelte.ts  # Singleton $state + actions + flags da UI
+    ├── tabs.ts          # Teclado nas abas ARIA
+    ├── types.ts
+    ├── config/controls.ts
+    └── components/      # Control, LayerList, BackgroundPanel, PreviewBox, CodeOutput, …
+```
+
+Veja [ARCHITECTURE.md](ARCHITECTURE.md) para os detalhes e [DESIGN.md](../../DESIGN.md) para o sistema visual.
+
+## Como usar
+
+Use online em [layeredshade.netlify.app](https://layeredshade.netlify.app/) ou rode localmente (Node 20.19+):
 
 ```bash
 git clone https://github.com/Franklyn-R-Silva/Layered-Shade.git
 cd Layered-Shade
-npm install
+npm ci
 npm run dev      # http://localhost:5173
 ```
 
-Gere o build de produção com `npm run build` (saída em `dist/`) e visualize com `npm run preview`.
+Gere o build com `npm run build` (saída em `dist/`) e sirva o build com `npm run preview`.
 
-## 🧪 Testes
+## Testes
 
 ```bash
-npm install            # Instalar dependências
-npm test               # Rodar testes
-npm run test:coverage  # Rodar com cobertura
+npm test               # Testes de unidade + integração
+npm run test:coverage  # Cobertura do núcleo de lógica
 npm run check          # Type-check (svelte-check)
-npm run lint           # Verificar estilo do código
+npm run lint           # ESLint
 ```
 
-Os testes automatizados focam no **núcleo de lógica puro** (`src/lib/shadow.ts`) — mutações de
-estado e os geradores CSS/Dart/Tailwind — que não dependem de DOM e têm cobertura de ~99%. Os
-componentes Svelte são verificados via `svelte-check` e testes manuais.
+O núcleo (`src/lib/shadow.ts`: mutações de estado e os geradores CSS/Dart/Tailwind) é coberto por testes de unidade sem DOM. O `src/App.test.ts` monta a árvore real de componentes para conferir que a UI acompanha o estado.
 
-## ⚠️ Limitações Conhecidas
+## Como contribuir
 
-- **`inset` no Flutter**: o `BoxShadow` nativo do Flutter não tem inset. Quando "inset"
-  está ativado, o código Dart gerado indica que o pacote
-  [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow) é necessário.
-- **Múltiplos gradientes de fundo no Flutter**: o `BoxDecoration` aceita apenas um gradiente,
-  então a exportação Dart usa a camada de gradiente do topo. CSS/Tailwind exportam todas.
+1. Faça um fork do projeto
+2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
+3. Faça commit das mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
+4. Envie a branch (`git push origin feature/nova-funcionalidade`)
+5. Abra um pull request
 
-## 📝 Como Contribuir
+Veja [CONTRIBUTING.md](CONTRIBUTING.md) para as diretrizes e [SECURITY.md](SECURITY.md) para reportar uma vulnerabilidade.
 
-1. Fork o projeto
-2. Crie sua branch (`git checkout -b feature/NovaFuncionalidade`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/NovaFuncionalidade`)
-5. Abra um Pull Request
-
-Veja [CONTRIBUTING.md](CONTRIBUTING.md) para guia detalhado.
-
-## 👤 Autor
+## Autor
 
 Franklyn R. Silva
 
 - GitHub: [@Franklyn-R-Silva](https://github.com/Franklyn-R-Silva)
 - LinkedIn: [franklyn-roberto-dev](https://www.linkedin.com/in/franklyn-roberto-dev/)
 
-## 📄 Licença
+## Licença
 
-Este projeto está licenciado sob a [MIT License](../../LICENSE).
-
----
-
-⭐ Se este projeto foi útil, considere dar uma estrela!
+[MIT](../../LICENSE)

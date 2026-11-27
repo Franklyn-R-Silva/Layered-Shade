@@ -23,6 +23,8 @@ import {
   hexToRgba,
   hexToColorObj,
   rgbaToHex,
+  isDarkColor,
+  shadowCornerRadius,
 } from './shadow';
 import type { BackgroundLayer, ShadowState } from './types';
 
@@ -52,8 +54,8 @@ describe('shadow (pure logic)', () => {
 
     it('should have correct default box properties', () => {
       expect(s.boxProperties.borderRadius).toBe(0);
-      expect(s.boxProperties.backgroundColor).toBe('#ffdd00');
-      expect(s.boxProperties.canvasColor).toBe('#ffffff');
+      expect(s.boxProperties.backgroundColor).toBe('#ffffff');
+      expect(s.boxProperties.canvasColor).toBe('#e9eef0');
     });
 
     it('should initialize with empty background layers', () => {
@@ -122,8 +124,8 @@ describe('shadow (pure logic)', () => {
       reset(s);
 
       expect(s.boxProperties.borderRadius).toBe(0);
-      expect(s.boxProperties.backgroundColor).toBe('#ffdd00');
-      expect(s.boxProperties.canvasColor).toBe('#ffffff');
+      expect(s.boxProperties.backgroundColor).toBe('#ffffff');
+      expect(s.boxProperties.canvasColor).toBe('#e9eef0');
     });
 
     it('should clear background layers', () => {
@@ -186,6 +188,17 @@ describe('shadow (pure logic)', () => {
 
       removeLayer(s, 2);
       expect(s.currentLayerIndex).toBe(1);
+    });
+
+    it('keeps the same layer selected when an earlier one is removed', () => {
+      addLayer(s);
+      addLayer(s);
+      s.layers[2].blur = 42;
+      selectLayer(s, 2);
+
+      removeLayer(s, 0);
+      expect(s.currentLayerIndex).toBe(1);
+      expect(s.layers[s.currentLayerIndex].blur).toBe(42);
     });
   });
 
@@ -284,7 +297,7 @@ describe('shadow (pure logic)', () => {
 
   describe('getBackgroundCSS', () => {
     it('should return solid color when no gradient layers', () => {
-      expect(getBackgroundCSS(s)).toBe('#ffdd00');
+      expect(getBackgroundCSS(s)).toBe('#ffffff');
     });
 
     it('should generate linear gradient CSS', () => {
@@ -299,7 +312,7 @@ describe('shadow (pure logic)', () => {
 
     it('should include base color with gradients', () => {
       addBackgroundLayer(s, 'linear');
-      expect(getBackgroundCSS(s)).toContain('#ffdd00');
+      expect(getBackgroundCSS(s)).toContain('#ffffff');
     });
 
     it('should generate radial gradient with custom size', () => {
@@ -325,7 +338,7 @@ describe('shadow (pure logic)', () => {
       const bgCSS = getBackgroundCSS(s);
       expect(bgCSS).toContain('linear-gradient');
       expect(bgCSS).toContain('radial-gradient');
-      expect(bgCSS).toContain('#ffdd00');
+      expect(bgCSS).toContain('#ffffff');
     });
 
     // Regression: generation must not mutate stop order.
@@ -363,6 +376,16 @@ describe('shadow (pure logic)', () => {
   });
 
   describe('getDart', () => {
+    it('closes every bracket it opens (default state included)', () => {
+      const count = (code: string, ch: string) => code.split(ch).length - 1;
+      for (const setup of [() => {}, () => update(s, 'borderRadius', 12), () => addBackgroundLayer(s)]) {
+        setup();
+        const code = getDart(s);
+        expect(count(code, '(')).toBe(count(code, ')'));
+        expect(count(code, '[')).toBe(count(code, ']'));
+      }
+    });
+
     it('should generate valid Dart code', () => {
       const dart = getDart(s);
       expect(dart).toContain('BoxShadow');
@@ -412,7 +435,7 @@ describe('shadow (pure logic)', () => {
 
     it('should output solid color in Dart when no gradient layers', () => {
       update(s, 'borderRadius', 10);
-      expect(getDart(s)).toContain('color: Color(0xFFFFDD00)');
+      expect(getDart(s)).toContain('color: Color(0xFFFFFFFF)');
     });
   });
 
@@ -479,6 +502,31 @@ describe('shadow (pure logic)', () => {
 
     it('should handle hex without hash', () => {
       expect(hexToColorObj('ff0000').hex).toBe('FF0000');
+    });
+  });
+
+  describe('shadowCornerRadius', () => {
+    it('keeps square corners square and follows the spec curve in between', () => {
+      expect(shadowCornerRadius(0, 20)).toBe(0);
+      expect(shadowCornerRadius(16, 8)).toBe(24);
+      expect(shadowCornerRadius(10, 20)).toBeCloseTo(10 + 20 * (1 + (0.5 - 1) ** 3));
+      expect(shadowCornerRadius(4, -10)).toBe(0);
+      expect(shadowCornerRadius(16, -4)).toBe(12);
+    });
+  });
+
+  describe('isDarkColor', () => {
+    it('flags dark canvases and leaves light ones', () => {
+      expect(isDarkColor('#000000')).toBe(true);
+      expect(isDarkColor('#1a1b2e')).toBe(true);
+      expect(isDarkColor('#2747c9')).toBe(true);
+      expect(isDarkColor('#ffffff')).toBe(false);
+      expect(isDarkColor('#e9eef0')).toBe(false);
+      expect(isDarkColor('#fd0')).toBe(false);
+    });
+
+    it('treats unparseable input as light', () => {
+      expect(isDarkColor('red')).toBe(false);
     });
   });
 

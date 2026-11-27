@@ -1,0 +1,133 @@
+/* Code column: a graphite sheet; the selected layer's line is marked in blueline. */
+
+.column-code {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  background: var(--sheet);
+  color: var(--sheet-ink);
+  scrollbar-color: var(--sheet-rule) transparent;
+}
+
+.column-code :focus-visible {
+  outline-color: var(--sheet-blueline);
+}
+
+.code-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) 0;
+  border-bottom: 1px solid var(--sheet-rule);
+}
+
+.code-head h2 {
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+.code-tabs {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.tab-btn {
+  margin-bottom: -1px;
+  padding: var(--space-2) var(--space-3) 10px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--sheet-ink-2);
+  cursor: pointer;
+  transition:
+    color var(--fast) var(--ease-out),
+    border-color var(--fast) var(--ease-out);
+}
+
+.tab-btn:hover {
+  color: var(--sheet-ink);
+}
+
+.tab-btn[aria-selected='true'] {
+  color: var(--sheet-ink);
+  border-bottom-color: var(--sheet-blueline);
+}
+
+.code-body {
+  overflow: auto;
+  padding: var(--space-4) 0;
+}
+
+.code {
+  margin: 0;
+  padding: 0 var(--space-5);
+  font-size: var(--text-sm);
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+}
+
+.code ::selection {
+  background: var(--sheet-blueline);
+  color: var(--sheet);
+}
+
+/* Wrapped lines hang 4ch past the line's own indent (--indent = its leading spaces). */
+.code-line {
+  --hang: calc((var(--indent, 0) + 4) * 1ch);
+  display: block;
+  margin-inline: calc(var(--space-5) * -1);
+  padding-inline: calc(var(--space-5) + var(--hang)) var(--space-5);
+  text-indent: calc(var(--hang) * -1);
+  transition: background-color var(--fast) var(--ease-out);
+}
+
+.code-line.current {
+  background: var(--sheet-current);
+  color: #ffffff;
+}
+
+.note {
+  display: flex;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid rgba(242, 164, 147, 0.4);
+  border-radius: var(--radius);
+  background: rgba(242, 164, 147, 0.07);
+  font-size: var(--text-sm);
+  color: var(--sheet-pencil);
+}
+
+.note svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.note code {
+  color: var(--sheet-ink);
+}
+
+.note .cmd {
+  display: block;
+  margin-top: var(--space-2);
+  user-select: all;
+}
+
+.code-foot {
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  border-top: 1px solid var(--sheet-rule);
+}
+
+.copy-status {
+  min-height: 1.2em;
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--sheet-ink-2);
+}
+
+.copy-status.failed {
+  color: var(--sheet-pencil);
+}

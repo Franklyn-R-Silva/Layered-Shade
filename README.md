@@ -1,157 +1,125 @@
-# 🎨 Layered Shade - Box Shadow Generator
+# Layered Shade
 
-A modern and interactive web tool for generating CSS shadows (`box-shadow`) and Dart/Flutter code (`BoxShadow`) visually.
+Build multi-layer box shadows visually and copy the same result as **CSS**, **Flutter/Dart** (`BoxShadow`, `BoxDecoration`) or **Tailwind**.
 
 [🇧🇷 Português](docs/pt-BR/README.md)
 
-[![Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://layeredshade.netlify.app/)
+[![Demo](https://img.shields.io/badge/Demo-layeredshade.netlify.app-2747c9)](https://layeredshade.netlify.app/)
 [![CI](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml/badge.svg)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-71%20passing-success)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions)
-[![Coverage](https://img.shields.io/badge/Coverage-core%20logic%20~99%25-brightgreen)](https://github.com/Franklyn-R-Silva/Layered-Shade)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Performance](https://img.shields.io/badge/Performance-98%25-success)](https://pagespeed.web.dev/analysis/https-layeredshade-netlify-app/1)
-[![Accessibility](https://img.shields.io/badge/Accessibility-95%25-success)](https://pagespeed.web.dev/analysis/https-layeredshade-netlify-app/1)
-[![Best Practices](https://img.shields.io/badge/Best%20Practices-100%25-success)](https://pagespeed.web.dev/analysis/https-layeredshade-netlify-app/1)
-[![SEO](https://img.shields.io/badge/SEO-100%25-success)](https://pagespeed.web.dev/analysis/https-layeredshade-netlify-app/1)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/17195/badge)](https://www.bestpractices.dev/projects/17195)
 
-## 🛠️ Technologies
+![Layered Shade: layer controls on the left, the preview plate with dimension lines in the centre, generated CSS on the right](public/github/tela.png)
 
-![Skills](https://go-skill-icons.vercel.app/api/icons?i=svelte,typescript,vite,css&theme=dark&perline=4)
+## Why
 
-## 🚀 Demo
+Most shadow generators stop at CSS. Layered Shade treats Flutter as a first-class target: one shadow model, three exports that agree, and the Flutter limits stated where they apply instead of being hidden.
 
-[👉 Try it online](https://layeredshade.netlify.app/)
-
-### Preview
-
-![Preview](public/github/tela.png)
-
-### Demo Animation
-
-![Demo](public/github/demo.webp)
-
-## ✨ Features
+## Features
 
 ### Shadows
 
-- **Real-time Preview**: Instant preview of changes
-- **Multiple Layers**: Create complex shadows with multiple layers
-- **Full Control**: Adjust X, Y, blur, spread, color and opacity
-- **Inset Support**: Inner shadows with automatic Flutter package suggestion
+- **Layers**: add, select and remove shadow layers; each has X/Y offset, blur, spread, color, opacity and inset.
+- **Measured preview**: the box is drawn 1:1 on a grid, and dimension lines show the selected layer's offset, its spread outline, how far the blur reaches and where the light comes from. Toggle them with **Cotas**.
+- **Presets**: Soft, Neumorph and Glass as starting points.
 
-### Background & Shape
+### Background and shape
 
-- **Gradients**: Linear and radial with multiple color stops
-- **Custom Shape**: Adjust border-radius and padding
-- **Presets**: Ready-made templates (Soft, Neumorphism, Glass)
+- **Gradients**: stack linear and radial gradients with any number of color stops, over a solid base color.
+- **Shape**: border radius; the preview canvas color is adjustable too.
 
 ### Export
 
-- **CSS**: Ready-to-use code with prefixes (-webkit, -moz)
-- **Dart/Flutter**: Formatted BoxShadow and BoxDecoration
-- **Tailwind**: Arbitrary utility classes
-- **Smart Copy**: Context-sensitive button (CSS/Dart/Tailwind)
+- **CSS**: `box-shadow`, `background` and `border-radius`, one layer per line. The panel shows exactly what is copied, with the selected layer highlighted.
+- **Dart/Flutter**: `BoxDecoration` with `BoxShadow` entries, ready to paste into a `Container`.
+- **Tailwind**: `shadow-[…]` and `bg-[…]` arbitrary-value classes.
+- **Copy**: one button for the active format, with a confirmation that screen readers announce.
 
-## 📊 Tech Stack
+## Known limitations
 
-| Technology     | Usage                                               |
-| -------------- | --------------------------------------------------- |
-| **Svelte 5**   | Reactive UI with runes (`$state`, `$derived`)       |
-| **TypeScript** | Typed state, logic and components                   |
-| **Vite**       | Dev server and production build                     |
-| **CSS3**       | Variables, Grid, Flexbox, Animations, Glassmorphism |
-| **Vitest**     | Unit tests for the pure logic core                  |
+- **Flutter `inset`**: Flutter's `BoxShadow` has no inset. When a layer is inset, the Dart tab says so and gives the [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow) install command.
+- **Several gradients in Flutter**: `BoxDecoration` takes one gradient, so the Dart export uses the top one (gradient 1). CSS and Tailwind export all of them.
+- **Colors are hex only** (`#RGB` / `#RRGGBB`).
 
-## ♿ Accessibility (A11y)
+## Accessibility
 
-This project was developed with accessibility in mind:
+- Every control has a visible label; number fields and sliders stay in sync and are clamped to valid values.
+- The panel switch and the export tabs follow the WAI-ARIA tabs pattern (arrow keys, Home, End).
+- Visible focus everywhere, a skip link to the preview, and `prefers-reduced-motion` respected.
+- Copy success and failure are announced through a live region.
 
-- **Skip Link**: Quick navigation for keyboard users
-- **Semantic Landmarks**: `main`, `header`, `footer`, `nav`, `aside`
-- **ARIA Roles**: Tabs with `role="tablist"` and `role="tabpanel"`
-- **Descriptive Labels**: All buttons and links with `aria-label`
-- **Focus Visible**: Enhanced focus indicators
-- **Hidden Decoratives**: `aria-hidden="true"` on visual elements
+## Tech stack
 
-## 📁 Architecture
+| Technology     | Usage                                                     |
+| -------------- | --------------------------------------------------------- |
+| **Svelte 5**   | Reactive UI with runes (`$state`, `$derived`)             |
+| **TypeScript** | Typed state, logic and components                         |
+| **Vite**       | Dev server and production build                           |
+| **CSS**        | Custom properties, Grid; self-hosted Overpass fonts       |
+| **Vitest**     | Unit tests for the logic core and integration tests (DOM) |
+
+## Architecture
 
 A **pure, framework-free logic core** with a thin **reactive UI** on top:
 
 ```text
 src/
-├── App.svelte           # Layout composition
+├── App.svelte           # Top bar + the three working columns
 ├── main.ts              # Mounts the app
+├── App.test.ts          # Integration tests (happy-dom)
 └── lib/
     ├── shadow.ts        # Pure state + code generation (CSS/Dart/Tailwind)
     ├── shadow.test.ts   # Unit tests (no DOM)
-    ├── state.svelte.ts  # $state singleton + actions
+    ├── state.svelte.ts  # $state singleton + actions + UI flags
+    ├── tabs.ts          # Keyboard support for ARIA tabs
     ├── types.ts
     ├── config/controls.ts
-    └── components/       # Control, LayerList, BackgroundPanel, CodeOutput, …
+    └── components/      # Control, LayerList, BackgroundPanel, PreviewBox, CodeOutput, …
 ```
 
-For complete technical details, see [ARCHITECTURE.md](ARCHITECTURE.md).
+See [ARCHITECTURE.md](ARCHITECTURE.md) for details and [DESIGN.md](DESIGN.md) for the visual system.
 
-## 🚀 Getting Started
+## Getting started
 
-### Online
-
-Visit [layeredshade.netlify.app](https://layeredshade.netlify.app/)
-
-### Locally
+Use it online at [layeredshade.netlify.app](https://layeredshade.netlify.app/), or run it locally (Node 20.19+):
 
 ```bash
 git clone https://github.com/Franklyn-R-Silva/Layered-Shade.git
 cd Layered-Shade
-npm install
+npm ci
 npm run dev      # http://localhost:5173
 ```
 
-Build for production with `npm run build` (output in `dist/`) and preview it with `npm run preview`.
+Build with `npm run build` (output in `dist/`) and serve the build with `npm run preview`.
 
-## 🧪 Testing
+## Testing
 
 ```bash
-npm install            # Install dependencies
-npm test               # Run tests
-npm run test:coverage  # Run with coverage
+npm test               # Unit + integration tests
+npm run test:coverage  # Coverage of the logic core
 npm run check          # Type-check (svelte-check)
-npm run lint           # Check code style
+npm run lint           # ESLint
 ```
 
-Automated tests target the **pure logic core** (`src/lib/shadow.ts`) — state mutations and the
-CSS/Dart/Tailwind generators — which have no DOM dependency and are covered at ~99%. The Svelte
-components are verified via `svelte-check` and manual testing.
+The logic core (`src/lib/shadow.ts`: state mutations and the CSS/Dart/Tailwind generators) is covered by unit tests with no DOM. `src/App.test.ts` mounts the real component tree to check that the UI follows the state.
 
-## ⚠️ Known Limitations
-
-- **Flutter `inset`**: Flutter's native `BoxShadow` has no inset. When "inset" is enabled,
-  the generated Dart emits a note that the [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow)
-  package is required.
-- **Multiple background gradients in Flutter**: `BoxDecoration` accepts only one gradient,
-  so the Dart export uses the top gradient layer. CSS/Tailwind export all layers.
-
-## 📝 Contributing
+## Contributing
 
 1. Fork the project
-2. Create your branch (`git checkout -b feature/NewFeature`)
+2. Create a branch (`git checkout -b feature/new-feature`)
 3. Commit your changes (`git commit -m 'Add new feature'`)
-4. Push to the branch (`git push origin feature/NewFeature`)
-5. Open a Pull Request
+4. Push the branch (`git push origin feature/new-feature`)
+5. Open a pull request
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the guidelines and [SECURITY.md](SECURITY.md) to report a vulnerability.
 
-## 👤 Author
+## Author
 
 Franklyn R. Silva
 
 - GitHub: [@Franklyn-R-Silva](https://github.com/Franklyn-R-Silva)
 - LinkedIn: [franklyn-roberto-dev](https://www.linkedin.com/in/franklyn-roberto-dev/)
 
-## 📄 License
+## License
 
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-⭐ If this project was helpful, consider giving it a star!
+[MIT](LICENSE)

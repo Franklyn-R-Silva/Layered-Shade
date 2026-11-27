@@ -1,64 +1,91 @@
+/* Self-hosted variable fonts (one file per subset serves every weight). */
+@font-face {
+  font-family: 'Overpass';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/overpass-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Overpass';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/overpass-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Overpass Mono';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/overpass-mono-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Overpass Mono';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/overpass-mono-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Drafting plate: film ground, graphite ink, blueline for the shell, selection and the copy action. */
 :root {
-  /* Premium Glassmorphism Palette */
+  --film: #e9eef0;
+  --film-raised: #f6f8f9;
+  --film-sunk: #dfe6e9;
+  --paper: #ffffff;
+  --rule: #c5ced3;
+  --rule-strong: #78858d;
 
-  /* Primary Accents (Neon/Vibrant) */
-  --primary-color: #4f46e5; /* Indigo 600 - Base Action */
-  --primary-hover: #4338ca; /* Indigo 700 */
-  --accent-color: #f472b6; /* Pink 400 - Highlights */
-  --accent-glow: 0 0 20px rgba(244, 114, 182, 0.5);
+  --graphite: #23272b;
+  --graphite-2: #4a535a;
 
-  /* Backgrounds */
-  --bg-gradient-1: #4f46e5;
-  --bg-gradient-2: #ec4899;
-  --bg-gradient-3: #06b6d4;
+  --blueline: #2747c9;
+  --blueline-deep: #1c3599;
+  --blueline-tint: #e1e7fa;
+  --blueline-ring: rgba(39, 71, 201, 0.22);
+  --on-blueline: #ffffff;
+  --on-blueline-2: #d5dcf7;
+  --blueline-night: #142a7a;
 
-  /* Text */
-  --text-main: #0f172a; /* Slate 900 - Darker for better contrast */
-  --text-muted: #475569; /* Slate 600 - Darker for readability */
-  --text-light: #ffffff;
+  /* Red pencil: platform-limit notes and destructive hover only. */
+  --pencil: #b3311e;
 
-  /* Glass Effect Tokens */
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-bg-hover: rgba(255, 255, 255, 0.95);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-  --glass-blur: blur(16px);
+  /* Code column: graphite sheet. */
+  --sheet: #1f2327;
+  --sheet-rule: #353b41;
+  --sheet-ink: #e4e9ec;
+  --sheet-ink-2: #a3aeb5;
+  --sheet-blueline: #8fa3ff;
+  --sheet-current: rgba(39, 71, 201, 0.6);
+  --sheet-pencil: #f2a493;
 
-  --bg-secondary: rgba(255, 255, 255, 0.4); /* Added for lists/secondary items */
+  --font-ui: 'Overpass', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Overpass Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
-  /* Input/Control Colors */
-  --input-bg: rgba(255, 255, 255, 0.5);
-  --input-border: 1px solid rgba(255, 255, 255, 0.6);
-  --input-focus-border: var(--primary-color);
-  --input-focus-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  --text-xs: 0.75rem; /* 12 */
+  --text-sm: 0.8125rem; /* 13 */
+  --text-md: 0.875rem; /* 14 */
+  --text-lg: 1rem; /* 16 */
+  --text-xl: 1.125rem; /* 18 */
 
-  /* Layout */
-  --max-width: 1200px;
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-xl: 32px;
-  --radius-full: 9999px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
 
-  /* Spacing Scale (4px base) */
-  --spacing-1: 0.25rem; /* 4px */
-  --spacing-2: 0.5rem; /* 8px */
-  --spacing-3: 0.75rem; /* 12px */
-  --spacing-4: 1rem; /* 16px */
-  --spacing-5: 1.25rem; /* 20px */
-  --spacing-6: 1.5rem; /* 24px */
-  --spacing-8: 2rem; /* 32px */
-  --spacing-10: 2.5rem; /* 40px */
-  --spacing-12: 3rem; /* 48px */
-  --spacing-16: 4rem; /* 64px */
-
-  /* Typography */
-  --font-family: 'Inter', sans-serif;
-  --font-h1: 3rem;
-  --font-h2: 1.5rem;
-  --font-body: 1rem;
-  --font-small: 0.875rem;
-
-  --line-height-base: 1.5;
-  --line-height-heading: 1.1;
+  --radius: 4px;
+  --topbar-h: 56px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --fast: 160ms;
 }

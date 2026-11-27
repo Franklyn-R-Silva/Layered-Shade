@@ -1,124 +1,143 @@
-/* Layout and Grid */
+/* Shell: blueline top bar over three working columns (controls · stage · code). */
 
-.main-wrapper {
-  max-width: var(--max-width);
-  margin: var(--spacing-8) auto;
-  padding: var(--spacing-6);
-  position: relative;
-  z-index: 1;
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: var(--topbar-h);
+  padding: var(--space-2) var(--space-5);
+  background: var(--blueline);
+  color: var(--on-blueline);
 }
 
-header {
-  text-align: center;
-  margin-bottom: var(--spacing-10);
+.topbar :focus-visible {
+  outline-color: var(--on-blueline);
 }
 
-header h1 {
-  font-weight: 800;
-  font-size: var(--font-h1);
-  letter-spacing: -2px;
-  color: var(--text-main);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: var(--spacing-2);
-  line-height: var(--line-height-heading);
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
 }
 
-header h1 span {
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
+.brand h1 {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
-header p {
-  color: var(--text-main);
-  font-size: 1.1rem;
-  font-weight: 500;
-  opacity: 0.9;
+.brand-mark {
+  flex: none;
 }
 
-/* Helpers for inline style removal */
-.section-title-secondary {
-  font-size: 1.2rem;
-  margin: 1.5rem 0 1rem;
-  color: var(--text-muted);
+.mark-box {
+  fill: var(--on-blueline);
 }
 
-.hidden-rule {
-  display: none;
+.mark-shadow {
+  fill: var(--blueline-night);
 }
 
-/* Grid Layout */
-#box-shadow-generator {
+.tagline {
+  font-size: var(--text-sm);
+  color: var(--on-blueline-2);
+  padding-left: var(--space-3);
+  border-left: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--on-blueline-2);
+}
+
+.author a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--on-blueline);
+  text-decoration: none;
+}
+
+.author a:hover span {
+  text-decoration: underline;
+}
+
+.workspace {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: var(--spacing-8);
-  align-items: start;
+  grid-template-columns: minmax(300px, 340px) minmax(0, 1fr) minmax(340px, 400px);
+  height: calc(100dvh - var(--topbar-h));
 }
 
-@media (max-width: 900px) {
-  #box-shadow-generator {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-6);
-  }
-
-  .main-wrapper {
-    padding: var(--spacing-4);
-    margin: var(--spacing-4) auto;
-  }
+.column {
+  min-width: 0;
+  min-height: 0;
 }
 
-/* Preview Box */
-#preview {
-  position: sticky;
-  top: var(--spacing-4);
+.column-controls {
   display: flex;
   flex-direction: column;
-  min-height: 520px;
-  padding: var(--spacing-8);
-  justify-content: flex-start;
-  align-items: center; /* Center content horizontally */
-  background: var(--glass-bg); /* Ensure it has glass background */
-  border-radius: var(--radius-lg);
-  border: var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  overflow: auto;
+  background: var(--film-raised);
+  border-right: 1px solid var(--rule);
 }
 
-/* Title stays in normal flow at the top; the preview box centers itself in the
-   remaining space via `margin: auto`. (Previously absolutely positioned, which
-   could overlap the box on small screens.) */
-#preview h2 {
-  align-self: flex-start;
-  margin-bottom: var(--spacing-6);
+/* Two columns: the stage and the code share the right side, the page scrolls. */
+@media (max-width: 1199px) {
+  .workspace {
+    grid-template-columns: minmax(300px, 340px) minmax(0, 1fr);
+    height: auto;
+  }
+
+  .column-controls {
+    grid-row: 1 / span 2;
+    overflow: visible;
+  }
+
+  .column-stage {
+    min-height: 560px;
+  }
 }
 
-#box {
-  width: 200px;
-  height: 200px;
-  background: #ffdd00;
-  border-radius: var(--radius-md);
-  margin: auto; /* Center the box in the remaining space */
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .blob {
-    opacity: 0.4;
-  }
-  header h1 {
-    font-size: 2.5rem;
+/* One column: the stage stays pinned on top while the controls scroll under it. */
+@media (max-width: 759px) {
+  .topbar {
+    padding-inline: var(--space-4);
   }
 
-  #preview {
-    min-height: 360px;
-    position: static; /* No sticky preview on small screens */
+  .topbar {
+    flex-wrap: wrap;
   }
 
-  #box {
-    width: 150px;
-    height: 150px;
+  .tagline,
+  .author a span {
+    display: none;
+  }
+
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .column-controls {
+    grid-row: auto;
+    border-right: 0;
+    padding-inline: var(--space-4);
+  }
+
+  .column-stage {
+    order: -1;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    height: clamp(380px, 52dvh, 460px);
+    min-height: 0;
+    border-bottom: 1px solid var(--rule);
   }
 }

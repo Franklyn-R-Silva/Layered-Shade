@@ -7,6 +7,31 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 [🇺🇸 English](../../CHANGELOG.md)
 
+## [2.1.0] - 2026-11-27
+
+### Modificado
+
+- 🎨 **Redesign ("prancha de desenho")**, feito com a skill de design [impeccable](https://github.com/pbakaus/impeccable): saem os painéis de vidro, as manchas animadas e o título em gradiente. Uma barra azul fica sobre três colunas de trabalho: controles das camadas, prancha de preview em escala 1:1 e o código gerado com o botão de copiar, tudo visível em 1440×900.
+- 📐 **Cotas no preview** (botão *Cotas*): deslocamento X/Y, contorno com spread, alcance do blur e a direção da luz da camada selecionada, com tinta clara em fundos escuros.
+- 🧾 **O painel de código mostra exatamente o que é copiado**: CSS com uma camada por linha e a camada selecionada destacada; as linhas obsoletas `-webkit-`/`-moz-` não aparecem mais (nunca eram copiadas). O Tailwind mostra as classes sem o `class=""`, como são copiadas.
+- 🔤 Overpass / Overpass Mono hospedadas no próprio app (sem requisição ao Google Fonts).
+- ⌨️ Acessibilidade: abas ARIA com setas, sem elementos interativos aninhados nas listas, campo hex editável, campos numéricos limitados a valores válidos, status de cópia anunciado, ícones em SVG no lugar de caracteres.
+- ⚪ Novos padrões: caixa branca sobre a prancha cinza (`#ffffff` sobre `#e9eef0`).
+
+### Corrigido
+
+- 🐛 **Exportação Dart**: o estado padrão abria `BoxDecoration(` sem fechar, então o código copiado não compilava.
+- 🐛 Remover uma camada antes da selecionada não troca mais a seleção para outra camada.
+- 🐛 O aviso de inset do Flutter aparece sempre que alguma camada é interna, não só a selecionada; um aviso explica o limite de um gradiente.
+- 🐛 A opacidade mostrava a unidade `px`; agora mostra `%`.
+- 🐛 Remover a penúltima cor de um gradiente não abre mais um `alert()` do navegador; o botão fica desativado.
+
+### Segurança / manutenção
+
+- 🔒 Content Security Policy adicionada aos cabeçalhos da Netlify (o SECURITY.md já dizia que existia). E-mail de contato de segurança corrigido.
+- 📦 Dependências: Vite 8, `@sveltejs/vite-plugin-svelte` 7.3, TypeScript fixado na 5.9 (o TypeScript 7 quebrava o `typescript-eslint`); o `npm ci` tinha parado de resolver na `main`. `npm audit`: 0 vulnerabilidades.
+- 🤖 O CI instala com `npm ci`; o Dependabot agrupa as atualizações por mês e as correções de segurança num PR só.
+
 ## [2.0.0] - 2026-07-13
 
 ### Modificado

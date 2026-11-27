@@ -17,9 +17,11 @@ components stay declarative.
   - State: `createInitialState()`, `update()`, `reset()`, `addLayer()`, `removeLayer()`,
     `selectLayer()`, `addBackgroundLayer()`, `removeBackgroundLayer()`, `applyPreset()`.
   - Generators: `getCSS()`, `getDart()` (Flutter `BoxShadow`/`BoxDecoration`), `getTailwind()`,
-    `getBackgroundCSS()`, `getLayerDart()`, `getLayerTailwind()`.
+    `getBackgroundCSS()`, `getLayerCSS()`, `getLayerDart()`, `getLayerTailwind()`.
+  - Helpers: `hexToRgba()`, `hexToColorObj()`, `isDarkColor()` (guide ink on dark canvases),
+    `shadowCornerRadius()` (the spec's spread/radius rule, used by the preview's dimension lines).
 - **Reactive state (`src/lib/state.svelte.ts`)** — a Svelte 5 `$state` singleton wrapping the
-  pure core: `state` (the `ShadowState`), `ui` (`mode`, `sidebar`) and `actions` (thin wrappers).
+  pure core: `state` (the `ShadowState`), `ui` (`mode`, `sidebar`, `guides`) and `actions` (thin wrappers).
   Mutating `state` re-renders any component that reads it — replacing the manual wiring of the
   previous MVC controller.
 - **Types (`src/lib/types.ts`)** — `ShadowLayer`, `BackgroundLayer`, `GradientStop`,
@@ -32,11 +34,13 @@ components stay declarative.
 index.html                # Vite entry (SEO/OG/JSON-LD/PWA head)
 src/
   main.ts                 # mounts App, imports global CSS
-  App.svelte              # layout: header, Toolbar, generator grid, CodeOutput, Footer
+  App.svelte              # top bar (name, author links) + three columns: controls, stage, code
   lib/
     shadow.ts             # pure state + code generation
     shadow.test.ts        # unit tests (no DOM)
     state.svelte.ts       # $state singleton + actions
+    tabs.ts               # keyboard support for ARIA tabs
+    format.ts             # display number formatting (typographic minus)
     types.ts
     config/controls.ts
     components/
@@ -44,10 +48,12 @@ src/
       ShadowControls.svelte / ShapeControls.svelte
       LayerList.svelte    # shadow layers
       BackgroundPanel.svelte   # gradient layers + stops
-      PreviewBox.svelte
-      CodeOutput.svelte   # CSS/Dart/Tailwind tabs + copy
-      Toolbar.svelte / Sidebar.svelte / Footer.svelte
-  styles/                 # global CSS (styles.css → variables.css + modules/*.css)
+      PreviewBox.svelte   # 1:1 stage: box, grid, dimension lines (SVG)
+      Toolbar.svelte      # stage bar: presets, canvas color, Cotas toggle
+      CodeOutput.svelte   # CSS/Dart/Tailwind tabs, code as copied, copy + live status
+      Sidebar.svelte      # Sombra/Fundo panels + reset
+      Icon.svelte         # one stroke icon set
+  styles/                 # global CSS: variables.css (tokens, @font-face) + modules/{base,layout,controls,stage,code}.css
 public/                   # manifest.json, sitemap.xml, robots.txt, icons/, github/
 ```
 
@@ -63,5 +69,5 @@ public/                   # manifest.json, sitemap.xml, robots.txt, icons/, gith
 - Flutter has no native inset shadow: `getDart()` emits `inset` as a comment referencing the
   [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow) package, and
   exports only the top gradient layer (`BoxDecoration` accepts a single gradient).
-- Global CSS is reused by class name (not scoped `<style>` blocks) so the migrated markup keeps
-  the original design system.
+- Global CSS is shared by class name (no scoped `<style>` blocks); tokens live in
+  `src/styles/variables.css` and the visual system is documented in [DESIGN.md](DESIGN.md).
