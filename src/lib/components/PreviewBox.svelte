@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { state as shadow, ui, actions } from '../state.svelte';
+  import { state as shadow, ui, actions, layerPolar } from '../state.svelte';
+  import { toPolar } from '../light';
   import { getCSS, getBackgroundCSS, isDarkColor, guideInk, hexToRgba, getTextShadowCSS, fontStack } from '../shadow';
   import { plateGeometry } from '../dimensions';
   import { fmt } from '../format';
@@ -52,15 +53,36 @@
     actions.beginGesture();
   }
 
+  // Dragging the light ray's start turns the light around the element's centre, keeping the distance.
+  let aim: { id: number; cx: number; cy: number } | undefined;
+
+  function grabLight(e: PointerEvent) {
+    if (e.button !== 0 || drag || aim) return;
+    e.stopPropagation(); // the stage drag (which moves the offset) must not start
+    const el = e.currentTarget as Element;
+    const r = el.closest('svg')!.getBoundingClientRect();
+    // The stage keeps the pointer: the handle moves, and can vanish, while the light turns.
+    el.closest('.stage')!.setPointerCapture(e.pointerId);
+    aim = { id: e.pointerId, cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
+    actions.beginGesture();
+  }
+
   function move(e: PointerEvent) {
+    if (e.pointerId === aim?.id) {
+      // The light is where the pointer is, so the shadow falls from the pointer through the centre.
+      const prev = layerPolar(shadow.currentLayerIndex);
+      actions.aimLight(toPolar(aim.cx - e.clientX, aim.cy - e.clientY, prev).angle);
+      return;
+    }
     if (e.pointerId !== drag?.id) return;
     actions.update('horizontal', offset(drag.h, e.clientX - drag.x));
     actions.update('vertical', offset(drag.v, e.clientY - drag.y));
   }
 
   function release(e: PointerEvent) {
-    if (e.pointerId !== drag?.id) return;
-    drag = undefined;
+    if (e.pointerId === aim?.id) aim = undefined;
+    else if (e.pointerId === drag?.id) drag = undefined;
+    else return;
     actions.endGesture();
   }
 </script>
@@ -154,6 +176,11 @@
                 <path class="dim-ray" pathLength="1" d={g.ray.line} />
                 <polyline class="dim-arrow" points={g.ray.head} />
                 {@render label(g.ray.label)}
+                <!-- Pointer-only, like the stage drag: the Angle field is its keyboard alternative. -->
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <circle class="ray-handle" cx={g.ray.start.x} cy={g.ray.start.y} r="4" onpointerdown={grabLight}
+                  ><title>{t('lightHandle')}</title></circle
+                >
               {/if}
 
               {#if g.radius}

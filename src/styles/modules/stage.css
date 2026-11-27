@@ -176,6 +176,15 @@
   stroke-linejoin: round;
 }
 
+/* Start of the light ray: drag it to turn the light. A 4px dot; the clear stroke makes it a 24px target. */
+.dims .ray-handle {
+  fill: var(--guide);
+  stroke: transparent;
+  stroke-width: 16px;
+  pointer-events: all;
+  cursor: grab;
+}
+
 .dim-label {
   fill: var(--guide);
   stroke: var(--canvas);

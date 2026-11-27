@@ -47,7 +47,8 @@ export interface PlateGeometry {
   reach: Rect | null;
   dimX: Dim;
   dimY: Dim;
-  ray: { line: string; head: string; label: Label } | null;
+  /** `start` is where the light comes from: the handle that turns it. */
+  ray: { line: string; head: string; label: Label; start: { x: number; y: number } } | null;
   radius: { leader: string; label: Label } | null;
 }
 
@@ -181,10 +182,12 @@ export function plateGeometry(
       const ex = cx - ux * 6;
       const ey = cy - uy * 6;
       const deg = Math.round((Math.atan2(Math.abs(y), Math.abs(x)) * 180) / Math.PI);
+      const start = { x: cx - ux * L, y: cy - uy * L };
       ray = {
-        line: `M${cx - ux * L} ${cy - uy * L}L${ex} ${ey}`,
+        start,
+        line: `M${start.x} ${start.y}L${ex} ${ey}`,
         head: `${ex - ux * 7 - uy * 3.5},${ey - uy * 7 + ux * 3.5} ${ex},${ey} ${ex - ux * 7 + uy * 3.5},${ey - uy * 7 - ux * 3.5}`,
-        label: rayLabel(cx - ux * L, cy - uy * L, ux, uy, `${light} ${deg}°`, bounds),
+        label: rayLabel(start.x, start.y, ux, uy, `${light} ${deg}°`, bounds),
       };
     }
   }

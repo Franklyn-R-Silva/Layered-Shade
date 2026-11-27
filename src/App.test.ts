@@ -21,6 +21,7 @@ describe('App (integration)', () => {
     ui.sidebar = 'shadow';
     ui.context = 'box';
     ui.cssFormat = 'props';
+    ui.globalLight = false;
   });
 
   function render() {
@@ -258,6 +259,93 @@ describe('App (integration)', () => {
     pointer('pointermove', 400, -300);
     pointer('pointerup', 400, -300);
     expect(state.layers[1]).toMatchObject({ horizontal: 100, vertical: -100 });
+    expect(state.layers[0]).toMatchObject({ horizontal: 5, vertical: 5 });
+
+    actions.undo();
+    flushSync();
+    expect(state.layers).toHaveLength(2);
+    expect(state.layers[1]).toMatchObject({ horizontal: 5, vertical: 5 });
+  });
+
+  const type = (id: string, value: string) => {
+    const input = host.querySelector(`#${id}`) as HTMLInputElement;
+    input.value = value;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    flushSync();
+  };
+  const shown = (id: string) => (host.querySelector(`#${id}`) as HTMLInputElement).value;
+
+  it('edits the offset as the light angle and distance, and says when ±100 shortened it', () => {
+    render();
+    expect(shown('light-angle-value')).toBe('135'); // 5, 5 falls down-right: light from the upper left
+    expect(shown('light-distance-value')).toBe('7');
+    type('light-angle-value', '0');
+    expect(state.layers[0]).toMatchObject({ horizontal: -7, vertical: 0 });
+    type('light-distance-value', '20');
+    expect(state.layers[0]).toMatchObject({ horizontal: -20, vertical: 0 });
+    type('light-angle-value', '90');
+    expect(state.layers[0]).toMatchObject({ horizontal: 0, vertical: 20 });
+
+    actions.update('horizontal', -20); // the X slider
+    flushSync();
+    expect(shown('light-angle-value')).toBe('45');
+    expect(shown('light-distance-value')).toBe('28');
+
+    expect(host.querySelector('#light-clamped')?.textContent?.trim()).toBe('');
+    type('light-angle-value', '0');
+    type('light-distance-value', '141'); // X −141 is past the slider: shortened, the angle kept
+    expect(state.layers[0]).toMatchObject({ horizontal: -100, vertical: 0 });
+    expect(shown('light-distance-value')).toBe('100');
+    expect(host.querySelector('#light-clamped')?.textContent).toContain('±100');
+  });
+
+  it('turns every visible layer with global light, each keeping its distance, as one undo step', async () => {
+    render();
+    const layer = { blur: 10, spread: 0, color: '#000000', opacity: 0.3, inset: false };
+    actions.setLayers([
+      { ...layer, horizontal: 0, vertical: 10 },
+      { ...layer, horizontal: -20, vertical: 0 },
+      { ...layer, horizontal: 3, vertical: 4, hidden: true },
+    ]);
+    (host.querySelector('#global-light') as HTMLInputElement).click();
+    flushSync();
+    expect(ui.globalLight).toBe(true);
+    await new Promise((r) => setTimeout(r, 450)); // close the burst that set the layers up
+
+    type('light-angle-value', '180');
+    expect(state.layers.map((l) => [l.horizontal, l.vertical])).toEqual([
+      [10, 0],
+      [20, 0],
+      [3, 4], // hidden layers keep their light
+    ]);
+
+    actions.undo();
+    flushSync();
+    expect(state.layers.map((l) => [l.horizontal, l.vertical])).toEqual([
+      [0, 10],
+      [-20, 0],
+      [3, 4],
+    ]);
+  });
+
+  it('turns the light by dragging the start of the ray, without starting the offset drag', () => {
+    render();
+    actions.addLayer();
+    flushSync();
+    const stage = host.querySelector('.stage') as HTMLElement;
+    const pointer = (target: Element, type: string, clientX: number, clientY: number) => {
+      target.dispatchEvent(new PointerEvent(type, { clientX, clientY, pointerId: 1, button: 0, bubbles: true }));
+      flushSync();
+    };
+
+    // happy-dom lays nothing out, so the element's centre is at (0, 0).
+    pointer(host.querySelector('.ray-handle') as Element, 'pointerdown', -40, -40);
+    pointer(stage, 'pointermove', 60, -60); // light from the upper right
+    expect(state.layers[1]).toMatchObject({ horizontal: -5, vertical: 5 });
+    expect(shown('light-angle-value')).toBe('45');
+    pointer(stage, 'pointermove', 0, 80); // light from below
+    expect(state.layers[1]).toMatchObject({ horizontal: 0, vertical: -7 });
+    pointer(stage, 'pointerup', 0, 80);
     expect(state.layers[0]).toMatchObject({ horizontal: 5, vertical: 5 });
 
     actions.undo();

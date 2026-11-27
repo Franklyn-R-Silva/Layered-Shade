@@ -23,6 +23,7 @@
 **Build**
 - Stack as many shadow layers as you need: offset, blur, spread, color, opacity and inset per layer; duplicate, reorder, hide or remove them.
 - Drag on the preview to move the selected shadow; undo and redo with Ctrl+Z / Ctrl+Shift+Z.
+- Set the offset as **angle and distance** too (Photoshop's convention: the angle is where the light comes from), turn the light by dragging the start of the ray on the preview, and tick **Global light** to turn every visible layer together.
 - Start from a preset (Soft, Neumorph, Glass), generate a **smooth multi-layer shadow**, or **import** an existing `box-shadow`, CSS rule or Tailwind `shadow-[…]` class.
 - Gradient backgrounds (linear and radial, any number of stops) and border radius.
 
@@ -33,6 +34,8 @@
 
 **Share**
 - Copy a link that reopens exactly this shadow; your last session is restored when you come back.
+
+**Not supported, and why:** Photoshop's per-shadow blend modes, noise and contour have no equivalent in CSS `box-shadow`, Flutter's `BoxShadow`, Compose, SwiftUI or React Native, so the tool leaves them out instead of exporting code that cannot reproduce them.
 
 ## Export support
 

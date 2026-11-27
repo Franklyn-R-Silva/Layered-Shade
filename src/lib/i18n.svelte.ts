@@ -178,6 +178,12 @@ const pt = {
   copyTab: 'Copiar {tab}',
   copiedStatus: 'Código {tab} copiado para a área de transferência.',
   copyFailed: 'Não deu para copiar. Selecione o código acima e use Ctrl+C.',
+
+  // Technical controls (#76)
+  inDegrees: '{label} em graus',
+  lightClamped: 'X e Y vão até ±100 px: a distância foi encurtada.',
+  globalLight: 'Luz global (camadas visíveis)',
+  lightHandle: 'Arraste para girar a luz',
 };
 
 export type Key = keyof typeof pt;
@@ -342,6 +348,12 @@ const en: Record<Key, string> = {
   copyTab: 'Copy {tab}',
   copiedStatus: '{tab} code copied to the clipboard.',
   copyFailed: 'Could not copy. Select the code above and press Ctrl+C.',
+
+  // Technical controls (#76)
+  inDegrees: '{label} in degrees',
+  lightClamped: 'X and Y stop at ±100 px, so the distance was shortened.',
+  globalLight: 'Global light (visible layers)',
+  lightHandle: 'Drag to turn the light',
 };
 
 const dict: Record<Lang, Record<Key, string>> = { pt, en };
