@@ -4,7 +4,7 @@
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createInitialState } from './shadow';
-import { getDropShadowFilter, getImageCSS, getImageTailwind, getImageSwiftUI, getImageNote } from './image';
+import { getDropShadowFilter, getImageCSS, getImageTailwind, getImageSwiftUI, getImageNote, getImageMarkup, getImageQt, getImageFlet } from './image';
 import type { ShadowLayer, ShadowState } from './types';
 
 const layer = (o: Partial<ShadowLayer>): ShadowLayer => ({
@@ -72,3 +72,31 @@ describe('image mode exports', () => {
     expect(getImageNote('rn')).toContain('boxShadow');
   });
 });
+
+describe('image exports for frameworks and Python', () => {
+  it('puts the drop-shadow chain on an <img>, as a JSX style object or an inline style', () => {
+    const s = createInitialState();
+    const filter = getDropShadowFilter(s);
+    // The default layer has spread 3, so each starts with its dropped-spread comment.
+    expect(getImageMarkup(s, true)).toMatch(/^\{\/\*.*\*\/\}\n/);
+    expect(getImageMarkup(s, true).endsWith(`<img src="/image.png" alt="" style={{ filter: '${filter}' }} />`)).toBe(true);
+    expect(getImageMarkup(s, false)).toMatch(/^<!--.*-->\n/);
+    expect(getImageMarkup(s, false).endsWith(`<img src="image.png" alt="" style="filter: ${filter}" />`)).toBe(true);
+  });
+
+  it('Qt: the first visible outer layer on a QLabel, alpha as 0–255', () => {
+    const s = createInitialState();
+    s.layers = [
+      { horizontal: 1, vertical: 1, blur: 2, spread: 0, color: '#ffffff', opacity: 1, inset: true },
+      { horizontal: 0, vertical: 4, blur: 12, spread: -2, color: '#17191e', opacity: 0.12, inset: false },
+    ];
+    const q = getImageQt(s);
+    expect(q).toContain('shadow.setOffset(0, 4)');
+    expect(q).toContain('shadow.setBlurRadius(12)');
+    expect(q).toContain('QColor(23, 25, 30, 31)');
+    s.layers[1].hidden = true;
+    expect(getImageQt(s)).toContain('No visible outer layer');
+    expect(getImageFlet()).toMatch(/^# Flet/);
+  });
+});
+

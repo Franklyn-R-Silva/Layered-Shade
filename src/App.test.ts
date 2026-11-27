@@ -22,7 +22,7 @@ describe('App (integration)', () => {
     ui.sidebar = 'shadow';
     ui.context = 'box';
     ui.cssFormat = 'props';
-    Object.assign(image, { src: SAMPLE_IMAGE, name: '', width: 200 });
+    Object.assign(image, { src: SAMPLE_IMAGE, name: '', width: 200, broken: false });
     ui.reactFormat = 'inline';
     ui.globalLight = false;
   });
@@ -394,4 +394,19 @@ describe('App (integration)', () => {
     expect(state.layers).toHaveLength(2);
     expect(state.layers[1]).toMatchObject({ horizontal: 5, vertical: 5 });
   });
+
+  it('falls back to the sample and reports it when an image file cannot be drawn', () => {
+    render();
+    ui.context = 'image';
+    flushSync();
+    Object.assign(image, { src: 'data:image/png;base64,AAAA', name: 'broken.png', broken: false });
+    flushSync();
+    const img = host.querySelector('#image-sample') as HTMLImageElement;
+    img.dispatchEvent(new Event('error'));
+    flushSync();
+    expect(image.src).toBe(SAMPLE_IMAGE);
+    expect(image.broken).toBe(true);
+    expect(host.querySelector('#panel-shadow [role="status"].failed')?.textContent).toContain('Não consegui ler');
+  });
 });
+

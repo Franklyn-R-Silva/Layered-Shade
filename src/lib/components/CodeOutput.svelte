@@ -16,6 +16,7 @@
     getTextReactNative,
   } from '../shadow';
   import * as fw from '../frameworks';
+  import * as img from '../image';
   import type { CodeMode, PreviewContext, ShadowState } from '../types';
   import Icon from './Icon.svelte';
   import { t } from '../i18n.svelte';
@@ -58,20 +59,36 @@
     qt: fw.getTextQt,
   };
 
+  const IMAGE: Generators = {
+    css: img.getImageCSS,
+    tailwind: img.getImageTailwind,
+    react: (s) => img.getImageMarkup(s, true),
+    vue: (s) => img.getImageMarkup(s, false),
+    svelte: (s) => img.getImageMarkup(s, false),
+    angular: (s) => img.getImageMarkup(s, false),
+    dart: () => img.getImageNote('dart'),
+    compose: () => img.getImageNote('compose'),
+    swiftui: img.getImageSwiftUI,
+    rn: () => img.getImageNote('rn'),
+    flet: img.getImageFlet,
+    qt: img.getImageQt,
+  };
+
   /** The code for a preview context and export, one entry per line; CSS layer lines carry their layer index. */
   function codeLines(context: PreviewContext, mode: CodeMode): { text: string; layer?: number }[] {
-    const onText = context === 'text';
-    const code = (onText ? TEXT : BOX)[mode](shadow);
+    // Text and image shadows (text-shadow, drop-shadow) have no inset: those layers are not drawn.
+    const outerOnly = context !== 'box';
+    const code = (context === 'text' ? TEXT : context === 'image' ? IMAGE : BOX)[mode](shadow);
     // In the CSS properties view each indented line is one drawn layer, in layer order.
-    const tagged = mode === 'css' && (onText || ui.cssFormat === 'props');
-    const order = shadow.layers.flatMap((l, i) => (l.hidden || (onText && l.inset) ? [] : [i]));
+    const tagged = mode === 'css' && (outerOnly || ui.cssFormat === 'props');
+    const order = shadow.layers.flatMap((l, i) => (l.hidden || (outerOnly && l.inset) ? [] : [i]));
     let k = 0;
     return code
       .split('\n')
       .map((text) => ({ text, layer: tagged && text.startsWith('  ') ? order[k++] : undefined }));
   }
 
-  const isText = $derived(ui.context === 'text');
+  const isText = $derived(ui.context !== 'box'); // text or image: the box-only notes and variants do not apply
   const lines = $derived(codeLines(ui.context, ui.mode));
   const text = $derived(lines.map((l) => l.text).join('\n'));
   const indentOf = (line: string) => line.length - line.trimStart().length;
@@ -117,7 +134,7 @@
   </div>
 
   <div class="code-body">
-    {#if ui.mode === 'react' || (!isText && (ui.mode === 'css' || ui.mode === 'tailwind'))}
+    {#if (ui.mode === 'react' && ui.context !== 'image') || (!isText && (ui.mode === 'css' || ui.mode === 'tailwind'))}
       <div class="format-switch" role="group" aria-label={t('variant')}>
         {#if ui.mode === 'css'}
           <button type="button" aria-pressed={ui.cssFormat === 'props'} onclick={() => (ui.cssFormat = 'props')}

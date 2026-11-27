@@ -13,5 +13,8 @@ const STAR =
 /** Shown until the user picks a file. A data: URL, as the CSP allows `img-src data:` (not blob:). */
 export const SAMPLE_IMAGE = `data:image/svg+xml,${encodeURIComponent(STAR)}`;
 
-/** `name` is the file name (the preview's alt text); empty for the sample. `width` is in CSS px. */
-export const image = $state({ src: SAMPLE_IMAGE, name: '', width: 200 });
+/**
+ * `name` is the file name (the preview's alt text); empty for the sample. `width` is in CSS px.
+ * `broken` is set when the browser could not draw the chosen file (the preview falls back to the sample).
+ */
+export const image = $state({ src: SAMPLE_IMAGE, name: '', width: 200, broken: false });

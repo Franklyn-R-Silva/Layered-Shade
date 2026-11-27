@@ -91,3 +91,41 @@ const IMAGE_NOTES: Record<ImageNoteTarget, string> = {
 export function getImageNote(target: ImageNoteTarget): string {
   return IMAGE_NOTES[target];
 }
+
+/** Web frameworks: an `<img>` with the filter inline (JSX gets a style object). */
+export function getImageMarkup(state: ShadowState, jsx: boolean): string {
+  const filter = getDropShadowFilter(state);
+  return jsx
+    ? `${droppedNote(state, '{/*', ' */}')}<img src="/image.png" alt="" style={{ filter: '${filter}' }} />`
+    : `${droppedNote(state, '<!--', ' -->')}<img src="image.png" alt="" style="filter: ${filter}" />`;
+}
+
+/** Flet draws BoxShadow around the container's rectangle, not the image's transparency. */
+export function getImageFlet(): string {
+  return (
+    '# Flet: ft.BoxShadow is drawn around the container rectangle, not the image transparency.\n' +
+    '# Bake the shadow into the PNG, or use the CSS export when the image is shown in a web view.'
+  );
+}
+
+/**
+ * PySide6 / PyQt6: QGraphicsDropShadowEffect follows the rendered pixels, so the shadow follows the
+ * image's transparency. Qt draws ONE shadow with no spread: the first visible outer layer.
+ */
+export function getImageQt(state: ShadowState): string {
+  const head = '# PySide6 (PyQt6: same code with PyQt6 imports). Qt draws one shadow, no spread.\n';
+  const l = dropLayers(state)[0];
+  if (!l) return head + '# No visible outer layer to export.';
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(l.color.slice(i, i + 2), 16));
+  return (
+    head +
+    'from PySide6.QtGui import QColor, QPixmap\n' +
+    'from PySide6.QtWidgets import QGraphicsDropShadowEffect, QLabel\n\n' +
+    'label = QLabel()\nlabel.setPixmap(QPixmap("image.png"))\n' +
+    'shadow = QGraphicsDropShadowEffect(label)\n' +
+    `shadow.setBlurRadius(${l.blur})\nshadow.setOffset(${l.horizontal}, ${l.vertical})\n` +
+    `shadow.setColor(QColor(${r}, ${g}, ${b}, ${Math.round(l.opacity * 255)}))\n` +
+    'label.setGraphicsEffect(shadow)'
+  );
+}
+

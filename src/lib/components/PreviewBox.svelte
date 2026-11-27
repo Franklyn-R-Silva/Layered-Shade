@@ -4,7 +4,7 @@
   import { getCSS, getBackgroundCSS, isDarkColor, guideInk, hexToRgba, getTextShadowCSS, fontStack } from '../shadow';
   import { plateGeometry } from '../dimensions';
   import { getDropShadowFilter } from '../image';
-  import { image } from '../image.svelte';
+  import { image, SAMPLE_IMAGE } from '../image.svelte';
   import { fmt } from '../format';
   import Toolbar from './Toolbar.svelte';
   import { t } from '../i18n.svelte';
@@ -141,6 +141,10 @@
           alt={image.name || t('imageSample')}
           width={image.width}
           draggable="false"
+          onerror={() => {
+            // A file of an accepted type that does not decode: say so and show the sample again.
+            if (image.src !== SAMPLE_IMAGE) Object.assign(image, { src: SAMPLE_IMAGE, name: '', broken: true });
+          }}
           bind:clientWidth={elW}
           bind:clientHeight={elH}
           style:filter={getDropShadowFilter(shadow)}
