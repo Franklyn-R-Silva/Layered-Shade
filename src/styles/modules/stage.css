@@ -134,6 +134,14 @@
   font-weight: 700;
 }
 
+/* Text mode: the user's text at 1:1; the dimension lines measure its line box. Long text wraps. */
+.text-sample {
+  line-height: 1;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
 .dims {
   position: absolute;
   inset: 0;

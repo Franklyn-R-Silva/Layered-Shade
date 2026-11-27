@@ -7,6 +7,7 @@
   import BackgroundPanel from './BackgroundPanel.svelte';
   import Icon from './Icon.svelte';
   import LayerTools from './LayerTools.svelte';
+  import TextControls from './TextControls.svelte';
 
   const panels = [
     { id: 'shadow', label: 'Sombra' },
@@ -45,6 +46,7 @@
     aria-labelledby="tab-shadow"
     hidden={ui.sidebar !== 'shadow'}
   >
+    {#if ui.context === 'text'}<TextControls />{/if}
     <section id="layer-controls-container" class="group"><LayerList /><LayerTools /></section>
 
     <section class="group" aria-labelledby="layer-title">

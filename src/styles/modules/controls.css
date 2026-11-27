@@ -518,7 +518,23 @@ input[type='color']::-moz-color-swatch {
   text-transform: uppercase;
 }
 
-.hex:focus-visible {
+/* Text mode: free text in the hex field's frame. */
+.text-field {
+  width: 100%;
+  padding: 6px var(--space-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-size: var(--text-sm);
+}
+
+input[type='file'] {
+  max-width: 100%;
+  font-size: var(--text-sm);
+}
+
+.hex:focus-visible,
+.text-field:focus-visible {
   outline: none;
   border-color: var(--blueline);
   box-shadow: 0 0 0 3px var(--blueline-ring);

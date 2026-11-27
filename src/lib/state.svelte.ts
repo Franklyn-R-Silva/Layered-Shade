@@ -9,7 +9,7 @@
 import * as core from './shadow';
 import { encodeState, decodeState } from './share';
 import { createHistory } from './history';
-import type { CodeMode, PreviewContext, ShadowLayer, ShadowState } from './types';
+import type { CodeMode, PreviewContext, ShadowLayer, ShadowState, TextProps } from './types';
 
 export const STORAGE_KEY = 'layered-shade:v1';
 
@@ -108,6 +108,8 @@ export const actions = {
   removeBackgroundLayer: (index: number) => core.removeBackgroundLayer(state, index),
   selectBackgroundLayer: (index: number) => core.selectBackgroundLayer(state, index),
   applyPreset: (name: core.PresetName) => core.applyPreset(state, name),
+  /** Callers pass only valid values (see TextControls): an invalid text would fail to restore. */
+  setText: (patch: Partial<TextProps>) => Object.assign(state.text, patch),
   undo: () => restore(past.undo(burst ? encodeState(state) : committed)),
   redo: () => restore(past.redo(burst ? encodeState(state) : committed)),
   /** Absolute link that reopens exactly this shadow. */

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { state as shadow, ui } from '../state.svelte';
-  import { getCSS, getBackgroundCSS, isDarkColor } from '../shadow';
+  import { getCSS, getBackgroundCSS, isDarkColor, getTextShadowCSS, fontStack } from '../shadow';
   import { plateGeometry } from '../dimensions';
   import { fmt } from '../format';
   import Toolbar from './Toolbar.svelte';
@@ -14,13 +14,23 @@
   // Element sizes in CSS px, drawn 1:1 so every dimension line reads in real pixels.
   const SIZES = { box: { w: 200, h: 200 }, card: { w: 280, h: 180 }, button: { w: 168, h: 48 } };
   const NAMES = { box: 'Caixa', card: 'Card', button: 'Botão' };
-  const size = $derived(SIZES[ui.context]);
+  // Text mode measures the rendered text, so the lines start from its box.
+  let textW = $state(0);
+  let textH = $state(0);
+  const isText = $derived(ui.context === 'text');
+  const size = $derived(ui.context === 'text' ? { w: textW, h: textH } : SIZES[ui.context]);
+  const textShadow = $derived(getTextShadowCSS(shadow));
+  const textDrops = $derived(isText && shadow.layers.some((l) => !l.hidden && (l.inset || l.spread !== 0)));
   const ink = $derived(isDarkColor(shadow.boxProperties.backgroundColor) ? '#f6f8f9' : '#23272b');
   const visible = $derived(shadow.layers.filter((l) => !l.hidden).length);
 
   let stageW = $state(0);
   let stageH = $state(0);
-  const g = $derived(plateGeometry(layer, radius, { w: stageW, h: stageH }, size));
+  // Text has no corners or box outline: no radius callout, no spread/blur rectangles.
+  const g = $derived.by(() => {
+    const geo = plateGeometry(layer, isText ? 0 : radius, { w: stageW, h: stageH }, size);
+    return isText ? { ...geo, spread: null, reach: null } : geo;
+  });
 
   // The lines draw in only when another layer is selected, never on page load.
   let mounted = false;
@@ -47,7 +57,21 @@
   <Toolbar />
 
   <div class="stage" class:guides={ui.guides} bind:clientWidth={stageW} bind:clientHeight={stageH}>
-    <div class="plate" style:width={`${size.w}px`} style:height={`${size.h}px`}>
+    <div class="plate" style:width={isText ? undefined : `${size.w}px`} style:height={isText ? undefined : `${size.h}px`}>
+      {#if ui.context === 'text'}
+        <div
+          id="text-sample"
+          class="text-sample"
+          role="img"
+          aria-label={`Texto “${shadow.text.content}” de demonstração com sombra de texto`}
+          bind:clientWidth={textW}
+          bind:clientHeight={textH}
+          style:font-family={fontStack(shadow.text.font)}
+          style:font-size={`${shadow.text.size}px`}
+          style:font-weight={shadow.text.weight}
+          style:color={shadow.text.color}
+          style:text-shadow={textShadow}>{shadow.text.content}</div>
+      {:else}
       <div
         id="box"
         class={`sample sample-${ui.context}`}
@@ -67,6 +91,7 @@
           <span class="sample-button" aria-hidden="true">Comprar agora</span>
         {/if}
       </div>
+      {/if}
 
       {#if ui.guides}
         <svg class="dims" width={size.w} height={size.h} viewBox={`0 0 ${size.w} ${size.h}`} aria-hidden="true">
@@ -118,5 +143,6 @@
         {/if}
       </span>
     {/if}
+    {#if textDrops}<span>texto: sem spread e sem inset</span>{/if}
   </div>
 </section>
