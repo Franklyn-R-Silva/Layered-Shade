@@ -1,134 +1,96 @@
 # Layered Shade
 
-Monte sombras em camadas (box-shadow) visualmente e copie o mesmo resultado em **CSS**, **Tailwind**, **Flutter/Dart**, **Jetpack Compose**, **SwiftUI** ou **React Native**.
+**Monte sombras em camadas para caixas e textos visualmente e copie a mesma sombra em CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI ou React Native.**
 
-[🇺🇸 English](../../README.md)
+[🇺🇸 English](../../README.md) · [Abrir o app](https://layeredshade.netlify.app/) · [Reportar um bug](https://github.com/Franklyn-R-Silva/Layered-Shade/issues/new?template=bug_report.md) · [Sugerir um recurso](https://github.com/Franklyn-R-Silva/Layered-Shade/issues/new?template=feature_request.md)
 
-[![Demo](https://img.shields.io/badge/Demo-layeredshade.netlify.app-2747c9)](https://layeredshade.netlify.app/)
 [![CI](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml/badge.svg)](https://github.com/Franklyn-R-Silva/Layered-Shade/actions/workflows/ci.yml)
-[![Licença](https://img.shields.io/badge/Licen%C3%A7a-MIT-blue.svg)](../../LICENSE)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/17195/badge)](https://www.bestpractices.dev/projects/17195)
+[![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-blue.svg)](../../LICENSE)
+[![PRs bem-vindos](https://img.shields.io/badge/PRs-bem--vindos-2747c9.svg)](CONTRIBUTING.md)
+[![Good first issues](https://img.shields.io/github/issues/Franklyn-R-Silva/Layered-Shade/good%20first%20issue?label=good%20first%20issues&color=2747c9)](https://github.com/Franklyn-R-Silva/Layered-Shade/labels/good%20first%20issue)
 
-![Layered Shade: controles das camadas à esquerda, a prancha do preview com cotas no centro e o CSS gerado à direita](../../public/github/tela.png)
+![Layered Shade: controles das camadas à esquerda, a prancha de preview 1:1 com cotas no centro e o código gerado à direita](../../public/github/tela.png)
 
-## Por quê
+## Por que o Layered Shade
 
-A maioria dos geradores de sombra para no CSS. O Layered Shade trata o Flutter como alvo de primeira classe: um só modelo de sombra, três exportações que batem entre si, e os limites do Flutter avisados onde eles se aplicam, em vez de escondidos.
+- **Uma sombra, todas as plataformas.** As mesmas camadas saem para seis formatos, e cada exportação diz com clareza o que a plataforma não suporta, em vez de descartar em silêncio.
+- **Medido, não chutado.** O preview é desenhado em escala 1:1 sobre uma grade, com cotas do deslocamento, do spread, do alcance do blur e da direção da luz da camada selecionada.
+- **Grátis, instantâneo e privado.** Sem conta, sem backend, sem analytics, sem requisições a terceiros. As fontes que você envia não saem do seu navegador.
 
-## Funcionalidades
+## Recursos
 
-### Sombras
+**Montar**
+- Empilhe quantas camadas quiser: deslocamento, blur, spread, cor, opacidade e inset em cada uma; duplique, reordene, oculte ou remova.
+- Arraste no preview para mover a sombra selecionada; desfaça e refaça com Ctrl+Z / Ctrl+Shift+Z.
+- Comece de um preset (Soft, Neumorph, Glass), gere uma **sombra suave em várias camadas** ou **importe** um `box-shadow`, uma regra CSS ou uma classe `shadow-[…]` do Tailwind.
+- Fundos em gradiente (linear e radial, com quantas cores quiser) e border radius.
 
-- **Camadas**: adicione, duplique, reordene, oculte e remova camadas; cada uma tem deslocamento X/Y, blur, spread, cor, opacidade e inset.
-- **Gerador de sombra suave**: escolha quantas camadas, a distância e a intensidade, e ele monta a pilha (deslocamento e blur dobram a cada camada) para a queda suave que uma sombra só não dá.
-- **Importar CSS**: cole um `box-shadow` existente, uma regra CSS inteira ou uma classe `shadow-[…]` do Tailwind e continue editando.
-- **Preview medido**: a caixa é desenhada em escala 1:1 sobre uma grade, e as cotas mostram o deslocamento da camada selecionada, o contorno com spread, até onde o blur chega e de onde vem a luz. Ligue e desligue em **Cotas**.
-- **Presets**: Soft, Neumorph e Glass como ponto de partida.
-- **Desfazer / refazer** (Ctrl+Z, Ctrl+Shift+Z), e a última sessão volta quando você reabre o site.
+**Ver**
+- Numa caixa, num card, num botão ou no **seu próprio texto**, em qualquer fonte instalada ou num arquivo de fonte que você enviar.
+- Em fundo claro, escuro ou de qualquer cor; as cotas mantêm contraste de pelo menos 3:1 sobre ele.
 
-### Fundo e forma
+**Compartilhar**
+- Copie um link que reabre exatamente esta sombra; sua última sessão volta quando você reabre o site.
 
-- **Gradientes**: empilhe gradientes lineares e radiais, com quantas cores quiser, sobre uma cor base sólida.
-- **Forma**: border radius; a cor do fundo do preview também é ajustável.
-- **Preview numa caixa, num card ou num botão**, em fundo claro ou escuro, sempre em escala 1:1.
+## O que cada exportação suporta
 
-### Exportação
+| Formato | Várias camadas | Spread | Inset | Fundo em gradiente |
+| --- | :---: | :---: | :---: | :---: |
+| CSS (propriedades ou variável) | ✅ | ✅ | ✅ | ✅ |
+| Tailwind (classes ou token `@theme` da v4) | ✅ | ✅ | ✅ | ✅ |
+| Flutter (`BoxDecoration`) | ✅ | ✅ | com [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow) | só a camada do topo |
+| Jetpack Compose 1.9+ (`dropShadow` / `innerShadow`) | ✅ | ✅ | ✅ | API indicada num comentário |
+| SwiftUI | ✅ | — | ✅ (iOS 16+) | API indicada num comentário |
+| React Native 0.76+ (`boxShadow`) | ✅ | ✅ | ✅ | API indicada num comentário |
 
-- **CSS**: `box-shadow`, `background` e `border-radius`, uma camada por linha. O painel mostra exatamente o que é copiado, com a camada selecionada destacada.
-- **Dart/Flutter**: `BoxDecoration` com os `BoxShadow`, pronto para colar num `Container`.
-- **Variável CSS**: a sombra como `--shadow-layered`, para um arquivo de tokens.
-- **Tailwind**: classes de valor arbitrário `shadow-[…]` e `bg-[…]`, ou um token `@theme` da v4 (`shadow-layered`).
-- **Jetpack Compose** (1.9+): `Modifier.dropShadow` / `innerShadow`.
-- **SwiftUI**: uma forma por sombra, sombras internas com `.shadow(.inner)` (iOS 16+).
-- **React Native** (0.76+, nova arquitetura): estilo `boxShadow` com a sintaxe do CSS.
-- **Link compartilhável**: a sombra inteira numa URL, para colar num PR ou num chat.
-- **Copiar**: um botão para o formato ativo, com confirmação anunciada a leitores de tela.
+O **modo texto** exporta `text-shadow` (CSS, Tailwind), `TextStyle.shadows` (Flutter) e `.shadow` (SwiftUI); Compose e React Native aceitam **uma** sombra por texto, então exportam a primeira camada e avisam. Sombra de texto não tem spread nem inset.
 
-## Limitações conhecidas
+O radius de sombra do SwiftUI é cerca de metade do blur do CSS; a exportação converte e avisa num comentário.
 
-- **`inset` no Flutter**: o `BoxShadow` do Flutter não tem inset. Quando uma camada é interna, a aba Dart avisa e mostra o comando para instalar o [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow).
-- **Vários gradientes no Flutter**: o `BoxDecoration` aceita um gradiente só, então o Dart exporta o do topo (gradiente 1). CSS e Tailwind exportam todos.
-- **SwiftUI** não tem spread, e o radius dele é cerca de metade do blur do CSS; o código exportado avisa num comentário. Gradientes saem só em CSS, Tailwind e Dart; os outros formatos indicam a API a usar.
-- **Cores só em hexadecimal** no editor (`#RGB` / `#RRGGBB`); a importação de CSS também lê `rgb()`/`rgba()` e hex com alfa.
+## Como começar
 
-## Acessibilidade
-
-- Todo controle tem rótulo visível; campo numérico e slider andam juntos e são limitados a valores válidos.
-- A troca de painel e as abas de exportação seguem o padrão de abas do WAI-ARIA (setas, Home, End).
-- Foco visível em tudo, link para pular direto ao preview e respeito a `prefers-reduced-motion`.
-- Sucesso e falha ao copiar são anunciados numa região live.
-
-## Stack técnica
-
-| Tecnologia     | Uso                                                        |
-| -------------- | ---------------------------------------------------------- |
-| **Svelte 5**   | UI reativa com runes (`$state`, `$derived`)                |
-| **TypeScript** | Estado, lógica e componentes tipados                       |
-| **Vite**       | Servidor de dev e build de produção                        |
-| **CSS**        | Custom properties, Grid; fontes Overpass hospedadas no app |
-| **Vitest**     | Testes de unidade do núcleo e de integração (DOM)          |
-
-## Arquitetura
-
-Um **núcleo de lógica puro, sem framework**, com uma **UI reativa** fina por cima:
-
-```text
-src/
-├── App.svelte           # Barra superior + as três colunas de trabalho
-├── main.ts              # Monta o app
-├── App.test.ts          # Testes de integração (happy-dom)
-└── lib/
-    ├── shadow.ts        # Estado puro + geração de código (CSS/Dart/Tailwind)
-    ├── shadow.test.ts   # Testes de unidade (sem DOM)
-    ├── state.svelte.ts  # Singleton $state + actions + flags da UI
-    ├── tabs.ts          # Teclado nas abas ARIA
-    ├── types.ts
-    ├── config/controls.ts
-    └── components/      # Control, LayerList, BackgroundPanel, PreviewBox, CodeOutput, …
-```
-
-Veja [ARCHITECTURE.md](ARCHITECTURE.md) para os detalhes e [DESIGN.md](../../DESIGN.md) para o sistema visual.
-
-## Como usar
-
-Use online em [layeredshade.netlify.app](https://layeredshade.netlify.app/) ou rode localmente (Node 20.19+):
+Use online em **[layeredshade.netlify.app](https://layeredshade.netlify.app/)** ou rode localmente (Node 20.19+):
 
 ```bash
 git clone https://github.com/Franklyn-R-Silva/Layered-Shade.git
 cd Layered-Shade
 npm ci
-npm run dev      # http://localhost:5173
+npm run dev          # http://localhost:5173
 ```
 
-Gere o build com `npm run build` (saída em `dist/`) e sirva o build com `npm run preview`.
+| Comando | O que faz |
+| --- | --- |
+| `npm test` | Testes de unidade e integração (Vitest) |
+| `npm run lint` | ESLint, nenhum aviso permitido |
+| `npm run check` | Checagem de tipos com svelte-check, nenhum aviso permitido |
+| `npm run build` | Build de produção em `dist/` |
 
-## Testes
+## Contribuindo: qualquer pessoa pode ajudar
 
-```bash
-npm test               # Testes de unidade + integração
-npm run test:coverage  # Cobertura do núcleo de lógica
-npm run check          # Type-check (svelte-check)
-npm run lint           # ESLint
-```
+Você não precisa conhecer o código, Svelte ou sombras a fundo para contribuir. As issues marcadas como **[good first issue](https://github.com/Franklyn-R-Silva/Layered-Shade/labels/good%20first%20issue)** são pequenas, dizem exatamente quais arquivos mexer e quando estão prontas.
 
-O núcleo (`src/lib/shadow.ts`: mutações de estado e os geradores CSS/Dart/Tailwind) é coberto por testes de unidade sem DOM. O `src/App.test.ts` monta a árvore real de componentes para conferir que a UI acompanha o estado.
+1. Escolha uma issue (ou [abra uma](https://github.com/Franklyn-R-Silva/Layered-Shade/issues/new/choose)) e comente que vai pegar.
+2. Faça um fork, crie uma branch e rode `npm ci`.
+3. Faça a mudança com um teste; rode `npm test`, `npm run lint` e `npm run check`.
+4. Abra um pull request com `Closes #<issue>`. O CI roda as mesmas checagens e você recebe uma revisão.
 
-## Como contribuir
+Relatos de bug, traduções, correções na documentação e ideias são tão bem-vindos quanto código. Veja o [CONTRIBUTING.md](CONTRIBUTING.md) para os detalhes e o [Código de Conduta](CODE_OF_CONDUCT.md) para como nos tratamos.
 
-1. Faça um fork do projeto
-2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
-3. Faça commit das mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
-4. Envie a branch (`git push origin feature/nova-funcionalidade`)
-5. Abra um pull request
+## Segurança e qualidade
 
-Veja [CONTRIBUTING.md](CONTRIBUTING.md) para as diretrizes e [SECURITY.md](SECURITY.md) para reportar uma vulnerabilidade.
+- Autoavaliado pelos critérios do [OpenSSF Best Practices](https://www.bestpractices.dev/projects/17195); o selo acima mostra a situação atual.
+- O CodeQL analisa todo pull request. Alertas e atualizações de segurança agrupadas do Dependabot, varredura de segredos com proteção no push, instalação só pelo lockfile e actions fixadas por SHA protegem a cadeia de dependências.
+- O site usa uma Content Security Policy rígida e não carrega nada de terceiros.
+- Achou uma vulnerabilidade? Reporte de forma privada como explica o [SECURITY.md](SECURITY.md).
+
+## Arquitetura
+
+Um núcleo de lógica puro, sem framework (`src/lib/shadow.ts` e os módulos ao lado), com uma UI fina em Svelte 5 por cima, para que todo gerador seja testado sem navegador. Veja o [ARCHITECTURE.md](ARCHITECTURE.md), o sistema visual no [DESIGN.md](../../DESIGN.md) e o contexto do produto no [PRODUCT.md](../../PRODUCT.md).
 
 ## Autor
 
-Franklyn R. Silva
-
-- GitHub: [@Franklyn-R-Silva](https://github.com/Franklyn-R-Silva)
-- LinkedIn: [franklyn-roberto-dev](https://www.linkedin.com/in/franklyn-roberto-dev/)
+Feito por **Franklyn R. Silva** · [GitHub](https://github.com/Franklyn-R-Silva) · [LinkedIn](https://www.linkedin.com/in/franklyn-roberto-dev/)
 
 ## Licença
 
