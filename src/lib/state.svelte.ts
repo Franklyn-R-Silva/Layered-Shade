@@ -9,9 +9,11 @@ import type { CodeMode, ShadowState } from './types';
 
 export const state: ShadowState = $state(core.createInitialState());
 
-export const ui = $state<{ mode: CodeMode; sidebar: 'shadow' | 'background' }>({
+export const ui = $state<{ mode: CodeMode; sidebar: 'shadow' | 'background'; guides: boolean }>({
   mode: 'css',
   sidebar: 'shadow',
+  /** Grid and dimension lines on the preview stage. */
+  guides: true,
 });
 
 export const actions = {

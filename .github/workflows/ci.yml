@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -19,10 +22,8 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Clean install dependencies
-        run: |
-          rm -rf node_modules package-lock.json
-          npm install
+      - name: Install dependencies (from the lockfile)
+        run: npm ci
 
       - name: Lint
         run: npm run lint

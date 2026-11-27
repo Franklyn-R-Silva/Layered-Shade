@@ -17,7 +17,7 @@ cd Layered-Shade
 ### 2. Install Dependencies
 
 ```bash
-npm install
+npm ci   # installs exactly what package-lock.json pins (Node 20.19+)
 ```
 
 ### 3. Create a Branch
@@ -28,9 +28,16 @@ git checkout -b feature/my-new-feature
 
 ### 4. Make Your Changes
 
-- Follow the existing code style
-- Add tests for new features
-- Ensure all tests pass: `npm test`
+- Follow the existing code style and architecture (pure logic in `src/lib/shadow.ts`, UI in `src/lib/components/`)
+- **Every behavior change comes with tests**: logic changes get unit tests in `src/lib/shadow.test.ts`; UI behavior gets a case in `src/App.test.ts`. Bug fixes include a test that fails without the fix.
+- Before opening the PR, all of these must pass (CI runs the same on every pull request and blocks the merge otherwise):
+
+  ```bash
+  npm run lint    # ESLint, zero warnings allowed
+  npm run check   # svelte-check type-check, zero warnings allowed
+  npm test        # Vitest
+  npm run build   # production build
+  ```
 
 ### 5. Commit and Push
 
@@ -48,18 +55,19 @@ Go to the original repository and open a PR describing your changes.
 
 ## 📏 Code Standards
 
-### JavaScript
+### TypeScript and Svelte
 
-- ES6+ (modules, arrow functions, destructuring)
-- Variable names in `camelCase`
-- Classes in `PascalCase`
-- JSDoc comments for public functions
+- TypeScript everywhere; Svelte 5 components with runes (`$state`, `$derived`, `$props`)
+- Keep `src/lib/shadow.ts` free of Svelte and DOM so it stays unit-testable
+- Variable names in `camelCase`, components in `PascalCase`
+- A short doc comment on every exported function
+- UI copy in Portuguese (pt-BR); docs in English with a pt-BR mirror under `docs/pt-BR/`
 
 ### CSS
 
-- CSS Variables for colors and spacing
-- BEM-like naming (when applicable)
-- Mobile-first approach
+- Use the tokens in `src/styles/variables.css`; the visual system is described in [DESIGN.md](DESIGN.md)
+- Global CSS by class name, one module per region in `src/styles/modules/`
+- Every control keeps a visible label, keyboard access and a visible focus state
 
 ### Commits
 

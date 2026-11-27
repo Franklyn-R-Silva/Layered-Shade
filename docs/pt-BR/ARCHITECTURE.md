@@ -17,9 +17,11 @@ e os componentes declarativos.
   - Estado: `createInitialState()`, `update()`, `reset()`, `addLayer()`, `removeLayer()`,
     `selectLayer()`, `addBackgroundLayer()`, `removeBackgroundLayer()`, `applyPreset()`.
   - Geradores: `getCSS()`, `getDart()` (Flutter `BoxShadow`/`BoxDecoration`), `getTailwind()`,
-    `getBackgroundCSS()`, `getLayerDart()`, `getLayerTailwind()`.
+    `getBackgroundCSS()`, `getLayerCSS()`, `getLayerDart()`, `getLayerTailwind()`.
+  - Auxiliares: `hexToRgba()`, `hexToColorObj()`, `isDarkColor()` (tinta das cotas em fundo escuro),
+    `shadowCornerRadius()` (a regra de spread/radius da especificação, usada nas cotas do preview).
 - **Estado reativo (`src/lib/state.svelte.ts`)** — um singleton `$state` do Svelte 5 que envolve
-  o núcleo puro: `state` (o `ShadowState`), `ui` (`mode`, `sidebar`) e `actions` (wrappers finos).
+  o núcleo puro: `state` (o `ShadowState`), `ui` (`mode`, `sidebar`, `guides`) e `actions` (wrappers finos).
   Mutar `state` re-renderiza qualquer componente que o lê — substituindo o wiring manual do antigo
   controller MVC.
 - **Tipos (`src/lib/types.ts`)** — `ShadowLayer`, `BackgroundLayer`, `GradientStop`,
@@ -32,7 +34,7 @@ e os componentes declarativos.
 index.html                # entry do Vite (head com SEO/OG/JSON-LD/PWA)
 src/
   main.ts                 # monta o App, importa o CSS global
-  App.svelte              # layout: header, Toolbar, grid do gerador, CodeOutput, Footer
+  App.svelte              # barra superior (nome, links do autor) + três colunas: controles, prancha, código
   lib/
     shadow.ts             # estado puro + geração de código
     shadow.test.ts        # testes de unidade (sem DOM)
@@ -44,10 +46,12 @@ src/
       ShadowControls.svelte / ShapeControls.svelte
       LayerList.svelte    # camadas de sombra
       BackgroundPanel.svelte   # camadas de gradiente + stops
-      PreviewBox.svelte
-      CodeOutput.svelte   # abas CSS/Dart/Tailwind + copiar
-      Toolbar.svelte / Sidebar.svelte / Footer.svelte
-  styles/                 # CSS global (styles.css → variables.css + modules/*.css)
+      PreviewBox.svelte   # prancha 1:1: caixa, grade e cotas (SVG)
+      Toolbar.svelte      # barra da prancha: presets, cor do fundo, Cotas
+      CodeOutput.svelte   # abas CSS/Dart/Tailwind, código como é copiado, copiar + status
+      Sidebar.svelte      # painéis Sombra/Fundo + resetar
+      Icon.svelte         # conjunto único de ícones de traço
+  styles/                 # CSS global: variables.css (tokens, @font-face) + modules/{base,layout,controls,stage,code}.css
 public/                   # manifest.json, sitemap.xml, robots.txt, icons/, github/
 ```
 
@@ -63,5 +67,5 @@ public/                   # manifest.json, sitemap.xml, robots.txt, icons/, gith
 - O Flutter não tem sombra inset nativa: `getDart()` emite `inset` como comentário indicando o
   pacote [`flutter_inset_box_shadow`](https://pub.dev/packages/flutter_inset_box_shadow) e exporta
   apenas a camada de gradiente do topo (o `BoxDecoration` aceita um único gradiente).
-- O CSS global é reutilizado por nome de classe (sem `<style>` com escopo), então o markup migrado
-  mantém o design system original.
+- O CSS global é compartilhado por nome de classe (sem `<style>` com escopo); os tokens ficam em
+  `src/styles/variables.css` e o sistema visual está documentado no [DESIGN.md](../../DESIGN.md).

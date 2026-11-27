@@ -34,11 +34,11 @@ npx vitest run -t "getTailwind"
 Reactive UI (Svelte 5 runes) over a **pure, framework-free logic core**. This split is the key idea — keep it.
 
 - **`src/lib/shadow.ts` — pure logic (no Svelte).** State factory (`createInitialState`), mutations (`update`, `addLayer`, `reset`, `addBackgroundLayer`, …), presets (`applyPreset`), and all code generation (`getCSS`, `getDart`, `getTailwind`, `getBackgroundCSS`). Everything takes a `ShadowState` and is unit-tested in `src/lib/shadow.test.ts` with no DOM/Svelte. Put new logic here.
-- **`src/lib/state.svelte.ts` — reactive layer.** `export const state = $state(createInitialState())` plus `ui` (`mode`, `sidebar`) and thin `actions` wrappers that call the pure functions on the singleton `state`. Mutating `state` re-renders the UI — this replaces the old manual controller wiring.
+- **`src/lib/state.svelte.ts` — reactive layer.** `export const state = $state(createInitialState())` plus `ui` (`mode`, `sidebar`, `guides`) and thin `actions` wrappers that call the pure functions on the singleton `state`. Mutating `state` re-renders the UI — this replaces the old manual controller wiring.
 - **`src/lib/types.ts`** — `ShadowLayer`, `BackgroundLayer`, `GradientStop`, `BoxProperties`, `ShadowState`, `CodeMode`.
 - **`src/lib/config/controls.ts`** — declarative slider/color/checkbox config (`shadowControls`).
-- **`src/lib/components/*.svelte`** — `Control` (renders one config-driven control), `ShadowControls`/`ShapeControls`, `LayerList`, `BackgroundPanel`, `PreviewBox`, `CodeOutput` (tabs + copy), `Toolbar`, `Sidebar`, `Footer`. `src/App.svelte` composes the layout; `src/main.ts` mounts it.
-- **`src/styles/`** — global CSS (`styles.css` `@import`s `variables.css` + `modules/*.css`). Imported once in `main.ts`. Components reuse these class names rather than scoped `<style>`.
+- **`src/lib/components/*.svelte`** — `Control` (renders one config-driven control), `ShadowControls`/`ShapeControls`, `LayerList`, `BackgroundPanel`, `PreviewBox` (1:1 stage with SVG dimension lines), `Toolbar` (stage bar: presets, canvas color, Cotas), `CodeOutput` (tabs, code exactly as copied, copy + live status), `Sidebar`, `Icon`. `src/App.svelte` composes the top bar and the three columns; `src/main.ts` mounts it. `src/lib/tabs.ts` gives ARIA tablists their arrow-key support.
+- **`src/styles/`** — global CSS (`styles.css` `@import`s `variables.css` + `modules/{base,layout,controls,stage,code}.css`). Imported once in `main.ts`. Components reuse these class names rather than scoped `<style>`. Visual system: `DESIGN.md` (impeccable); product context: `PRODUCT.md`.
 
 ### Key conventions & gotchas
 
@@ -52,7 +52,8 @@ Reactive UI (Svelte 5 runes) over a **pure, framework-free logic core**. This sp
 
 - Vitest + `happy-dom` (config lives in `vite.config.ts` under `test`). Tests are `src/**/*.test.ts`; the core suite is `src/lib/shadow.test.ts` (pure logic). Coverage is scoped to `src/lib/shadow.ts` + `src/lib/config/controls.ts`.
 - Lint uses ESLint 10 flat config (`eslint.config.js`) with `typescript-eslint` + `eslint-plugin-svelte`.
-- CI (`.github/workflows/ci.yml`, Node 20): clean install → lint → test → coverage → **build**.
+- CI (`.github/workflows/ci.yml`, Node 20): `npm ci` → lint → test → coverage → **build**. Keep `package-lock.json` committed: a fresh `npm install` without it hits an npm 10 arborist crash on this dependency set.
+- The impeccable design skill, its agents and its detector hook live under `.claude/` (`/impeccable`).
 
 ## Notes
 

@@ -20,7 +20,9 @@
 
   function onRange(e: Event) {
     let v = Number((e.target as HTMLInputElement).value);
-    if (Number.isNaN(v)) return; // ignore non-numeric text entry
+    if (Number.isNaN(v) || (e.target as HTMLInputElement).value === '') return;
+    // Out-of-range values make invalid CSS (a negative blur drops the whole box-shadow).
+    v = Math.min(config.max ?? v, Math.max(config.min ?? v, v));
     if (config.id === 'opacity') v = v / 100;
     actions.update(config.id, v);
   }
@@ -29,60 +31,70 @@
     actions.update(config.id, (e.target as HTMLInputElement).value);
   }
 
+  // Hex is committed on change (blur/Enter) so a half-typed value never jumps the caret.
+  function onHex(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(input.value.trim());
+    if (!m) {
+      input.value = raw as string;
+      return;
+    }
+    const hex = m[1].length === 3 ? [...m[1]].map((c) => c + c).join('') : m[1];
+    actions.update(config.id, `#${hex.toLowerCase()}`);
+  }
+
   function onCheck(e: Event) {
     actions.update(config.id, (e.target as HTMLInputElement).checked);
   }
 </script>
 
 {#if config.type === 'checkbox'}
-  <div class="form-control checkbox-control">
-    <label for={config.id}>{config.label}</label>
-    <input
-      type="checkbox"
-      id={config.id}
-      class="checkmark"
-      title={config.label}
-      checked={raw as boolean}
-      onchange={onCheck}
-    />
-  </div>
+  <label class="check">
+    <input type="checkbox" id={config.id} checked={raw as boolean} onchange={onCheck} />
+    <span>{config.label}</span>
+  </label>
 {:else if config.type === 'color'}
-  <div class="form-control">
-    <div class="control-header">
-      <label for={config.id}>{config.label}</label>
-      <div class="reference-input">
-        <input type="text" id={`${config.id}-value`} aria-label={`Valor de ${config.label}`} value={displayValue} readonly />
-      </div>
-    </div>
-    <div class="control-body">
-      <input type="color" id={config.id} title={config.label} value={raw as string} oninput={onColor} />
-    </div>
+  <div class="field field-inline">
+    <label for={config.id}>{config.label}</label>
+    <span class="color-pair">
+      <input type="color" id={config.id} value={raw as string} oninput={onColor} />
+      <input
+        type="text"
+        class="hex"
+        id={`${config.id}-value`}
+        aria-label={`${config.label} em hexadecimal`}
+        value={raw as string}
+        maxlength="7"
+        spellcheck="false"
+        autocomplete="off"
+        onchange={onHex}
+      />
+    </span>
   </div>
 {:else}
-  <div class="form-control">
-    <div class="control-header">
+  <div class="field">
+    <div class="field-head">
       <label for={config.id}>{config.label}</label>
-      <div class="reference-input">
+      <span class="num">
         <input
-          type="text"
+          type="number"
           id={`${config.id}-value`}
-          aria-label={`Valor de ${config.label}`}
+          aria-label={`${config.label} em ${config.unit === '%' ? 'porcentagem' : 'pixels'}`}
+          min={config.min}
+          max={config.max}
           value={displayValue}
           oninput={onRange}
         />
-        <span class="unit">px</span>
-      </div>
+        <span class="unit" aria-hidden="true">{config.unit}</span>
+      </span>
     </div>
-    <div class="control-body">
-      <input
-        type="range"
-        id={config.id}
-        title={config.label}
-        min={config.min}
-        max={config.max}
-        value={displayValue}
-        oninput={onRange}
-      />
-    </div>
+    <input
+      type="range"
+      id={config.id}
+      min={config.min}
+      max={config.max}
+      value={displayValue}
+      oninput={onRange}
+    />
   </div>
 {/if}

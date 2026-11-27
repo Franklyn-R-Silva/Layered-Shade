@@ -1,174 +1,461 @@
-/* Controls and Range Sliders */
+/* Controls column: panel switch, layer lists, fields and buttons. */
 
-.form-control {
-  margin-bottom: var(--spacing-6);
-  border: none;
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  padding: 3px;
+  background: var(--film-sunk);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.segmented [role='tab'] {
+  min-height: 32px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  font-weight: 600;
+  color: var(--graphite-2);
+  cursor: pointer;
+  transition:
+    background-color var(--fast) var(--ease-out),
+    color var(--fast) var(--ease-out);
+}
+
+.segmented [role='tab']:hover {
+  color: var(--graphite);
+}
+
+.segmented [aria-selected='true'] {
+  background: var(--paper);
+  color: var(--blueline);
+  box-shadow:
+    0 0 0 1px var(--rule),
+    0 1px 2px rgba(35, 39, 43, 0.12);
+}
+
+.tabpanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.group + .group {
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--rule);
+}
+
+.group h2,
+.panel-head h2 {
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+.group h3 {
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.stops-head {
+  margin-top: var(--space-2);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--graphite);
+  cursor: pointer;
+  transition:
+    background-color var(--fast) var(--ease-out),
+    border-color var(--fast) var(--ease-out),
+    color var(--fast) var(--ease-out);
+}
+
+.btn:hover {
+  border-color: var(--graphite-2);
+}
+
+.btn:active {
+  translate: 0 1px;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-quiet {
+  background: transparent;
+  border-color: var(--rule);
+}
+
+.btn-quiet:hover {
+  background: var(--paper);
+}
+
+.btn-primary {
+  min-height: 44px;
+  border-color: var(--blueline);
+  background: var(--blueline);
+  color: var(--on-blueline);
+  font-size: var(--text-md);
+}
+
+.btn-primary:hover {
+  border-color: var(--blueline-deep);
+  background: var(--blueline-deep);
+}
+
+.btn-block {
+  width: 100%;
+  justify-content: center;
+}
+
+.column-controls > .btn-block {
+  margin-top: auto;
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--graphite-2);
+  cursor: pointer;
+  transition:
+    background-color var(--fast) var(--ease-out),
+    color var(--fast) var(--ease-out);
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--film-sunk);
+  color: var(--pencil);
+}
+
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Layer and gradient lists */
+.layer-list,
+.stop-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
   padding: 0;
 }
 
-.control-header {
-  display: flex;
-  justify-content: space-between;
+.layer-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  margin-bottom: var(--spacing-3);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--paper);
+  transition:
+    border-color var(--fast) var(--ease-out),
+    background-color var(--fast) var(--ease-out);
 }
 
-.control-header label {
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--text-main);
-  margin: 0;
+.layer-item:hover {
+  border-color: var(--rule-strong);
 }
 
-.reference-input {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
+.layer-item.active {
+  border-color: var(--blueline);
+  background: var(--blueline-tint);
 }
 
-.reference-input .unit {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    font-weight: 500;
-    -webkit-user-select: none;
-    user-select: none;
+/* The focus ring wraps the whole row, remove button included. */
+.layer-item:has(.layer-select:focus-visible) {
+  outline: 2px solid var(--blueline);
+  outline-offset: 2px;
 }
 
-.control-body {
-    width: 100%;
-}
-
-/* Range Sliders */
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 8px; /* Slightly thicker */
-  background: rgba(0, 0, 0, 0.15); /* Darker track for visibility on light/glass bg */
-  border-radius: var(--radius-full);
+.layer-select:focus-visible {
   outline: none;
-  margin: 0;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  transition: background 0.3s;
 }
 
-input[type="range"]:hover {
-    background: rgba(0, 0, 0, 0.25);
+.layer-select {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
 }
 
-/* Restore a visible keyboard focus ring (the resting `outline: none` above
-   hides it, leaving sliders inaccessible to keyboard users). */
-input[type="range"]:focus-visible {
-    outline: 3px solid var(--accent-color);
-    outline-offset: 4px;
+.layer-index {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 600;
 }
 
-input[type="range"]:focus-visible::-webkit-slider-thumb {
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.35);
+.active .layer-index {
+  border-color: var(--blueline);
+  background: var(--blueline);
+  color: var(--on-blueline);
 }
 
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
+.layer-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.layer-name {
+  overflow: hidden;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.active .layer-name {
+  color: var(--blueline-deep);
+}
+
+.layer-swatch {
   width: 18px;
   height: 18px;
-  background: white;
+  border-radius: 2px;
+  outline: 1px solid var(--rule);
+}
+
+.gradient-swatch {
+  justify-self: end;
+  width: 56px;
+  height: 14px;
+  border-radius: 2px;
+  outline: 1px solid var(--rule);
+}
+
+.layer-spec {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--graphite-2);
+  white-space: nowrap;
+}
+
+.empty {
+  padding: var(--space-3);
+  border: 1px dashed var(--rule-strong);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  color: var(--graphite-2);
+}
+
+/* Fields */
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-head,
+.field-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.field-inline {
+  flex-direction: row;
+}
+
+.field label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.num {
+  display: inline-flex;
+  align-items: center;
+  padding-right: var(--space-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  transition: border-color var(--fast) var(--ease-out);
+}
+
+.num:hover {
+  border-color: var(--graphite-2);
+}
+
+.num:focus-within {
+  border-color: var(--blueline);
+  box-shadow: 0 0 0 3px var(--blueline-ring);
+}
+
+.num input {
+  width: 52px;
+  padding: 4px 4px 4px var(--space-2);
+  border: 0;
+  background: transparent;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.num input::-webkit-inner-spin-button,
+.num input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+/* The wrapper carries the focus ring for the number field. */
+.num input:focus-visible {
+  outline: none;
+}
+
+.unit,
+.readout {
+  font-size: var(--text-xs);
+  color: var(--graphite-2);
+}
+
+input[type='range'] {
+  width: 100%;
+  height: 20px;
+  margin: 0;
   cursor: pointer;
-  border-radius: 50%;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2px solid var(--primary-color);
-  margin-top: -6px; /* Center alignment fix depending on browser, or use flex centering */
-}
-/* No margin needed if height matches? Range height 6px, thumb 18px. Thumb is taller. */
-
-input[type="range"]::-webkit-slider-runnable-track {
-  height: 6px;
-  border-radius: var(--radius-full);
 }
 
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
 }
 
-/* Checkbox specific */
-.checkbox-control {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: var(--spacing-2) 0;
+input[type='color'] {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  cursor: pointer;
 }
 
-.checkbox-control label {
-    margin-right: auto;
-    font-weight: 600;
+input[type='color']::-webkit-color-swatch-wrapper {
+  padding: 3px;
 }
 
-/* Preset and Preview Controls */
-.preview-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    gap: 10px;
-    flex-wrap: wrap;
+input[type='color']::-webkit-color-swatch {
+  border: 0;
+  border-radius: 2px;
 }
 
-.presets-bar {
-    display: flex;
-    gap: 8px;
+input[type='color']::-moz-color-swatch {
+  border: 0;
+  border-radius: 2px;
 }
 
-.preset-btn {
-    background: rgba(255, 255, 255, 0.4); /* darker bg */
-    border: 1px solid rgba(0, 0, 0, 0.1); /* dark border */
-    color: var(--text-main); /* dark text */
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* subtle shadow */
+.color-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
-.preset-btn:hover {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
-    color: white; /* white text on hover */
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+.hex {
+  width: 84px;
+  padding: 6px var(--space-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
 }
 
-.color-config {
-    display: flex;
-    gap: 8px;
+.hex:focus-visible {
+  outline: none;
+  border-color: var(--blueline);
+  box-shadow: 0 0 0 3px var(--blueline-ring);
 }
 
-.color-config label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    overflow: hidden;
-    cursor: pointer;
-    border: 2px solid rgba(0, 0, 0, 0.15); /* Visible border */
-    transition: border-color 0.2s;
-    background: white; /* Fallback */
+.hex-static {
+  border-color: transparent;
+  background: transparent;
 }
 
-.color-config label:hover {
-    border-color: var(--primary-color);
+select {
+  max-width: 72%;
+  min-height: 32px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-size: var(--text-sm);
+  cursor: pointer;
 }
 
-.color-config input[type="color"] {
-    width: 150%;
-    height: 150%;
-    margin: -25%;
-    padding: 0;
-    border: none;
-    cursor: pointer;
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.stop-row {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 40px 32px;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.stop-row .readout {
+  text-align: right;
 }

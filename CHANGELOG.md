@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [🇧🇷 Português](docs/pt-BR/CHANGELOG.md)
 
+## [2.1.0] - 2026-11-27
+
+### Changed
+
+- 🎨 **Redesign ("drafting plate")**, made with the [impeccable](https://github.com/pbakaus/impeccable) design skill: the glass panels, animated blobs and gradient title are gone. A blueline top bar sits over three working columns: layer controls, a 1:1 preview plate and the generated code with the copy button, all visible at 1440×900.
+- 📐 **Dimension lines on the preview** (toggle: *Cotas*): X/Y offset, spread outline, blur reach and the implied light direction of the selected layer, with light ink on dark canvases.
+- 🧾 **Code panel shows exactly what is copied**: CSS one layer per line with the selected layer highlighted; the obsolete `-webkit-`/`-moz-` lines are no longer displayed (they were never copied). Tailwind shows the classes without the `class=""` wrapper, as copied.
+- 🔤 Overpass / Overpass Mono, self-hosted (no Google Fonts request).
+- ⌨️ Accessibility: ARIA tabs with arrow keys, no nested interactive elements in the layer lists, editable hex fields, number fields clamped to valid values, live copy status, SVG icons instead of glyphs.
+- ⚪ New defaults: white box on the film-grey plate (`#ffffff` on `#e9eef0`).
+
+### Fixed
+
+- 🐛 **Dart export**: the default state opened `BoxDecoration(` without closing it, so the copied code did not compile.
+- 🐛 Removing a layer before the selected one no longer moves the selection to another layer.
+- 🐛 The Flutter inset note now appears whenever any layer is inset, not only the selected one; a note explains the one-gradient limit.
+- 🐛 Opacity showed a `px` unit; it now shows `%`.
+- 🐛 Removing a gradient's last-but-one color no longer opens a browser `alert()`; the button is disabled instead.
+
+### Security / maintenance
+
+- 🔒 Content Security Policy added to the Netlify headers (SECURITY.md already claimed it). Security contact e-mail corrected.
+- 📦 Dependencies: Vite 8, `@sveltejs/vite-plugin-svelte` 7.3, TypeScript pinned to 5.9 (TypeScript 7 broke `typescript-eslint`); `npm ci` had stopped resolving on `main`. `npm audit`: 0 vulnerabilities.
+- 🤖 CI installs with `npm ci`; Dependabot groups updates monthly and security fixes into one PR.
+
 ## [2.0.0] - 2026-07-13
 
 ### Changed

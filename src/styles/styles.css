@@ -1,18 +1,7 @@
-/* Main Stylesheet 
-   Imports all modules. 
-*/
-
+/* Global stylesheet: tokens, then one module per region. Components reuse these class names. */
 @import 'variables.css';
 @import 'modules/base.css';
-@import 'modules/animations.css';
 @import 'modules/layout.css';
-@import 'modules/glassmorphism.css';
 @import 'modules/controls.css';
-@import 'modules/inputs.css';
-@import 'modules/buttons.css';
-@import 'modules/tabs.css';
-@import 'modules/layers.css';
-@import 'modules/gradients.css';
-@import 'modules/toolbar.css';
-@import 'modules/sidebar.css';
-@import 'modules/footer.css';
+@import 'modules/stage.css';
+@import 'modules/code.css';

@@ -54,10 +54,41 @@ describe('App (integration)', () => {
     const twTab = [...host.querySelectorAll('.tab-btn')].find(
       (b) => b.textContent?.trim() === 'Tailwind',
     );
-    expect(twTab?.classList.contains('active')).toBe(true);
-    // The tailwind panel should be the active one.
-    const twPanel = host.querySelector('#tailwind-rule');
-    expect(twPanel?.closest('.tab-content')?.classList.contains('active')).toBe(true);
+    expect(twTab?.getAttribute('aria-selected')).toBe('true');
+    // The tailwind panel is the only visible one.
+    const twPanel = host.querySelector('#tailwind-rule')?.closest('[role="tabpanel"]') as HTMLElement;
+    expect(twPanel.hidden).toBe(false);
+    expect((host.querySelector('#panel-css') as HTMLElement).hidden).toBe(true);
+  });
+
+  it('moves between code tabs with the arrow keys', () => {
+    render();
+    const list = host.querySelector('.code-tabs') as HTMLElement;
+    list.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    flushSync();
+    expect(ui.mode).toBe('dart');
+    list.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+    flushSync();
+    expect(ui.mode).toBe('tailwind');
+  });
+
+  it('shows the CSS exactly as it is copied, marking the selected layer', () => {
+    render();
+    actions.addLayer();
+    flushSync();
+    const lines = [...host.querySelectorAll('#rule .code-line')].map((l) => l.textContent);
+    expect(lines[0]).toBe('box-shadow:');
+    expect(lines.filter((l) => l?.startsWith('  '))).toHaveLength(2);
+    expect(host.querySelector('#rule .code-line.current')?.textContent).toBe(lines[2]);
+  });
+
+  it('hides the dimension lines when Cotas is off', () => {
+    render();
+    expect(host.querySelector('.dims')).toBeTruthy();
+    ui.guides = false;
+    flushSync();
+    expect(host.querySelector('.dims')).toBeFalsy();
+    ui.guides = true;
   });
 
   it('renders background-layer controls with correct <select> values', () => {

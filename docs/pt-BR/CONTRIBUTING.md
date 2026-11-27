@@ -17,7 +17,7 @@ cd Layered-Shade
 ### 2. Instale as Dependências
 
 ```bash
-npm install
+npm ci   # instala exatamente o que o package-lock.json fixa (Node 20.19+)
 ```
 
 ### 3. Crie uma Branch
@@ -28,9 +28,16 @@ git checkout -b feature/minha-nova-funcionalidade
 
 ### 4. Faça suas Alterações
 
-- Siga o padrão de código existente
-- Adicione testes para novas funcionalidades
-- Verifique se todos os testes passam: `npm test`
+- Siga o padrão de código e a arquitetura existentes (lógica pura em `src/lib/shadow.ts`, UI em `src/lib/components/`)
+- **Toda mudança de comportamento vem com testes**: mudanças de lógica ganham testes de unidade em `src/lib/shadow.test.ts`; comportamento da UI ganha um caso em `src/App.test.ts`. Correções de bug incluem um teste que falha sem a correção.
+- Antes de abrir o PR, tudo isto precisa passar (o CI roda o mesmo em todo pull request e bloqueia o merge se falhar):
+
+  ```bash
+  npm run lint    # ESLint, nenhum aviso permitido
+  npm run check   # type-check do svelte-check, nenhum aviso permitido
+  npm test        # Vitest
+  npm run build   # build de produção
+  ```
 
 ### 5. Commit e Push
 
@@ -48,18 +55,19 @@ Vá até o repositório original e abra um PR descrevendo suas alterações.
 
 ## 📏 Padrões de Código
 
-### JavaScript
+### TypeScript e Svelte
 
-- ES6+ (modules, arrow functions, destructuring)
-- Nomes de variáveis em `camelCase`
-- Classes em `PascalCase`
-- Comentários JSDoc para funções públicas
+- TypeScript em tudo; componentes Svelte 5 com runes (`$state`, `$derived`, `$props`)
+- Mantenha `src/lib/shadow.ts` sem Svelte e sem DOM, para seguir testável em unidade
+- Variáveis em `camelCase`, componentes em `PascalCase`
+- Um comentário curto de documentação em toda função exportada
+- Textos da UI em português (pt-BR); docs em inglês com espelho pt-BR em `docs/pt-BR/`
 
 ### CSS
 
-- CSS Variables para cores e espaçamentos
-- BEM-like naming (quando aplicável)
-- Mobile-first approach
+- Use os tokens de `src/styles/variables.css`; o sistema visual está descrito no [DESIGN.md](../../DESIGN.md)
+- CSS global por nome de classe, um módulo por região em `src/styles/modules/`
+- Todo controle mantém rótulo visível, acesso por teclado e estado de foco visível
 
 ### Commits
 
