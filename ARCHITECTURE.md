@@ -18,7 +18,8 @@ components stay declarative.
     `selectLayer()`, `addBackgroundLayer()`, `removeBackgroundLayer()`, `applyPreset()`.
   - Generators: `getCSS()`, `getDart()` (Flutter `BoxShadow`/`BoxDecoration`), `getTailwind()`,
     `getBackgroundCSS()`, `getLayerCSS()`, `getLayerDart()`, `getLayerTailwind()`.
-  - Helpers: `hexToRgba()`, `hexToColorObj()`, `isDarkColor()` (guide ink on dark canvases),
+  - Helpers: `hexToRgba()`, `hexToColorObj()`, `isDarkColor()` (sample text ink), `contrastRatio()` and
+    `guideInk()` (dimension-line ink that keeps 3:1 on any plate color),
     `shadowCornerRadius()` (the spec's spread/radius rule, used by the preview's dimension lines).
 - **Reactive state (`src/lib/state.svelte.ts`)** — a Svelte 5 `$state` singleton wrapping the
   pure core: `state` (the `ShadowState`), `ui` (`mode`, `sidebar`, `guides`) and `actions` (thin wrappers).

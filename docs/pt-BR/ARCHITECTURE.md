@@ -18,7 +18,8 @@ e os componentes declarativos.
     `selectLayer()`, `addBackgroundLayer()`, `removeBackgroundLayer()`, `applyPreset()`.
   - Geradores: `getCSS()`, `getDart()` (Flutter `BoxShadow`/`BoxDecoration`), `getTailwind()`,
     `getBackgroundCSS()`, `getLayerCSS()`, `getLayerDart()`, `getLayerTailwind()`.
-  - Auxiliares: `hexToRgba()`, `hexToColorObj()`, `isDarkColor()` (tinta das cotas em fundo escuro),
+  - Auxiliares: `hexToRgba()`, `hexToColorObj()`, `isDarkColor()` (tinta do texto de exemplo), `contrastRatio()` e
+    `guideInk()` (tinta das cotas, com 3:1 em qualquer cor de fundo),
     `shadowCornerRadius()` (a regra de spread/radius da especificação, usada nas cotas do preview).
 - **Estado reativo (`src/lib/state.svelte.ts`)** — um singleton `$state` do Svelte 5 que envolve
   o núcleo puro: `state` (o `ShadowState`), `ui` (`mode`, `sidebar`, `guides`) e `actions` (wrappers finos).

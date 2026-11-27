@@ -27,7 +27,6 @@ colors:
   sheet-current: "rgba(39, 71, 201, 0.6)"
   grid-minor: "rgba(39, 71, 201, 0.07)"
   grid-major: "rgba(39, 71, 201, 0.15)"
-  guide-night: "#c3cfff"
 typography:
   headline:
     fontFamily: "Overpass, system-ui, -apple-system, 'Segoe UI', sans-serif"
@@ -249,8 +248,8 @@ Cool drafting-film neutrals inked in graphite, one committed blue for everything
 - **Current Line** (rgba(39, 71, 201, 0.6)): highlights the CSS line of the selected shadow layer when there is more than one.
 
 ### Plate inks
-- **Grid Minor / Grid Major** (rgba(39, 71, 201, 0.07) / rgba(39, 71, 201, 0.15)): the 8px and 40px grid on a light plate. On a dark plate both switch to film at the same alphas.
-- **Guide on Dark** (#c3cfff): dimension lines and labels when the person picks a dark plate color (switched by `isDarkColor`).
+- **Guide ink**: dimension lines, labels and grid stay Blueline while it reaches 3:1 against the plate color; otherwise they switch to graphite (#16181d) or film (#f6f8f9), whichever contrasts more (`guideInk`). Mid-tone plates such as teal take graphite.
+- **Grid Minor / Grid Major** (rgba(39, 71, 201, 0.07) / rgba(39, 71, 201, 0.15)): the 8px and 40px grid, the guide ink at 7% and 15%.
 
 ### Named Rules
 **The Blueline Rule.** Blueline is the committed field: the top bar, selection, focus, the dimension lines and the copy action. Nothing decorative is ever blue.
@@ -357,7 +356,7 @@ Plain, ruled and quick; the copy button is the only filled one.
 - **Platform note:** shown in place above the copy button only when it applies: Red Pencil on Sheet text in a box with a 1px border of the same red at 40% and a 7% wash, 4px radius, 12px padding; the install command is selectable in one click.
 
 ### Stage plate (signature)
-The drafting plate. The 200px box renders at 1:1 on the person's plate color, over an 8px/40px Blueline grid when Cotas is on. Dimension lines in Blueline (Guide on Dark on dark plates) measure the selected layer: x and y offsets with ticks (or arrows from outside when the span is under 28px) and extension stubs, a solid outline of the spread, a dashed outline of the blur reach, a light ray with arrowhead and angle from the opposite corner, and an R callout on the free corner when the box is rounded. Lines sit on the side the shadow falls toward and stay inside the stage. When another layer is selected, lines draw in and labels fade in once (260ms, the expo ease-out); never on page load. A legend in the caption bar keys the solid and dashed lines to their values.
+The drafting plate. The 200px box renders at 1:1 on the person's plate color, over an 8px/40px Blueline grid when Cotas is on. Dimension lines in the guide ink (Blueline unless the plate color drops it under 3:1) measure the selected layer: x and y offsets with ticks (or arrows from outside when the span is under 28px) and extension stubs, a solid outline of the spread, a dashed outline of the blur reach, a light ray with arrowhead and angle from the opposite corner, and an R callout on the free corner when the box is rounded. Lines sit on the side the shadow falls toward and stay inside the stage. When another layer is selected, lines draw in and labels fade in once (260ms, the expo ease-out); never on page load. A legend in the caption bar keys the solid and dashed lines to their values.
 
 ### Motion
 State changes (color, border, background, the skip link) run 160ms on `cubic-bezier(0.16, 1, 0.3, 1)`. The dimension draw-in is the one authored moment. Under `prefers-reduced-motion` every animation and transition collapses to an instant change.

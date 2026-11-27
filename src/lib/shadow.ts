@@ -489,15 +489,35 @@ export function shadowCornerRadius(radius: number, spread: number): number {
   return radius + spread * (1 + (radius / spread - 1) ** 3);
 }
 
-/** True when a hex color is dark enough that light ink reads better on it (WCAG relative luminance). */
-export function isDarkColor(hex: string): boolean {
+/** WCAG relative luminance of a hex color (0–1); unparseable input reads as white. */
+function luminance(hex: string): number {
   const c = hexToColorObj(hex).hex;
-  if (!/^[0-9A-F]{6}$/.test(c)) return false;
+  if (!/^[0-9A-F]{6}$/.test(c)) return 1;
   const [r, g, b] = [0, 2, 4].map((i) => {
     const v = parseInt(c.slice(i, i + 2), 16) / 255;
     return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
   });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.18;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** True when a hex color is dark enough that light ink reads better on it (WCAG relative luminance). */
+export function isDarkColor(hex: string): boolean {
+  return luminance(hex) < 0.18;
+}
+
+/** WCAG 2 contrast ratio between two hex colors, 1 to 21. */
+export function contrastRatio(a: string, b: string): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((m, n) => n - m);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/**
+ * Ink for the dimension lines and grid on a plate color: blueline while it reaches 3:1 (WCAG
+ * non-text contrast), else graphite or film, whichever contrasts more (one always reaches 4:1).
+ */
+export function guideInk(canvas: string): string {
+  if (contrastRatio('#2747c9', canvas) >= 3) return '#2747c9';
+  return contrastRatio('#16181d', canvas) >= contrastRatio('#f6f8f9', canvas) ? '#16181d' : '#f6f8f9';
 }
 
 /** Fallback for non-hex colors. TODO: parse rgba() if stops ever store rgba strings. */
