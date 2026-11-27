@@ -31,3 +31,6 @@ build/
 
 # Test Coverage
 coverage/
+
+# Agent worktrees (Claude Code)
+.claude/worktrees/
