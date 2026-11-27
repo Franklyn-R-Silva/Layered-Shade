@@ -3,40 +3,55 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Layered Shade - Box Shadow Generator | CSS & Flutter</title>
-
-    <!-- SEO Meta Tags -->
+    <title>Layered Shade | Gerador de sombras para CSS, Flutter, Compose e SwiftUI</title>
     <meta
       name="description"
-      content="Crie sombras CSS (box-shadow) e código Dart/Flutter visualmente. Ferramenta online gratuita com preview em tempo real, suporte a múltiplas camadas e exportação para CSS, Dart e Tailwind."
+      content="Monte sombras em camadas para caixas e textos e copie o código em CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI e React Native. Grátis e sem cadastro."
     />
     <meta
       name="keywords"
-      content="box-shadow, CSS, Flutter, Dart, shadow generator, gerador de sombras, web design, UI design, Tailwind"
+      content="box-shadow, text-shadow, gerador de sombras, shadow generator, CSS, Tailwind, Flutter, BoxShadow, Jetpack Compose, SwiftUI, React Native"
     />
     <meta name="author" content="Franklyn R. Silva" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="theme-color" content="#2747c9" />
     <link rel="canonical" href="https://layeredshade.netlify.app/" />
+    <!-- One page, two languages: the app switches with ?lang=en (and updates title, description and canonical). -->
+    <link rel="alternate" hreflang="pt-BR" href="https://layeredshade.netlify.app/" />
+    <link rel="alternate" hreflang="en" href="https://layeredshade.netlify.app/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://layeredshade.netlify.app/" />
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Layered Shade" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:locale:alternate" content="en_US" />
     <meta property="og:url" content="https://layeredshade.netlify.app/" />
-    <meta property="og:title" content="Layered Shade - Box Shadow Generator" />
+    <meta property="og:title" content="Layered Shade: sombras em camadas para seis plataformas" />
     <meta
       property="og:description"
-      content="Crie sombras CSS e código Dart/Flutter visualmente. Preview em tempo real e exportação fácil."
+      content="Monte a sombra uma vez e copie em CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI ou React Native, com preview em escala 1:1."
     />
     <meta property="og:image" content="https://layeredshade.netlify.app/github/tela.png" />
+    <meta property="og:image:width" content="1440" />
+    <meta property="og:image:height" content="900" />
+    <meta
+      property="og:image:alt"
+      content="Layered Shade: controles das camadas, prancha de preview com cotas e o código gerado"
+    />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Layered Shade - Box Shadow Generator" />
+    <meta name="twitter:title" content="Layered Shade: sombras em camadas para seis plataformas" />
     <meta
       name="twitter:description"
-      content="Crie sombras CSS e código Dart/Flutter visualmente. Preview em tempo real e exportação fácil."
+      content="Monte a sombra uma vez e copie em CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI ou React Native."
     />
     <meta name="twitter:image" content="https://layeredshade.netlify.app/github/tela.png" />
+    <meta
+      name="twitter:image:alt"
+      content="Layered Shade: controles das camadas, prancha de preview com cotas e o código gerado"
+    />
 
     <!-- Favicon SVG -->
     <link
@@ -60,11 +75,23 @@
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Layered Shade",
-        "description": "Ferramenta online gratuita para gerar sombras CSS (box-shadow) e código Dart/Flutter (BoxShadow) visualmente, com preview em tempo real e exportação para CSS, Dart e Tailwind.",
         "url": "https://layeredshade.netlify.app/",
+        "description": "Visual generator for layered box and text shadows that exports the same shadow as CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI and React Native.",
         "applicationCategory": "DesignApplication",
         "operatingSystem": "Any",
         "browserRequirements": "Requires JavaScript and a modern browser",
+        "inLanguage": ["pt-BR", "en"],
+        "isAccessibleForFree": true,
+        "license": "https://opensource.org/licenses/MIT",
+        "screenshot": "https://layeredshade.netlify.app/github/tela.png",
+        "featureList": [
+          "Multi-layer box-shadow and text-shadow editor with a 1:1 preview",
+          "Export to CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI and React Native",
+          "Import an existing box-shadow, CSS rule or Tailwind class",
+          "Smooth multi-layer shadow generator",
+          "Preview on a box, card, button or your own text and font",
+          "Share link and undo/redo"
+        ],
         "author": {
           "@type": "Person",
           "name": "Franklyn R. Silva",
