@@ -141,6 +141,11 @@
   text-align: center;
 }
 
+/* Image mode: block, so no baseline gap makes the plate taller than the measured image. */
+.image-sample {
+  display: block;
+}
+
 .dims {
   position: absolute;
   inset: 0;

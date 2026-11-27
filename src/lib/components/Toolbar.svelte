@@ -11,7 +11,7 @@
     { name: 'cristal', label: 'Glass' },
   ];
   // Each id is also the key of its label.
-  const contexts: PreviewContext[] = ['box', 'card', 'button', 'text'];
+  const contexts: PreviewContext[] = ['box', 'card', 'button', 'text', 'image'];
   // Quick canvases to judge the same shadow on a light and on a dark app surface.
   const grounds = [
     { color: '#e9eef0', label: 'light' },

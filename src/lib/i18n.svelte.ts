@@ -178,6 +178,19 @@ const pt = {
   copyTab: 'Copiar {tab}',
   copiedStatus: 'Código {tab} copiado para a área de transferência.',
   copyFailed: 'Não deu para copiar. Selecione o código acima e use Ctrl+C.',
+
+  // Image mode (#75)
+  image: 'Imagem',
+  imageFile: 'Arquivo de imagem',
+  imageHint:
+    'PNG, JPEG, WebP, GIF ou SVG, até 10 MB. A imagem fica só neste navegador; nada é enviado. O link de compartilhamento não leva a imagem.',
+  imageLoaded: 'Imagem {name} carregada.',
+  imageTooBig: 'Arquivo grande demais: o limite é 10 MB.',
+  imageWrongType: 'Formato não aceito: use PNG, JPEG, WebP, GIF ou SVG.',
+  imageUnreadable: 'Não consegui ler esse arquivo de imagem.',
+  imageWidth: 'Largura',
+  imageSample: 'Imagem de exemplo',
+  imageDrops: 'imagem (drop-shadow): sem spread e sem inset',
 };
 
 export type Key = keyof typeof pt;
@@ -342,6 +355,19 @@ const en: Record<Key, string> = {
   copyTab: 'Copy {tab}',
   copiedStatus: '{tab} code copied to the clipboard.',
   copyFailed: 'Could not copy. Select the code above and press Ctrl+C.',
+
+  // Image mode (#75)
+  image: 'Image',
+  imageFile: 'Image file',
+  imageHint:
+    'PNG, JPEG, WebP, GIF or SVG, up to 10 MB. The image stays in this browser; nothing is uploaded. Share links do not carry the image.',
+  imageLoaded: 'Image {name} loaded.',
+  imageTooBig: 'File too large: the limit is 10 MB.',
+  imageWrongType: 'Format not accepted: use PNG, JPEG, WebP, GIF or SVG.',
+  imageUnreadable: 'Could not read that image file.',
+  imageWidth: 'Width',
+  imageSample: 'Sample image',
+  imageDrops: 'image (drop-shadow): no spread, no inset',
 };
 
 const dict: Record<Lang, Record<Key, string>> = { pt, en };

@@ -74,4 +74,4 @@ export interface ShadowState {
 export type CodeMode = 'css' | 'tailwind' | 'dart' | 'compose' | 'swiftui' | 'rn';
 
 /** What the preview draws the shadow on. */
-export type PreviewContext = 'box' | 'card' | 'button' | 'text';
+export type PreviewContext = 'box' | 'card' | 'button' | 'text' | 'image';

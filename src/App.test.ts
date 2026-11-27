@@ -3,11 +3,12 @@
  * Svelte reactivity wires the UI to the shared state (the main migration risk).
  */
 import { mount, unmount, flushSync } from 'svelte';
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import App from './App.svelte';
 import { state, ui, actions } from './lib/state.svelte';
 import { reset } from './lib/shadow';
 import { setLang } from './lib/i18n.svelte';
+import { image, SAMPLE_IMAGE } from './lib/image.svelte';
 
 describe('App (integration)', () => {
   let host: HTMLDivElement;
@@ -21,6 +22,7 @@ describe('App (integration)', () => {
     ui.sidebar = 'shadow';
     ui.context = 'box';
     ui.cssFormat = 'props';
+    Object.assign(image, { src: SAMPLE_IMAGE, name: '', width: 200 });
   });
 
   function render() {
@@ -229,6 +231,37 @@ describe('App (integration)', () => {
     input.dispatchEvent(new Event('input', { bubbles: true }));
     flushSync();
     expect(state.text.content).toBe('AMOR ❤');
+  });
+
+  it('draws the layers as a drop-shadow filter on the sample image, then on a chosen file', async () => {
+    render();
+    const select = host.querySelector('#preview-context') as HTMLSelectElement;
+    expect([...select.options].map((o) => o.textContent)).toContain('Imagem');
+    ui.context = 'image';
+    flushSync();
+    expect(host.querySelector('#box')).toBeNull();
+    expect(host.querySelector('#shape-title')).toBeNull(); // no radius: the shadow follows the outline
+    const img = host.querySelector('#image-sample') as HTMLImageElement;
+    expect(img.getAttribute('src')).toMatch(/^data:image\/svg\+xml,/);
+    expect(img.alt).toBe('Imagem de exemplo');
+    expect(img.style.filter).toContain('drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.2))');
+    expect(host.querySelector('.stage-caption')?.textContent).toContain('sem spread e sem inset');
+
+    const width = host.querySelector('#image-width') as HTMLInputElement;
+    width.value = '900';
+    width.dispatchEvent(new Event('input', { bubbles: true }));
+    flushSync();
+    expect(img.getAttribute('width')).toBe('480');
+
+    // Read locally with FileReader as a data: URL.
+    const input = host.querySelector('#image-file') as HTMLInputElement;
+    const file = new File([new Uint8Array([137, 80, 78, 71])], 'logo.png', { type: 'image/png' });
+    Object.defineProperty(input, 'files', { value: [file] });
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    await vi.waitFor(() => expect(img.getAttribute('src')).toMatch(/^data:image\/png;base64,/));
+    flushSync();
+    expect(img.alt).toBe('logo.png');
+    expect(host.querySelector('[aria-labelledby="image-title"] [role="status"]')?.textContent).toContain('logo.png');
   });
 
   it('draws the shadow on a card at its real size', () => {
