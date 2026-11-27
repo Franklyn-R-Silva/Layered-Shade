@@ -3,9 +3,12 @@
  * A token comes from a URL or from storage, so it is untrusted: every field is validated and
  * clamped to what the controls allow, and anything malformed is rejected as a whole.
  */
-import type { BackgroundLayer, ShadowLayer, ShadowState } from './types';
+import type { BackgroundLayer, ShadowLayer, ShadowState, TextProps } from './types';
+import { defaultText } from './shadow';
 
 const HEX = /^#[0-9a-f]{6}$/i;
+// No quotes or semicolons: the name goes into CSS font-family and into generated code.
+const FONT = /^[\p{L}\p{N} _-]{1,60}$/u;
 const SIZES = ['farthest-corner', 'closest-side', 'closest-corner', 'farthest-side'];
 
 const num = (v: unknown, min: number, max: number): number => {
@@ -62,6 +65,19 @@ function bgLayer(v: unknown): BackgroundLayer {
   return b;
 }
 
+function text(v: unknown): TextProps {
+  const o = obj(v);
+  const { content, font, weight } = o;
+  // Any Unicode is fine (it is rendered as text and escaped in exports), but a line break would end
+  // the string literal in the generated code.
+  if (typeof content !== 'string' || !content.length || content.length > 60 || /[\r\n]/.test(content))
+    throw new Error('content');
+  if (typeof font !== 'string' || !FONT.test(font)) throw new Error('font');
+  if (typeof weight !== 'number' || !Number.isInteger(weight / 100) || weight < 100 || weight > 900)
+    throw new Error('weight');
+  return { content, font, size: num(o.size, 8, 300), weight, color: hex(o.color) };
+}
+
 export function encodeState(state: ShadowState): string {
   const json = JSON.stringify({
     v: 1,
@@ -70,14 +86,19 @@ export function encodeState(state: ShadowState): string {
     b: state.backgroundLayers,
     bi: state.currentBgLayerIndex,
     p: state.boxProperties,
+    t: state.text,
   });
-  return btoa(json).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  // UTF-8 bytes first: btoa alone throws on the user's text beyond Latin-1.
+  const bytes = Array.from(new TextEncoder().encode(json), (b) => String.fromCharCode(b)).join('');
+  return btoa(bytes).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 export function decodeState(token: string): ShadowState | null {
   try {
     if (token.length > 20000) return null;
-    const o = obj(JSON.parse(atob(token.replace(/-/g, '+').replace(/_/g, '/'))));
+    // Tokens from before the text mode are ASCII JSON, which decodes the same as UTF-8.
+    const bytes = Uint8Array.from(atob(token.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+    const o = obj(JSON.parse(new TextDecoder().decode(bytes)));
     if (o.v !== 1) return null;
     const layers = list(o.l, 1, 30).map(layer);
     const backgroundLayers = list(o.b ?? [], 0, 12).map(bgLayer);
@@ -92,6 +113,7 @@ export function decodeState(token: string): ShadowState | null {
         backgroundColor: hex(p.backgroundColor),
         canvasColor: hex(p.canvasColor),
       },
+      text: o.t === undefined ? defaultText() : text(o.t),
     };
   } catch {
     return null;

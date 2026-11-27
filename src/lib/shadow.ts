@@ -9,6 +9,7 @@ import type {
   BoxProperties,
   ShadowLayer,
   ShadowState,
+  TextProps,
 } from './types';
 
 /** Template for a new shadow layer. */
@@ -31,6 +32,11 @@ export function defaultBoxProperties(): BoxProperties {
   };
 }
 
+/** Default text for the text preview. */
+export function defaultText(): TextProps {
+  return { content: 'LOVE', font: 'Overpass', size: 120, weight: 800, color: '#23272b' };
+}
+
 /** Creates a fresh state with one shadow layer and no background gradients. */
 export function createInitialState(): ShadowState {
   return {
@@ -39,6 +45,7 @@ export function createInitialState(): ShadowState {
     backgroundLayers: [],
     currentBgLayerIndex: -1,
     boxProperties: defaultBoxProperties(),
+    text: defaultText(),
   };
 }
 
@@ -77,6 +84,7 @@ export function reset(state: ShadowState): void {
   state.backgroundLayers = [];
   state.currentBgLayerIndex = -1;
   state.boxProperties = defaultBoxProperties();
+  state.text = defaultText();
 }
 
 export function addLayer(state: ShadowState): void {
@@ -412,13 +420,157 @@ export function getLayerTailwind(layer: BackgroundLayer): string {
   return `bg-[${toTailwindArbitrary(getBackgroundCSSForLayer(layer))}]`;
 }
 
+/* ---- Text exports: the same layers as `text-shadow` (no inset, no spread) ---- */
+
+/** Generic families stay bare in CSS: quoted, they would name a font. */
+export const GENERIC_FONTS = ['serif', 'sans-serif', 'monospace', 'cursive', 'fantasy', 'system-ui'];
+
+/** CSS `font-family` value for the text. */
+export function fontStack(font: string): string {
+  return GENERIC_FONTS.includes(font.toLowerCase()) ? font : `"${font}", sans-serif`;
+}
+
+/** A font family name reduced to what share links accept (letters, digits, space, `_`, `-`; 60 max). */
+export function cleanFontName(name: string): string {
+  return [...name.replace(/[^\p{L}\p{N} _-]/gu, '')].slice(0, 60).join('').trim();
+}
+
+/** Layers a text shadow can draw: visible and not inset. */
+const textLayers = (state: ShadowState) => visibleLayers(state).filter((l) => !l.inset);
+const textLayerCSS = (l: ShadowLayer) =>
+  `${l.horizontal}px ${l.vertical}px ${l.blur}px ${hexToRgba(l.color, l.opacity)}`;
+
+/** Comment line saying what the text export left out (inset layers, spread); empty when nothing is. */
+function droppedNote(state: ShadowState, open = '//', close = ''): string {
+  const v = visibleLayers(state);
+  const parts: string[] = [];
+  if (v.some((l) => l.inset)) parts.push('camadas internas (inset) ignoradas');
+  if (v.some((l) => !l.inset && l.spread !== 0)) parts.push('spread ignorado');
+  return parts.length ? `${open} Sombra de texto não tem inset nem spread: ${parts.join(', ')}.${close}\n` : '';
+}
+
+/** The user's text as a string literal: backslash, the quote and any `special` character escaped. */
+const literal = (s: string, quote: string, special: RegExp) => quote + s.replace(special, (c) => `\\${c}`) + quote;
+const dartString = (s: string) => literal(s, "'", /[\\'$]/g);
+const kotlinString = (s: string) => literal(s, '"', /[\\"$]/g);
+const swiftString = (s: string) => literal(s, '"', /[\\"]/g);
+const jsString = (s: string) => literal(s, "'", /[\\']/g);
+
+/** The `text-shadow` value. */
+export function getTextShadowCSS(state: ShadowState): string {
+  const layers = textLayers(state);
+  return layers.length ? layers.map(textLayerCSS).join(', ') : 'none';
+}
+
+/** CSS properties for the text, one shadow layer per indented line. */
+export function getTextCSS(state: ShadowState): string {
+  const { font, size, weight, color } = state.text;
+  const layers = textLayers(state);
+  const shadow = layers.length ? `\n${layers.map((l) => `  ${textLayerCSS(l)}`).join(',\n')};` : ' none;';
+  return (
+    droppedNote(state, '/*', ' */') +
+    `font-family: ${fontStack(font)};\nfont-size: ${size}px;\nfont-weight: ${weight};\ncolor: ${color};\ntext-shadow:${shadow}`
+  );
+}
+
+/** Tailwind v4.1 classes (a class list has no room for the dropped-layers comment). */
+export function getTextTailwind(state: ShadowState): string {
+  const { font, size, weight, color } = state.text;
+  // Single quotes keep the class attribute intact; a literal `_` would read as a space.
+  const family = toTailwindArbitrary(fontStack(font).replace(/"/g, "'").replace(/_/g, '\\_'));
+  return `text-shadow-[${toTailwindArbitrary(getTextShadowCSS(state))}] text-[${size}px] text-[${color}] font-[${weight}] [font-family:${family}]`;
+}
+
+/** Flutter `Text` with every layer in `TextStyle.shadows` (`Shadow` has no spread). */
+export function getTextDart(state: ShadowState): string {
+  const { content, font, size, weight, color } = state.text;
+  const shadows = textLayers(state)
+    .map((l) => {
+      const [r, g, b] = [1, 3, 5].map((i) => parseInt(l.color.slice(i, i + 2), 16));
+      return (
+        `      Shadow(\n        color: Color.fromRGBO(${r}, ${g}, ${b}, ${l.opacity}),\n` +
+        `        offset: Offset(${l.horizontal}, ${l.vertical}),\n        blurRadius: ${l.blur},\n      ),\n`
+      );
+    })
+    .join('');
+  return (
+    droppedNote(state) +
+    `Text(\n  ${dartString(content)},\n  style: TextStyle(\n    fontFamily: ${dartString(font)},\n` +
+    `    fontSize: ${size},\n    fontWeight: FontWeight.w${weight},\n    color: Color(0xFF${hexToColorObj(color).hex}),\n` +
+    `    shadows: [\n${shadows}    ],\n  ),\n)`
+  );
+}
+
+/** Jetpack Compose: `TextStyle` takes one `Shadow` (px floats), so only the first text layer goes. */
+export function getTextCompose(state: ShadowState): string {
+  const { content, font, size, weight, color } = state.text;
+  const l = textLayers(state)[0];
+  const shadow = l
+    ? `,\n        shadow = Shadow(\n            color = Color(0x${argb(l.color, l.opacity)}),\n` +
+      `            offset = Offset(${l.horizontal}f, ${l.vertical}f),\n            blurRadius = ${l.blur}f\n        )`
+    : '';
+  return (
+    '// Jetpack Compose: TextStyle aceita uma sombra só; exportada a primeira camada visível (offset e blur em px).\n' +
+    droppedNote(state) +
+    `Text(\n    text = ${kotlinString(content)},\n    style = TextStyle(\n` +
+    `        fontFamily = FontFamily.Default, // fonte "${font}": adicione em res/font\n` +
+    `        fontSize = ${size}.sp,\n        fontWeight = FontWeight.W${weight},\n` +
+    `        color = Color(0xFF${hexToColorObj(color).hex})${shadow}\n    )\n)`
+  );
+}
+
+const SWIFT_WEIGHTS: Record<number, string> = {
+  100: 'ultraLight',
+  200: 'thin',
+  300: 'light',
+  400: 'regular',
+  500: 'medium',
+  600: 'semibold',
+  700: 'bold',
+  800: 'heavy',
+  900: 'black',
+};
+
+/** SwiftUI `Text` with one `.shadow` per layer (radius = blur / 2, as in `getSwiftUI`). */
+export function getTextSwiftUI(state: ShadowState): string {
+  const { content, font, size, weight, color } = state.text;
+  const shadows = textLayers(state)
+    .map((l) => `\n    .shadow(color: ${swiftColor(l.color, l.opacity)}, radius: ${+(l.blur / 2).toFixed(1)}, x: ${l.horizontal}, y: ${l.vertical})`)
+    .join('');
+  return (
+    '// SwiftUI: radius = blur CSS / 2; cada .shadow empilhado também sombreia as sombras anteriores.\n' +
+    droppedNote(state) +
+    `Text(${swiftString(content)})\n    .font(.custom(${swiftString(font)}, size: ${size}))\n` +
+    `    .fontWeight(.${SWIFT_WEIGHTS[weight] ?? 'regular'})\n    .foregroundStyle(${swiftColor(color, 1)})${shadows}`
+  );
+}
+
+/** React Native: one text shadow (`textShadow*`), so only the first text layer goes. */
+export function getTextReactNative(state: ShadowState): string {
+  const { content, font, size, weight, color } = state.text;
+  const l = textLayers(state)[0];
+  const shadow = l
+    ? `    textShadowColor: '${hexToRgba(l.color, l.opacity)}',\n` +
+      `    textShadowOffset: { width: ${l.horizontal}, height: ${l.vertical} },\n    textShadowRadius: ${l.blur},\n`
+    : '';
+  return (
+    '// React Native: uma sombra de texto só; exportada a primeira camada visível.\n' +
+    droppedNote(state) +
+    `<Text style={styles.text}>{${jsString(content)}}</Text>\n\nconst styles = StyleSheet.create({\n  text: {\n` +
+    `    fontFamily: ${jsString(font)},\n    fontSize: ${size},\n    fontWeight: '${weight}',\n    color: '${color}',\n` +
+    `${shadow}  },\n});`
+  );
+}
+
 /* ---- Presets ---- */
 
 export type PresetName = 'soft' | 'neumorphism' | 'cristal';
 
 /** Applies a named preset, mutating the state. */
 export function applyPreset(state: ShadowState, presetName: PresetName): void {
+  const text = state.text; // a preset restyles the shadow, not the user's text
   reset(state);
+  state.text = text;
 
   if (presetName === 'soft') {
     update(state, 'blur', 10);
@@ -456,7 +608,9 @@ export function applyPreset(state: ShadowState, presetName: PresetName): void {
     update(state, 'color', '#ffffff');
     update(state, 'opacity', 0.18);
     update(state, 'inset', true);
-    update(state, 'backgroundColor', 'rgba(255, 255, 255, 0.15)');
+    // White at 15% over the #0891b2 canvas, pre-mixed: the model is hex-only (a rgba() here broke
+    // the saved session, undo, the color input and the Dart export).
+    update(state, 'backgroundColor', '#2da2be');
     update(state, 'canvasColor', '#0891b2');
     state.backgroundLayers = [];
   }

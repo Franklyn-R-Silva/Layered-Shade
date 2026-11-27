@@ -7,6 +7,7 @@
   import BackgroundPanel from './BackgroundPanel.svelte';
   import Icon from './Icon.svelte';
   import LayerTools from './LayerTools.svelte';
+  import TextControls from './TextControls.svelte';
 
   const panels = [
     { id: 'shadow', label: 'Sombra' },
@@ -45,6 +46,7 @@
     aria-labelledby="tab-shadow"
     hidden={ui.sidebar !== 'shadow'}
   >
+    {#if ui.context === 'text'}<TextControls />{/if}
     <section id="layer-controls-container" class="group"><LayerList /><LayerTools /></section>
 
     <section class="group" aria-labelledby="layer-title">
@@ -52,10 +54,13 @@
       <div id="shadow-controls-container" class="fields"><ShadowControls /></div>
     </section>
 
-    <section class="group" aria-labelledby="shape-title">
-      <h2 id="shape-title">Forma</h2>
-      <div id="shape-controls-container" class="fields"><ShapeControls /></div>
-    </section>
+    {#if ui.context !== 'text'}
+      <!-- Border radius shapes the element; text has no box to round. -->
+      <section class="group" aria-labelledby="shape-title">
+        <h2 id="shape-title">Forma</h2>
+        <div id="shape-controls-container" class="fields"><ShapeControls /></div>
+      </section>
+    {/if}
   </div>
 
   <div

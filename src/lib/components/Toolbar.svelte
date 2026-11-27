@@ -12,6 +12,7 @@
     { id: 'box', label: 'Caixa' },
     { id: 'card', label: 'Card' },
     { id: 'button', label: 'Botão' },
+    { id: 'text', label: 'Texto' },
   ];
   // Quick canvases to judge the same shadow on a light and on a dark app surface.
   const grounds = [

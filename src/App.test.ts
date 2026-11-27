@@ -168,6 +168,39 @@ describe('App (integration)', () => {
     expect(state.layers[1]).toMatchObject({ vertical: 8, blur: 24, opacity: 0.12 });
   });
 
+  it('applies the layers as text-shadow to the typed text and exports it', () => {
+    render();
+    const select = host.querySelector('#preview-context') as HTMLSelectElement;
+    expect([...select.options].map((o) => o.textContent)).toContain('Texto');
+    ui.context = 'text';
+    flushSync();
+    expect(host.querySelector('#box')).toBeNull();
+
+    const input = host.querySelector('#text-content') as HTMLInputElement;
+    input.value = 'AMOR ❤';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    actions.addLayer();
+    flushSync();
+    const sample = host.querySelector('#text-sample') as HTMLElement;
+    expect(sample.textContent).toBe('AMOR ❤');
+    expect(sample.style.textShadow).toContain('rgba');
+
+    const css = host.querySelector('#rule')?.textContent;
+    expect(css).toContain('font-family: "Overpass", sans-serif;');
+    expect(css).toContain('text-shadow:');
+    expect(host.querySelector('#rule .code-line.current')?.textContent).toMatch(/^ {2}5px 5px 10px rgba\(0, 0, 0, 0\.5\);$/);
+
+    ui.mode = 'dart';
+    flushSync();
+    expect(host.querySelector('#dart-rule')?.textContent).toContain("'AMOR ❤'");
+
+    // An empty field keeps the last text: an empty one would not restore from the saved session.
+    input.value = '';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    flushSync();
+    expect(state.text.content).toBe('AMOR ❤');
+  });
+
   it('draws the shadow on a card at its real size', () => {
     render();
     ui.context = 'card';

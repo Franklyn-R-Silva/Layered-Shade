@@ -10,9 +10,15 @@
     getReactNative,
     getBackgroundCSS,
     getLayerCSS,
+    getTextCSS,
+    getTextTailwind,
+    getTextDart,
+    getTextCompose,
+    getTextSwiftUI,
+    getTextReactNative,
   } from '../shadow';
   import { tabKeydown } from '../tabs';
-  import type { CodeMode } from '../types';
+  import type { CodeMode, ShadowState } from '../types';
   import Icon from './Icon.svelte';
 
   const tabs: CodeMode[] = ['css', 'tailwind', 'dart', 'compose', 'swiftui', 'rn'];
@@ -35,7 +41,25 @@
     return lines;
   });
 
+  const TEXT: Record<CodeMode, (s: ShadowState) => string> = {
+    css: getTextCSS,
+    tailwind: getTextTailwind,
+    dart: getTextDart,
+    compose: getTextCompose,
+    swiftui: getTextSwiftUI,
+    rn: getTextReactNative,
+  };
+  const isText = $derived(ui.context === 'text');
+
   const lines = $derived.by(() => {
+    if (isText) {
+      // In the CSS view each indented line is one text-shadow layer, in layer order.
+      const order = shadow.layers.flatMap((l, i) => (l.hidden || l.inset ? [] : [i]));
+      let k = 0;
+      return TEXT[ui.mode](shadow)
+        .split('\n')
+        .map((text) => ({ text, layer: ui.mode === 'css' && text.startsWith('  ') ? order[k++] : undefined }));
+    }
     if (ui.mode === 'css' && ui.cssFormat === 'props') return cssLines;
     const code =
       ui.mode === 'css'
@@ -55,8 +79,9 @@
   });
   const text = $derived(lines.map((l) => l.text).join('\n'));
   const indentOf = (line: string) => line.length - line.trimStart().length;
-  const anyInset = $derived(shadow.layers.some((l) => l.inset && !l.hidden));
-  const extraGradients = $derived(shadow.backgroundLayers.length > 1);
+  // Box-only notes: the text exports state their own limits in a comment.
+  const anyInset = $derived(!isText && shadow.layers.some((l) => l.inset && !l.hidden));
+  const extraGradients = $derived(!isText && shadow.backgroundLayers.length > 1);
 
   let status = $state<'idle' | 'copied' | 'failed'>('idle');
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -107,7 +132,7 @@
   </div>
 
   <div class="code-body" role="tabpanel" id="code-panel" aria-labelledby={`tab-${ui.mode}`}>
-    {#if ui.mode === 'css' || ui.mode === 'tailwind'}
+    {#if !isText && (ui.mode === 'css' || ui.mode === 'tailwind')}
       <div class="format-switch" role="group" aria-label="Variante">
         {#if ui.mode === 'css'}
           <button type="button" aria-pressed={ui.cssFormat === 'props'} onclick={() => (ui.cssFormat = 'props')}
