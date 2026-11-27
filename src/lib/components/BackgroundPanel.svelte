@@ -2,6 +2,7 @@
   import { state, actions } from '../state.svelte';
   import type { BackgroundLayer } from '../types';
   import Icon from './Icon.svelte';
+  import { t } from '../i18n.svelte';
 
   const activeLayer = $derived(
     state.currentBgLayerIndex >= 0 ? state.backgroundLayers[state.currentBgLayerIndex] : null,
@@ -25,9 +26,9 @@
 </script>
 
 <section class="group" aria-labelledby="base-title">
-  <h2 id="base-title">Cor base</h2>
+  <h2 id="base-title">{t('baseColor')}</h2>
   <div class="field field-inline">
-    <label for="base-bg-picker">Cor sólida da caixa</label>
+    <label for="base-bg-picker">{t('solidBoxColor')}</label>
     <span class="color-pair">
       <input
         type="color"
@@ -42,14 +43,14 @@
 
 <section id="background-layers-container" class="group">
   <div class="panel-head">
-    <h2 id="gradients-title">Gradientes</h2>
+    <h2 id="gradients-title">{t('gradients')}</h2>
     <button type="button" class="btn btn-quiet" onclick={() => actions.addBackgroundLayer('linear')}>
-      <Icon name="plus" /> Adicionar
+      <Icon name="plus" /> {t('add')}
     </button>
   </div>
 
   {#if state.backgroundLayers.length === 0}
-    <p class="empty">Sem gradientes: a caixa usa só a cor base. Adicione um para empilhar gradientes sobre ela.</p>
+    <p class="empty">{t('noGradients')}</p>
   {:else}
     <ol class="layer-list" aria-labelledby="gradients-title">
       {#each state.backgroundLayers as layer, i (i)}
@@ -67,8 +68,8 @@
           <button
             type="button"
             class="icon-btn"
-            aria-label={`Remover gradiente ${i + 1}`}
-            title="Remover gradiente"
+            aria-label={t('removeGradientN', { n: i + 1 })}
+            title={t('removeGradient')}
             onclick={() => actions.removeBackgroundLayer(i)}
           >
             <Icon name="close" />
@@ -81,10 +82,10 @@
 
 {#if activeLayer}
   <section class="group" aria-labelledby="gradient-title">
-    <h2 id="gradient-title">Gradiente {state.currentBgLayerIndex + 1}</h2>
+    <h2 id="gradient-title">{t('gradientN', { n: state.currentBgLayerIndex + 1 })}</h2>
     <div class="fields">
       <div class="field field-inline">
-        <label for="bg-type-select">Tipo</label>
+        <label for="bg-type-select">{t('type')}</label>
         <select
           id="bg-type-select"
           value={activeLayer.type}
@@ -101,7 +102,7 @@
       {#if activeLayer.type === 'linear'}
         <div class="field">
           <div class="field-head">
-            <label for="bg-angle-range">Ângulo</label>
+            <label for="bg-angle-range">{t('angle')}</label>
             <output class="readout" for="bg-angle-range">{activeLayer.angle}°</output>
           </div>
           <input
@@ -118,7 +119,7 @@
       {:else}
         <div class="field">
           <div class="field-head">
-            <label for="bg-pos-x">Posição X</label>
+            <label for="bg-pos-x">{t('positionX')}</label>
             <output class="readout" for="bg-pos-x">{activeLayer.posX ?? 50}%</output>
           </div>
           <input
@@ -134,7 +135,7 @@
         </div>
         <div class="field">
           <div class="field-head">
-            <label for="bg-pos-y">Posição Y</label>
+            <label for="bg-pos-y">{t('positionY')}</label>
             <output class="readout" for="bg-pos-y">{activeLayer.posY ?? 50}%</output>
           </div>
           <input
@@ -149,7 +150,7 @@
           />
         </div>
         <div class="field field-inline">
-          <label for="bg-radial-size">Tamanho</label>
+          <label for="bg-radial-size">{t('size')}</label>
           <select
             id="bg-radial-size"
             value={activeLayer.size ?? 'farthest-corner'}
@@ -157,19 +158,19 @@
               if (activeLayer) activeLayer.size = (e.target as HTMLSelectElement).value;
             }}
           >
-            <option value="farthest-corner">Canto distante (padrão)</option>
-            <option value="closest-side">Lado próximo</option>
-            <option value="closest-corner">Canto próximo</option>
-            <option value="farthest-side">Lado distante</option>
+            <option value="farthest-corner">{t('farthestCorner')}</option>
+            <option value="closest-side">{t('closestSide')}</option>
+            <option value="closest-corner">{t('closestCorner')}</option>
+            <option value="farthest-side">{t('farthestSide')}</option>
           </select>
         </div>
       {/if}
     </div>
 
     <div class="panel-head stops-head">
-      <h3 id="stops-title">Cores</h3>
+      <h3 id="stops-title">{t('colors')}</h3>
       <button type="button" class="btn btn-quiet" onclick={addStop}>
-        <Icon name="plus" /> Cor
+        <Icon name="plus" /> {t('color')}
       </button>
     </div>
     <ol class="stop-list" aria-labelledby="stops-title">
@@ -178,7 +179,7 @@
           <input
             type="color"
             value={stop.color}
-            aria-label={`Cor ${i + 1}`}
+            aria-label={t('colorN', { n: i + 1 })}
             oninput={(e) => (stop.color = (e.target as HTMLInputElement).value)}
           />
           <input
@@ -186,7 +187,7 @@
             min="0"
             max="100"
             value={stop.position}
-            aria-label={`Posição da cor ${i + 1}`}
+            aria-label={t('colorPositionN', { n: i + 1 })}
             aria-valuetext={`${stop.position}%`}
             oninput={(e) => (stop.position = Number((e.target as HTMLInputElement).value))}
           />
@@ -194,8 +195,8 @@
           <button
             type="button"
             class="icon-btn"
-            aria-label={`Remover cor ${i + 1}`}
-            title={activeLayer.stops.length <= 2 ? 'Um gradiente precisa de pelo menos 2 cores' : 'Remover cor'}
+            aria-label={t('removeColorN', { n: i + 1 })}
+            title={t(activeLayer.stops.length <= 2 ? 'minColors' : 'removeColor')}
             disabled={activeLayer.stops.length <= 2}
             onclick={() => removeStop(i)}
           >

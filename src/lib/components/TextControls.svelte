@@ -6,30 +6,32 @@
 <script lang="ts">
   import { state as shadow, actions } from '../state.svelte';
   import { cleanFontName, GENERIC_FONTS } from '../shadow';
+  import { t, type Key } from '../i18n.svelte';
 
   const FONTS = ['Overpass', 'system-ui', 'serif', 'sans-serif', 'monospace', 'Georgia', 'Times New Roman', 'Arial', 'Verdana', 'Courier New', 'Impact'];
   const WEIGHTS = [100, 200, 300, 400, 500, 600, 700, 800, 900];
   const MAX_FONT_BYTES = 5 * 1024 * 1024;
 
-  const t = $derived(shadow.text);
+  const text = $derived(shadow.text);
   const fonts = $derived([...new Set([...FONTS, ...uploaded])]);
 
   let loads = $state(0);
-  let fontStatus = $state('');
+  // Kept as a key so the message follows a language switch.
+  let fontStatus = $state<[Key, string?]>();
   let fontFailed = $state(false);
 
   // A family is installed when text set in it measures differently from both generic fallbacks.
   // (document.fonts.check() answers true in Chrome even for fonts the machine does not have.)
   const missing = $derived.by(() => {
     void loads;
-    if (GENERIC_FONTS.includes(t.font.toLowerCase())) return false;
+    if (GENERIC_FONTS.includes(text.font.toLowerCase())) return false;
     const ctx = document.createElement('canvas').getContext('2d');
     if (!ctx) return false; // no canvas (tests, old browsers): do not claim it is missing
     const width = (family: string) => {
       ctx.font = `72px ${family}`;
       return ctx.measureText('mmmmmmmmmmlli WAV 0123').width;
     };
-    return ['monospace', 'serif'].every((g) => width(`"${t.font}", ${g}`) === width(g));
+    return ['monospace', 'serif'].every((g) => width(`"${text.font}", ${g}`) === width(g));
   });
 
   const value = (e: Event) => (e.target as HTMLInputElement).value;
@@ -55,7 +57,7 @@
     const input = e.target as HTMLInputElement;
     const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(input.value.trim());
     if (!m) {
-      input.value = t.color;
+      input.value = text.color;
       return;
     }
     const hex = m[1].length === 3 ? [...m[1]].map((c) => c + c).join('') : m[1];
@@ -68,10 +70,10 @@
     if (!file) return;
     fontFailed = true;
     if (file.size > MAX_FONT_BYTES) {
-      fontStatus = 'Arquivo grande demais: o limite é 5 MB.';
+      fontStatus = ['fontTooBig'];
       return;
     }
-    const name = cleanFontName(file.name.replace(/\.[^.]*$/, '')) || 'Fonte carregada';
+    const name = cleanFontName(file.name.replace(/\.[^.]*$/, '')) || t('fontDefaultName');
     try {
       const face = new FontFace(name, await file.arrayBuffer());
       document.fonts.add(await face.load());
@@ -79,32 +81,32 @@
       actions.setText({ font: name });
       loads++;
       fontFailed = false;
-      fontStatus = `Fonte ${name} carregada.`;
+      fontStatus = ['fontLoaded', name];
     } catch {
-      fontStatus = 'Não consegui ler esse arquivo de fonte.';
+      fontStatus = ['fontUnreadable'];
     }
   }
 </script>
 
 <section class="group" aria-labelledby="text-title">
-  <h2 id="text-title">Tipografia</h2>
+  <h2 id="text-title">{t('typography')}</h2>
   <div class="fields">
     <div class="field">
-      <label for="text-content">Texto</label>
+      <label for="text-content">{t('text')}</label>
       <input
         type="text"
         id="text-content"
         class="text-field"
         maxlength="60"
         autocomplete="off"
-        value={t.content}
+        value={text.content}
         oninput={onContent}
         onchange={showKept('content')}
       />
     </div>
 
     <div class="field">
-      <label for="text-font">Fonte</label>
+      <label for="text-font">{t('font')}</label>
       <input
         type="text"
         id="text-font"
@@ -114,7 +116,7 @@
         spellcheck="false"
         autocomplete="off"
         aria-describedby={missing ? 'text-font-missing' : undefined}
-        value={t.font}
+        value={text.font}
         oninput={onFont}
         onchange={showKept('font')}
       />
@@ -122,14 +124,12 @@
         {#each fonts as f (f)}<option value={f}></option>{/each}
       </datalist>
       {#if missing}
-        <p id="text-font-missing" class="tool-hint">
-          Fonte não encontrada neste computador; o navegador usa uma substituta.
-        </p>
+        <p id="text-font-missing" class="tool-hint">{t('fontMissing')}</p>
       {/if}
     </div>
 
     <div class="field">
-      <label for="text-font-file">Carregar fonte</label>
+      <label for="text-font-file">{t('loadFont')}</label>
       <input
         type="file"
         id="text-font-file"
@@ -137,34 +137,36 @@
         aria-describedby="text-font-hint"
         onchange={onFile}
       />
-      <p id="text-font-hint" class="tool-hint">A fonte fica só neste navegador; nada é enviado.</p>
-      <p class="tool-status" class:failed={fontFailed} role="status">{fontStatus}</p>
+      <p id="text-font-hint" class="tool-hint">{t('fontStaysLocal')}</p>
+      <p class="tool-status" class:failed={fontFailed} role="status">
+        {fontStatus ? t(fontStatus[0], { name: fontStatus[1] ?? '' }) : ''}
+      </p>
     </div>
 
     <div class="field">
       <div class="field-head">
-        <label for="text-size">Tamanho</label>
+        <label for="text-size">{t('size')}</label>
         <span class="num">
           <input
             type="number"
             id="text-size-value"
-            aria-label="Tamanho em pixels"
+            aria-label={t('sizeInPixels')}
             min="12"
             max="240"
-            value={t.size}
+            value={text.size}
             oninput={onSize}
           />
           <span class="unit" aria-hidden="true">px</span>
         </span>
       </div>
-      <input type="range" id="text-size" min="12" max="240" value={t.size} oninput={onSize} />
+      <input type="range" id="text-size" min="12" max="240" value={text.size} oninput={onSize} />
     </div>
 
     <div class="field field-inline">
-      <label for="text-weight">Peso</label>
+      <label for="text-weight">{t('weight')}</label>
       <select
         id="text-weight"
-        value={t.weight}
+        value={text.weight}
         onchange={(e) => actions.setText({ weight: Number((e.target as HTMLSelectElement).value) })}
       >
         {#each WEIGHTS as w (w)}<option value={w}>{w}</option>{/each}
@@ -172,20 +174,20 @@
     </div>
 
     <div class="field field-inline">
-      <label for="text-color">Cor</label>
+      <label for="text-color">{t('color')}</label>
       <span class="color-pair">
         <input
           type="color"
           id="text-color"
-          value={t.color}
+          value={text.color}
           oninput={(e) => actions.setText({ color: value(e) })}
         />
         <input
           type="text"
           class="hex"
           id="text-color-value"
-          aria-label="Cor do texto em hexadecimal"
-          value={t.color}
+          aria-label={t('textColorHex')}
+          value={text.color}
           maxlength="7"
           spellcheck="false"
           autocomplete="off"

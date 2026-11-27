@@ -3,6 +3,7 @@
   import { parseBoxShadow } from '../importCss';
   import { smoothLayers } from '../shadow';
   import Icon from './Icon.svelte';
+  import { t } from '../i18n.svelte';
 
   let css = $state('');
   let importStatus = $state<'idle' | 'ok' | 'error'>('idle');
@@ -26,9 +27,11 @@
 </script>
 
 <details class="tool">
-  <summary><Icon name="import" /> Importar CSS</summary>
+  <summary><Icon name="import" /> {t('importCss')}</summary>
   <div class="tool-body">
-    <label for="import-css">Cole um <code>box-shadow</code>, uma regra CSS ou uma classe <code>shadow-[…]</code></label>
+    <label for="import-css"
+      >{t('importHintA')}<code>box-shadow</code>{t('importHintB')}<code>shadow-[…]</code>{t('importHintC')}</label
+    >
     <textarea
       id="import-css"
       rows="3"
@@ -39,48 +42,45 @@
       aria-describedby="import-status"
     ></textarea>
     <button type="button" class="btn btn-block" disabled={!css.trim()} onclick={importCss}>
-      Importar e substituir camadas
+      {t('importReplace')}
     </button>
     <p id="import-status" class="tool-status" class:failed={importStatus === 'error'} role="status">
       {#if importStatus === 'ok'}
-        {imported} {imported === 1 ? 'camada importada' : 'camadas importadas'}. Ctrl+Z desfaz.
+        {imported === 1 ? t('importedOne') : t('importedMany', { n: imported })}
       {:else if importStatus === 'error'}
-        Não reconheci essa sombra. Use valores em px e cores em hex ou rgb(), separando camadas por vírgula.
+        {t('importFailed')}
       {/if}
     </p>
   </div>
 </details>
 
 <details class="tool">
-  <summary><Icon name="layers" /> Gerar sombra suave</summary>
+  <summary><Icon name="layers" /> {t('smoothShadow')}</summary>
   <div class="tool-body">
-    <p class="tool-hint">
-      Várias camadas cujo deslocamento e desfoque dobram a cada uma: a queda suave que uma sombra só não
-      consegue.
-    </p>
+    <p class="tool-hint">{t('smoothHint')}</p>
     <div class="field">
       <div class="field-head">
-        <label for="smooth-count">Camadas</label>
+        <label for="smooth-count">{t('layers')}</label>
         <output class="readout" for="smooth-count">{count}</output>
       </div>
       <input type="range" id="smooth-count" min="2" max="8" bind:value={count} />
     </div>
     <div class="field">
       <div class="field-head">
-        <label for="smooth-distance">Distância</label>
+        <label for="smooth-distance">{t('distance')}</label>
         <output class="readout" for="smooth-distance">{distance}px</output>
       </div>
       <input type="range" id="smooth-distance" min="2" max="100" bind:value={distance} />
     </div>
     <div class="field">
       <div class="field-head">
-        <label for="smooth-intensity">Intensidade</label>
+        <label for="smooth-intensity">{t('intensity')}</label>
         <output class="readout" for="smooth-intensity">{intensity}%</output>
       </div>
       <input type="range" id="smooth-intensity" min="5" max="100" bind:value={intensity} />
     </div>
     <div class="field field-inline">
-      <label for="smooth-color">Cor</label>
+      <label for="smooth-color">{t('color')}</label>
       <input type="color" id="smooth-color" bind:value={color} />
     </div>
     <button
@@ -88,7 +88,7 @@
       class="btn btn-block"
       onclick={() => actions.setLayers(smoothLayers({ count, distance, intensity, color }))}
     >
-      Gerar e substituir camadas
+      {t('smoothReplace')}
     </button>
   </div>
 </details>

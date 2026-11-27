@@ -8,19 +8,18 @@
   import Icon from './Icon.svelte';
   import LayerTools from './LayerTools.svelte';
   import TextControls from './TextControls.svelte';
+  import { t } from '../i18n.svelte';
 
-  const panels = [
-    { id: 'shadow', label: 'Sombra' },
-    { id: 'background', label: 'Fundo' },
-  ] as const;
+  // Each id is also the key of its tab label.
+  const panels = [{ id: 'shadow' }, { id: 'background' }] as const;
   const ids = panels.map((p) => p.id);
 </script>
 
-<aside id="controls" class="column column-controls" aria-label="Controles">
+<aside id="controls" class="column column-controls" aria-label={t('controls')}>
   <div
     class="segmented"
     role="tablist"
-    aria-label="Painéis de configuração"
+    aria-label={t('settingsPanels')}
     tabindex="-1"
     onkeydown={(e) => tabKeydown(e, ids, ui.sidebar, (id) => (ui.sidebar = id))}
   >
@@ -34,7 +33,7 @@
         tabindex={ui.sidebar === p.id ? 0 : -1}
         onclick={() => (ui.sidebar = p.id)}
       >
-        {p.label}
+        {t(p.id)}
       </button>
     {/each}
   </div>
@@ -50,14 +49,14 @@
     <section id="layer-controls-container" class="group"><LayerList /><LayerTools /></section>
 
     <section class="group" aria-labelledby="layer-title">
-      <h2 id="layer-title">Camada {state.currentLayerIndex + 1}</h2>
+      <h2 id="layer-title">{t('layerN', { n: state.currentLayerIndex + 1 })}</h2>
       <div id="shadow-controls-container" class="fields"><ShadowControls /></div>
     </section>
 
     {#if ui.context !== 'text'}
       <!-- Border radius shapes the element; text has no box to round. -->
       <section class="group" aria-labelledby="shape-title">
-        <h2 id="shape-title">Forma</h2>
+        <h2 id="shape-title">{t('shape')}</h2>
         <div id="shape-controls-container" class="fields"><ShapeControls /></div>
       </section>
     {/if}
@@ -74,6 +73,6 @@
   </div>
 
   <button type="button" id="resetButton" class="btn btn-quiet btn-block" onclick={() => actions.reset()}>
-    <Icon name="reset" /> Resetar tudo
+    <Icon name="reset" /> {t('resetAll')}
   </button>
 </aside>

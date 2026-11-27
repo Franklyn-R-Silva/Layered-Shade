@@ -203,7 +203,7 @@ describe('more exports', () => {
   it('states the gradient limit where the target cannot take it', () => {
     const g = createInitialState();
     addBackgroundLayer(g, 'linear');
-    for (const f of [getCompose, getSwiftUI, getReactNative]) expect(f(g)).toMatch(/Gradientes não exportados/);
+    for (const f of [getCompose, getSwiftUI, getReactNative]) expect(f(g)).toMatch(/Gradients not exported/);
   });
 });
 
@@ -223,14 +223,14 @@ describe('text exports', () => {
     const css = getTextCSS(s);
     expect(css).toContain('font-family: "Times New Roman", sans-serif;\nfont-size: 64px;\nfont-weight: 800;\ncolor: #23272b;');
     expect(css).toContain('text-shadow:\n  5px 5px 10px rgba(0, 0, 0, 0.5),\n  -2px 3px 0px rgba(255, 255, 255, 0.25);');
-    for (const f of all) expect(f(s)).toMatch(/inset\) ignoradas, spread ignorado/);
+    for (const f of all) expect(f(s)).toMatch(/inset layers ignored, spread ignored/);
   });
 
   it('says nothing about inset or spread when no layer has them, and keeps generic fonts bare', () => {
     const c = createInitialState();
     c.layers[0].spread = 0;
     c.text.font = 'serif';
-    for (const f of all) expect(f(c)).not.toMatch(/Sombra de texto não tem/);
+    for (const f of all) expect(f(c)).not.toMatch(/Text shadows have no/);
     expect(getTextCSS(c)).toContain('font-family: serif;');
     c.layers[0].inset = true;
     expect(getTextShadowCSS(c)).toBe('none');
@@ -264,7 +264,7 @@ describe('text exports', () => {
     expect(k).toContain('color = Color(0x80000000),\n            offset = Offset(5f, 5f),\n            blurRadius = 10f');
     expect(k).toContain('fontSize = 64.sp');
     expect(k).toContain('FontWeight.W800');
-    expect(k).toMatch(/uma sombra só/);
+    expect(k).toMatch(/takes a single shadow/);
 
     const r = getTextReactNative(s);
     expect(r).toContain(String.raw`{'It\'s "$x" \\o/'}`);
@@ -272,7 +272,7 @@ describe('text exports', () => {
     expect(r).toContain("textShadowColor: 'rgba(0, 0, 0, 0.5)'");
     expect(r).toContain('textShadowOffset: { width: 5, height: 5 },\n    textShadowRadius: 10,');
     expect(r).toContain("fontWeight: '800'");
-    expect(r).toMatch(/uma sombra de texto só/);
+    expect(r).toMatch(/a single text shadow/);
   });
 
   it('SwiftUI: one .shadow per text layer with half the blur, text escaped for Swift', () => {
@@ -282,7 +282,7 @@ describe('text exports', () => {
     expect(w).toContain('.fontWeight(.heavy)');
     expect(w.match(/\.shadow\(/g)).toHaveLength(2);
     expect(w).toContain('radius: 5, x: 5, y: 5');
-    expect(w).toMatch(/sombreia as sombras anteriores/);
+    expect(w).toMatch(/also shadows the ones before it/);
   });
 
   it('a preset keeps the text, reset restores the default; font names are cleaned for share links', () => {

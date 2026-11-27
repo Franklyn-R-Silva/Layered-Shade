@@ -320,7 +320,7 @@ export function getDart(state: ShadowState): string {
 export function getCSSVariable(state: ShadowState): string {
   const radius = state.boxProperties.borderRadius;
   return (
-    `:root {\n  --shadow-layered: ${getCSS(state)};\n}\n\n.elemento {\n  box-shadow: var(--shadow-layered);\n` +
+    `:root {\n  --shadow-layered: ${getCSS(state)};\n}\n\n.element {\n  box-shadow: var(--shadow-layered);\n` +
     `  background: ${getBackgroundCSS(state)};\n` +
     (radius > 0 ? `  border-radius: ${radius}px;\n` : '') +
     `}`
@@ -329,7 +329,7 @@ export function getCSSVariable(state: ShadowState): string {
 
 /** Tailwind v4 theme token: `--shadow-*` becomes a `shadow-*` utility. */
 export function getTailwindTheme(state: ShadowState): string {
-  return `@theme {\n  --shadow-layered: ${getCSS(state)};\n}\n\n/* uso: class="shadow-layered" */`;
+  return `@theme {\n  --shadow-layered: ${getCSS(state)};\n}\n\n/* usage: class="shadow-layered" */`;
 }
 
 const argb = (hex: string, opacity: number) =>
@@ -353,7 +353,7 @@ export function getCompose(state: ShadowState): string {
   code += layers.filter((l) => !l.inset).map((l) => shadow(l, 'dropShadow')).join('');
   code += `    .background(color = Color(0xFF${hexToColorObj(backgroundColor).hex}), shape = ${shape})\n`;
   code += layers.filter((l) => l.inset).map((l) => shadow(l, 'innerShadow')).join('');
-  if (state.backgroundLayers.length) code += '// Gradientes não exportados: use Brush.linearGradient / radialGradient no background.\n';
+  if (state.backgroundLayers.length) code += '// Gradients not exported: use Brush.linearGradient / radialGradient in the background.\n';
   return code.trimEnd();
 }
 
@@ -378,7 +378,7 @@ export function getSwiftUI(state: ShadowState): string {
     .filter((l) => l.inset)
     .map((l) => `\n        .shadow(.inner(color: ${swiftColor(l.color, l.opacity)}, radius: ${radius(l)}, x: ${l.horizontal}, y: ${l.vertical}))`)
     .join('');
-  let code = '// SwiftUI: radius = blur CSS / 2; spread não existe no SwiftUI.\n';
+  let code = '// SwiftUI: radius = CSS blur / 2; SwiftUI has no spread.\n';
   code += `${shape}\n    .fill(${fill}${inner})\n`;
   const drops = layers.filter((l) => !l.inset);
   if (drops.length) {
@@ -388,7 +388,7 @@ export function getSwiftUI(state: ShadowState): string {
       .join('');
     code += '        }\n    }\n';
   }
-  if (state.backgroundLayers.length) code += '// Gradientes não exportados: use LinearGradient / RadialGradient no fill.\n';
+  if (state.backgroundLayers.length) code += '// Gradients not exported: use LinearGradient / RadialGradient in the fill.\n';
   return code.trimEnd();
 }
 
@@ -399,7 +399,7 @@ export function getReactNative(state: ShadowState): string {
   code += `    boxShadow: '${getCSS(state)}',\n`;
   if (r > 0) code += `    borderRadius: ${r},\n`;
   code += `    backgroundColor: '${state.boxProperties.backgroundColor}',\n  },\n});`;
-  if (state.backgroundLayers.length) code += '\n// Gradientes não exportados: use experimental_backgroundImage ou react-native-linear-gradient.';
+  if (state.backgroundLayers.length) code += '\n// Gradients not exported: use experimental_backgroundImage or react-native-linear-gradient.';
   return code;
 }
 
@@ -444,9 +444,9 @@ const textLayerCSS = (l: ShadowLayer) =>
 function droppedNote(state: ShadowState, open = '//', close = ''): string {
   const v = visibleLayers(state);
   const parts: string[] = [];
-  if (v.some((l) => l.inset)) parts.push('camadas internas (inset) ignoradas');
-  if (v.some((l) => !l.inset && l.spread !== 0)) parts.push('spread ignorado');
-  return parts.length ? `${open} Sombra de texto não tem inset nem spread: ${parts.join(', ')}.${close}\n` : '';
+  if (v.some((l) => l.inset)) parts.push('inset layers ignored');
+  if (v.some((l) => !l.inset && l.spread !== 0)) parts.push('spread ignored');
+  return parts.length ? `${open} Text shadows have no inset or spread: ${parts.join(', ')}.${close}\n` : '';
 }
 
 /** The user's text as a string literal: backslash, the quote and any `special` character escaped. */
@@ -510,10 +510,10 @@ export function getTextCompose(state: ShadowState): string {
       `            offset = Offset(${l.horizontal}f, ${l.vertical}f),\n            blurRadius = ${l.blur}f\n        )`
     : '';
   return (
-    '// Jetpack Compose: TextStyle aceita uma sombra só; exportada a primeira camada visível (offset e blur em px).\n' +
+    '// Jetpack Compose: TextStyle takes a single shadow; the first visible layer is exported (offset and blur in px).\n' +
     droppedNote(state) +
     `Text(\n    text = ${kotlinString(content)},\n    style = TextStyle(\n` +
-    `        fontFamily = FontFamily.Default, // fonte "${font}": adicione em res/font\n` +
+    `        fontFamily = FontFamily.Default, // font "${font}": add it under res/font\n` +
     `        fontSize = ${size}.sp,\n        fontWeight = FontWeight.W${weight},\n` +
     `        color = Color(0xFF${hexToColorObj(color).hex})${shadow}\n    )\n)`
   );
@@ -538,7 +538,7 @@ export function getTextSwiftUI(state: ShadowState): string {
     .map((l) => `\n    .shadow(color: ${swiftColor(l.color, l.opacity)}, radius: ${+(l.blur / 2).toFixed(1)}, x: ${l.horizontal}, y: ${l.vertical})`)
     .join('');
   return (
-    '// SwiftUI: radius = blur CSS / 2; cada .shadow empilhado também sombreia as sombras anteriores.\n' +
+    '// SwiftUI: radius = CSS blur / 2; each stacked .shadow also shadows the ones before it.\n' +
     droppedNote(state) +
     `Text(${swiftString(content)})\n    .font(.custom(${swiftString(font)}, size: ${size}))\n` +
     `    .fontWeight(.${SWIFT_WEIGHTS[weight] ?? 'regular'})\n    .foregroundStyle(${swiftColor(color, 1)})${shadows}`
@@ -554,7 +554,7 @@ export function getTextReactNative(state: ShadowState): string {
       `    textShadowOffset: { width: ${l.horizontal}, height: ${l.vertical} },\n    textShadowRadius: ${l.blur},\n`
     : '';
   return (
-    '// React Native: uma sombra de texto só; exportada a primeira camada visível.\n' +
+    '// React Native: a single text shadow; the first visible layer is exported.\n' +
     droppedNote(state) +
     `<Text style={styles.text}>{${jsString(content)}}</Text>\n\nconst styles = StyleSheet.create({\n  text: {\n` +
     `    fontFamily: ${jsString(font)},\n    fontSize: ${size},\n    fontWeight: '${weight}',\n    color: '${color}',\n` +
