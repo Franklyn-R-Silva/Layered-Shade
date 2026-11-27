@@ -1,19 +1,32 @@
 <script module lang="ts">
-  // Families loaded from files this visit. Only the name is kept; the bytes never leave this page.
+  // Families loaded this visit (uploaded files, the computer's list, Google loads). Names only.
   const uploaded = $state<string[]>([]);
+  const local = $state<string[]>([]);
+  const fromGoogle = $state<string[]>([]);
 </script>
 
 <script lang="ts">
   import { state as shadow, actions } from '../state.svelte';
   import { cleanFontName, GENERIC_FONTS } from '../shadow';
+  import { MAX_LINES, MAX_TEXT } from '../share';
+  import { SYSTEM_FONTS, googleCatalog, loadGoogleFont, canListLocalFonts, listLocalFonts, type GoogleFont } from '../fonts';
   import { t, type Key } from '../i18n.svelte';
 
-  const FONTS = ['Overpass', 'system-ui', 'serif', 'sans-serif', 'monospace', 'Georgia', 'Times New Roman', 'Arial', 'Verdana', 'Courier New', 'Impact'];
   const WEIGHTS = [100, 200, 300, 400, 500, 600, 700, 800, 900];
   const MAX_FONT_BYTES = 5 * 1024 * 1024;
 
   const text = $derived(shadow.text);
-  const fonts = $derived([...new Set([...FONTS, ...uploaded])]);
+
+  // The Google catalogue (~1,960 families) is fetched from this site the first time the font field is used.
+  let google = $state<GoogleFont[]>([]);
+  const googleNames = $derived(new Map(google.map((f) => [f.family.toLowerCase(), f])));
+  function openCatalog() {
+    if (!google.length) googleCatalog().then((list) => (google = list)).catch(() => {});
+  }
+
+  const fonts = $derived([
+    ...new Set(['Overpass', ...uploaded, ...local, ...SYSTEM_FONTS, ...GENERIC_FONTS, ...google.map((f) => f.family)]),
+  ]);
 
   let loads = $state(0);
   // Kept as a key so the message follows a language switch.
@@ -34,18 +47,24 @@
     return ['monospace', 'serif'].every((g) => width(`"${text.font}", ${g}`) === width(g));
   });
 
-  const value = (e: Event) => (e.target as HTMLInputElement).value;
+  // Offer Google only for a catalogue family that is not already usable here.
+  const googleFont = $derived(googleNames.get(text.font.toLowerCase()));
+  const offerGoogle = $derived(!!googleFont && !fromGoogle.includes(googleFont.family) && missing);
+
+  const value = (e: Event) => (e.target as HTMLInputElement | HTMLTextAreaElement).value;
 
   // Empty text or an unusable font name would make the saved session fail to restore: keep the last
   // valid value, and show it again when the field is left.
   function onContent(e: Event) {
-    if (value(e)) actions.setText({ content: value(e) });
+    const v = value(e).replace(/\r\n?/g, '\n').split('\n').slice(0, MAX_LINES).join('\n');
+    if (v.trim()) actions.setText({ content: v });
   }
   function onFont(e: Event) {
     const font = cleanFontName(value(e));
     if (font) actions.setText({ font });
   }
-  const showKept = (key: 'content' | 'font') => (e: Event) => ((e.target as HTMLInputElement).value = shadow.text[key]);
+  const showKept = (key: 'content' | 'font') => (e: Event) =>
+    ((e.target as HTMLInputElement | HTMLTextAreaElement).value = shadow.text[key]);
 
   function onSize(e: Event) {
     const v = Number(value(e));
@@ -64,7 +83,7 @@
     actions.setText({ color: `#${hex.toLowerCase()}` });
   }
 
-  // The file is read locally into a FontFace: no upload, no network (the CSP allows fonts from 'self' only).
+  // The file is read locally into a FontFace: no upload, no network.
   async function onFile(e: Event) {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (!file) return;
@@ -86,6 +105,36 @@
       fontStatus = ['fontUnreadable'];
     }
   }
+
+  // Installed fonts: the browser asks the user's permission (Chromium's Local Font Access API).
+  async function onListLocal() {
+    try {
+      const families = await listLocalFonts();
+      for (const f of families) if (!local.includes(f)) local.push(f);
+      fontFailed = false;
+      fontStatus = ['localFontsFound', String(families.length)];
+    } catch {
+      fontFailed = true;
+      fontStatus = ['localFontsDenied'];
+    }
+  }
+
+  // Google Fonts: only on this explicit click, because it sends a request (and the IP) to Google.
+  async function onLoadGoogle() {
+    const font = googleFont;
+    if (!font) return;
+    fontFailed = false;
+    fontStatus = ['googleFontLoading', font.family];
+    try {
+      await loadGoogleFont(font);
+      fromGoogle.push(font.family);
+      loads++;
+      fontStatus = ['googleFontLoaded', font.family];
+    } catch {
+      fontFailed = true;
+      fontStatus = ['googleFontFailed'];
+    }
+  }
 </script>
 
 <section class="group" aria-labelledby="text-title">
@@ -93,16 +142,18 @@
   <div class="fields">
     <div class="field">
       <label for="text-content">{t('text')}</label>
-      <input
-        type="text"
+      <textarea
         id="text-content"
         class="text-field"
-        maxlength="60"
+        rows="2"
+        maxlength={MAX_TEXT}
         autocomplete="off"
+        aria-describedby="text-lines-hint"
         value={text.content}
         oninput={onContent}
         onchange={showKept('content')}
-      />
+      ></textarea>
+      <p id="text-lines-hint" class="tool-hint">{t('textLinesHint')}</p>
     </div>
 
     <div class="field">
@@ -115,16 +166,28 @@
         maxlength="60"
         spellcheck="false"
         autocomplete="off"
-        aria-describedby={missing ? 'text-font-missing' : undefined}
+        aria-describedby="text-font-search{missing ? ' text-font-missing' : ''}"
         value={text.font}
+        onfocus={openCatalog}
         oninput={onFont}
         onchange={showKept('font')}
       />
       <datalist id="text-fonts">
         {#each fonts as f (f)}<option value={f}></option>{/each}
       </datalist>
-      {#if missing}
+      <p id="text-font-search" class="tool-hint">{t('fontSearchHint', { name: google.length || '1900+' })}</p>
+      {#if offerGoogle}
+        <button type="button" class="btn btn-block" aria-describedby="google-font-notice" onclick={onLoadGoogle}>
+          {t('googleFontLoad', { name: googleFont?.family ?? '' })}
+        </button>
+        <p id="google-font-notice" class="tool-hint">{t('googleFontNotice')}</p>
+      {:else if missing}
         <p id="text-font-missing" class="tool-hint">{t('fontMissing')}</p>
+      {/if}
+      {#if canListLocalFonts()}
+        <button type="button" class="btn btn-quiet btn-block" onclick={onListLocal}>{t('listLocalFonts')}</button>
+      {:else}
+        <p class="tool-hint">{t('localFontsUnsupported')}</p>
       {/if}
     </div>
 

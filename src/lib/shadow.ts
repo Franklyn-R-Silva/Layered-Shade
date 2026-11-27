@@ -449,8 +449,9 @@ function droppedNote(state: ShadowState, open = '//', close = ''): string {
   return parts.length ? `${open} Text shadows have no inset or spread: ${parts.join(', ')}.${close}\n` : '';
 }
 
-/** The user's text as a string literal: backslash, the quote and any `special` character escaped. */
-const literal = (s: string, quote: string, special: RegExp) => quote + s.replace(special, (c) => `\\${c}`) + quote;
+/** The user's text as a string literal: backslash, the quote and `special` escaped, line breaks as `\n`. */
+const literal = (s: string, quote: string, special: RegExp) =>
+  quote + s.replace(special, (c) => `\\${c}`).replace(/\n/g, '\\n').replace(/\t/g, '\\t') + quote;
 const dartString = (s: string) => literal(s, "'", /[\\'$]/g);
 const kotlinString = (s: string) => literal(s, '"', /[\\"$]/g);
 const swiftString = (s: string) => literal(s, '"', /[\\"]/g);

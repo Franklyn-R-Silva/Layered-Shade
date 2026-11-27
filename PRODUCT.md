@@ -35,7 +35,8 @@ One shadow model, three exports that agree: the Dart output is a first-class tar
 - Flutter limits are intentional: inset needs the `flutter_inset_box_shadow` package; Dart exports only the top gradient layer.
 - Colors are hex-only (`#RGB` / `#RRGGBB`).
 - Stack: Svelte 5 + Vite + TypeScript. The pure logic core (`src/lib/shadow.ts`) stays framework-free and unit-tested.
-- UI copy is Portuguese (pt-BR).
+- UI copy in Portuguese (pt-BR) and English, with a PT/EN switch and `?lang=en`.
+- Privacy: the only third-party request is Google Fonts, after an explicit click; uploaded fonts stay in the browser.
 
 ## Brand Commitments
 

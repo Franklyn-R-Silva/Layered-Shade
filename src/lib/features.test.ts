@@ -103,7 +103,10 @@ describe('share tokens', () => {
     const t = (patch: object) => decodeState(forge({ ...base(), t: { ...defaultText(), ...patch } }));
     for (const font of ['Arial"; } body { x', "Ari'al", 'a;b', '<b>', '', 'x'.repeat(61), 'url(x)'])
       expect(t({ font })).toBeNull();
-    for (const content of ['', 'x'.repeat(61), 'a\nb', 7]) expect(t({ content })).toBeNull();
+    // Up to 200 characters and 6 lines; \r never (the field normalizes it).
+    for (const content of ['', 'x'.repeat(201), 'a\r\nb', '1\n2\n3\n4\n5\n6\n7', 7]) expect(t({ content })).toBeNull();
+    expect(t({ content: 'AMOR\nLOVE' })!.text.content).toBe('AMOR\nLOVE');
+    expect(t({ content: 'x'.repeat(200) })).not.toBeNull();
     for (const weight of [850, 0, 1000, '800']) expect(t({ weight })).toBeNull();
     expect(t({ color: 'red' })).toBeNull();
     expect(t({ size: 9999 })!.text.size).toBe(300);
@@ -294,5 +297,16 @@ describe('text exports', () => {
     expect(cleanFontName('Inter "Bold"; v2')).toBe('Inter Bold v2');
     expect(cleanFontName('!!!')).toBe('');
     expect([...cleanFontName('𝔄'.repeat(70))]).toHaveLength(60);
+  });
+});
+
+describe('multi-line text in exports', () => {
+  it('writes the line break as an escaped \\n in every string literal', () => {
+    const s = createInitialState();
+    s.text.content = 'AMOR\nLOVE';
+    expect(getTextDart(s)).toContain("'AMOR\\nLOVE'");
+    expect(getTextSwiftUI(s)).toContain('"AMOR\\nLOVE"');
+    for (const code of [getTextDart(s), getTextSwiftUI(s), getTextCompose(s), getTextReactNative(s)])
+      expect(code).not.toMatch(/AMOR\nLOVE/); // no raw break inside a literal
   });
 });

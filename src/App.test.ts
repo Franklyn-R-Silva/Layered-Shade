@@ -56,7 +56,7 @@ describe('App (integration)', () => {
     const toggle = () => host.querySelector('.topbar button[lang]') as HTMLButtonElement;
     const text = (sel: string) => host.querySelector(sel)?.textContent?.trim();
     expect(toggle().textContent).toBe('EN');
-    expect(toggle().getAttribute('aria-label')).toBe('Switch to English');
+    expect(toggle().getAttribute('aria-label')).toBe('EN: Switch to English');
     expect(toggle().getAttribute('lang')).toBe('en');
 
     toggle().click();
@@ -67,7 +67,7 @@ describe('App (integration)', () => {
     expect(text('#copiarTexto')).toBe('Copy CSS');
     expect(text('#layers-title')).toBe('Shadow layers');
     expect(toggle().textContent).toBe('PT');
-    expect(toggle().getAttribute('aria-label')).toBe('Mudar para português');
+    expect(toggle().getAttribute('aria-label')).toBe('PT: Mudar para português');
     expect(toggle().getAttribute('lang')).toBe('pt-BR');
 
     toggle().click();

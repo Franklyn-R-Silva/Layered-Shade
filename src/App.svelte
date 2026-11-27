@@ -88,7 +88,7 @@
     type="button"
     class="bar-btn"
     lang={HTML_LANG[other]}
-    aria-label={t('switchLang')}
+    aria-label={`${other.toUpperCase()}: ${t('switchLang')}`}
     title={t('switchLang')}
     onclick={() => setLang(other)}>{other.toUpperCase()}</button
   >

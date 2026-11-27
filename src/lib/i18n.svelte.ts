@@ -8,7 +8,10 @@ export type Lang = 'pt' | 'en';
 const pt = {
   // Top bar
   skipToPreview: 'Pular para o preview',
-  tagline: 'Sombras em camadas para CSS, Flutter e Tailwind',
+  tagline: 'Sombras em camadas para seis plataformas',
+  metaTitle: 'Layered Shade | Gerador de sombras para CSS, Flutter, Compose e SwiftUI',
+  metaDescription:
+    'Monte sombras em camadas para caixas e textos e copie o código em CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI e React Native. Grátis e sem cadastro.',
   historyAndShare: 'Histórico e compartilhamento',
   undo: 'Desfazer (Ctrl+Z)',
   redo: 'Refazer (Ctrl+Shift+Z)',
@@ -75,6 +78,17 @@ const pt = {
   fontMissing: 'Fonte não encontrada neste computador; o navegador usa uma substituta.',
   loadFont: 'Carregar fonte',
   fontStaysLocal: 'A fonte fica só neste navegador; nada é enviado.',
+  textLinesHint: 'Até 6 linhas; Enter quebra a linha.',
+  fontSearchHint: 'Digite para buscar entre as fontes do sistema e as {name} do Google Fonts.',
+  listLocalFonts: 'Listar as fontes deste computador',
+  localFontsFound: '{name} fontes deste computador entraram na lista.',
+  localFontsDenied: 'Sem permissão para listar as fontes; digite o nome.',
+  localFontsUnsupported: 'Este navegador não lista as fontes instaladas; digite o nome ou escolha uma da lista.',
+  googleFontLoad: 'Carregar “{name}” do Google Fonts',
+  googleFontNotice: 'A fonte é baixada de fonts.google.com, então o Google recebe o seu endereço IP.',
+  googleFontLoading: 'Carregando “{name}”…',
+  googleFontLoaded: '“{name}” carregada do Google Fonts.',
+  googleFontFailed: 'Não deu para carregar a fonte do Google Fonts.',
   fontTooBig: 'Arquivo grande demais: o limite é 5 MB.',
   fontDefaultName: 'Fonte carregada',
   fontLoaded: 'Fonte {name} carregada.',
@@ -171,7 +185,10 @@ export type Key = keyof typeof pt;
 // Typed against `pt`: a missing key fails the type check.
 const en: Record<Key, string> = {
   skipToPreview: 'Skip to preview',
-  tagline: 'Layered shadows for CSS, Flutter and Tailwind',
+  tagline: 'Layered shadows for six platforms',
+  metaTitle: 'Layered Shade | Shadow generator for CSS, Flutter, Compose and SwiftUI',
+  metaDescription:
+    'Design layered box and text shadows and copy the code as CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI or React Native. Free, no sign-up.',
   historyAndShare: 'History and sharing',
   undo: 'Undo (Ctrl+Z)',
   redo: 'Redo (Ctrl+Shift+Z)',
@@ -231,6 +248,17 @@ const en: Record<Key, string> = {
   fontMissing: 'Font not found on this computer; the browser uses a fallback.',
   loadFont: 'Load font',
   fontStaysLocal: 'The font stays in this browser; nothing is uploaded.',
+  textLinesHint: 'Up to 6 lines; Enter starts a new line.',
+  fontSearchHint: 'Type to search system fonts and the {name} Google Fonts families.',
+  listLocalFonts: 'List the fonts on this computer',
+  localFontsFound: '{name} fonts from this computer were added to the list.',
+  localFontsDenied: 'No permission to list the fonts; type the name.',
+  localFontsUnsupported: 'This browser cannot list installed fonts; type a name or pick one from the list.',
+  googleFontLoad: 'Load “{name}” from Google Fonts',
+  googleFontNotice: 'The font is downloaded from fonts.google.com, so Google receives your IP address.',
+  googleFontLoading: 'Loading “{name}”…',
+  googleFontLoaded: '“{name}” loaded from Google Fonts.',
+  googleFontFailed: 'Could not load the font from Google Fonts.',
   fontTooBig: 'File too large: the limit is 5 MB.',
   fontDefaultName: 'Uploaded font',
   fontLoaded: 'Font {name} loaded.',
@@ -336,11 +364,20 @@ function initialLang(): Lang {
 }
 
 export const i18n = $state<{ lang: Lang }>({ lang: initialLang() });
-document.documentElement.lang = HTML_LANG[i18n.lang];
+applyDocument(i18n.lang);
+
+/** Title, description and canonical follow the language, so `?lang=en` is a real English page. */
+function applyDocument(lang: Lang): void {
+  document.documentElement.lang = HTML_LANG[lang];
+  document.title = dict[lang].metaTitle;
+  document.querySelector('meta[name="description"]')?.setAttribute('content', dict[lang].metaDescription);
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) canonical.setAttribute('href', `${location.origin}/${lang === 'en' ? '?lang=en' : ''}`);
+}
 
 export function setLang(lang: Lang): void {
   i18n.lang = lang;
-  document.documentElement.lang = HTML_LANG[lang];
+  applyDocument(lang);
   try {
     localStorage.setItem(LANG_KEY, lang);
   } catch {
