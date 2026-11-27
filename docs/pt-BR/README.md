@@ -23,6 +23,7 @@
 **Montar**
 - Empilhe quantas camadas quiser: deslocamento, blur, spread, cor, opacidade e inset em cada uma; duplique, reordene, oculte ou remova.
 - Arraste no preview para mover a sombra selecionada; desfaça e refaça com Ctrl+Z / Ctrl+Shift+Z.
+- Ajuste o deslocamento também por **ângulo e distância** (a convenção do Photoshop: o ângulo é de onde vem a luz), gire a luz arrastando o início do raio no preview e marque **Luz global** para girar todas as camadas visíveis juntas.
 - Comece de um preset (Soft, Neumorph, Glass), gere uma **sombra suave em várias camadas** ou **importe** um `box-shadow`, uma regra CSS ou uma classe `shadow-[…]` do Tailwind.
 - Fundos em gradiente (linear e radial, com quantas cores quiser) e border radius.
 
@@ -33,6 +34,8 @@
 
 **Compartilhar**
 - Copie um link que reabre exatamente esta sombra; sua última sessão volta quando você reabre o site.
+
+**O que fica de fora, e por quê:** modo de mesclagem por sombra, ruído e contorno do Photoshop não têm equivalente no `box-shadow` do CSS, no `BoxShadow` do Flutter, no Compose, no SwiftUI nem no React Native, então a ferramenta não os oferece em vez de exportar um código que não os reproduz.
 
 ## O que cada exportação suporta
 
