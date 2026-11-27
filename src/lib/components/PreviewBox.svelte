@@ -4,6 +4,7 @@
   import { plateGeometry } from '../dimensions';
   import { fmt } from '../format';
   import Toolbar from './Toolbar.svelte';
+  import { t } from '../i18n.svelte';
 
   const css = $derived(getCSS(shadow));
   const bg = $derived(getBackgroundCSS(shadow));
@@ -13,7 +14,6 @@
 
   // Element sizes in CSS px, drawn 1:1 so every dimension line reads in real pixels.
   const SIZES = { box: { w: 200, h: 200 }, card: { w: 280, h: 180 }, button: { w: 168, h: 48 } };
-  const NAMES = { box: 'Caixa', card: 'Card', button: 'Botão' };
   // Text mode measures the rendered text, so the lines start from its box.
   let textW = $state(0);
   let textH = $state(0);
@@ -28,7 +28,7 @@
   let stageH = $state(0);
   // Text has no corners or box outline: no radius callout, no spread/blur rectangles.
   const g = $derived.by(() => {
-    const geo = plateGeometry(layer, isText ? 0 : radius, { w: stageW, h: stageH }, size);
+    const geo = plateGeometry(layer, isText ? 0 : radius, { w: stageW, h: stageH }, size, t('lightRay'));
     return isText ? { ...geo, spread: null, reach: null } : geo;
   });
 
@@ -99,7 +99,7 @@
           id="text-sample"
           class="text-sample"
           role="img"
-          aria-label={`Texto “${shadow.text.content}” de demonstração com sombra de texto`}
+          aria-label={t('textSample', { text: shadow.text.content })}
           bind:clientWidth={textW}
           bind:clientHeight={textH}
           style:font-family={fontStack(shadow.text.font)}
@@ -112,7 +112,7 @@
         id="box"
         class={`sample sample-${ui.context}`}
         role="img"
-        aria-label={`${NAMES[ui.context]} de demonstração com ${visible} ${visible === 1 ? 'camada' : 'camadas'} de sombra`}
+        aria-label={t(visible === 1 ? 'sampleOneLayer' : 'sampleLayers', { name: t(ui.context), n: visible })}
         style:box-shadow={css}
         style:background={bg}
         style:border-radius={`${radius}px`}
@@ -120,11 +120,11 @@
       >
         <!-- Sample content (synthetic) so the shadow is judged on a real-looking element. -->
         {#if ui.context === 'card'}
-          <span class="sample-title" aria-hidden="true">Relatório semanal</span>
-          <span class="sample-text" aria-hidden="true">12 pedidos novos, 3 aguardando envio</span>
-          <span class="sample-meta" aria-hidden="true">Atualizado há 5 min</span>
+          <span class="sample-title" aria-hidden="true">{t('sampleTitle')}</span>
+          <span class="sample-text" aria-hidden="true">{t('sampleText')}</span>
+          <span class="sample-meta" aria-hidden="true">{t('sampleMeta')}</span>
         {:else if ui.context === 'button'}
-          <span class="sample-button" aria-hidden="true">Comprar agora</span>
+          <span class="sample-button" aria-hidden="true">{t('sampleButton')}</span>
         {/if}
       </div>
       {/if}
@@ -168,18 +168,24 @@
   </div>
 
   <div class="stage-caption">
-    <span>{`Camada ${shadow.currentLayerIndex + 1} de ${shadow.layers.length}${layer.inset ? ', interna' : ''}, escala 1:1`}</span>
+    <span
+      >{t('stageCaption', {
+        i: shadow.currentLayerIndex + 1,
+        n: shadow.layers.length,
+        inset: layer.inset ? t('stageCaptionInset') : '',
+      })}</span
+    >
     {#if ui.guides && g.spread}
       <span class="legend">
-        <span class="key" aria-hidden="true"></span> contorno com spread
+        <span class="key" aria-hidden="true"></span> {t('spreadOutline')}
         <span class="num-text">{fmt(layer.spread)}</span>
         {#if g.reach}
-          <span class="key key-reach" aria-hidden="true"></span> alcance do blur
+          <span class="key key-reach" aria-hidden="true"></span> {t('blurReach')}
           <span class="num-text">{layer.blur}</span>
         {/if}
       </span>
     {/if}
-    {#if textDrops}<span>texto: sem spread e sem inset</span>{/if}
-    <span class="drag-hint">Arraste na prancha para mover a sombra</span>
+    {#if textDrops}<span>{t('textDrops')}</span>{/if}
+    <span class="drag-hint">{t('dragHint')}</span>
   </div>
 </section>

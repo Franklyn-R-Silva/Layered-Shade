@@ -2,28 +2,26 @@
   import { state, ui, actions } from '../state.svelte';
   import type { PresetName } from '../shadow';
   import type { PreviewContext } from '../types';
+  import { t } from '../i18n.svelte';
 
+  // Preset names are the same in every language.
   const presets: { name: PresetName; label: string }[] = [
     { name: 'soft', label: 'Soft' },
     { name: 'neumorphism', label: 'Neumorph' },
     { name: 'cristal', label: 'Glass' },
   ];
-  const contexts: { id: PreviewContext; label: string }[] = [
-    { id: 'box', label: 'Caixa' },
-    { id: 'card', label: 'Card' },
-    { id: 'button', label: 'Botão' },
-    { id: 'text', label: 'Texto' },
-  ];
+  // Each id is also the key of its label.
+  const contexts: PreviewContext[] = ['box', 'card', 'button', 'text'];
   // Quick canvases to judge the same shadow on a light and on a dark app surface.
   const grounds = [
-    { color: '#e9eef0', label: 'Claro' },
-    { color: '#16181d', label: 'Escuro' },
-  ];
+    { color: '#e9eef0', label: 'light' },
+    { color: '#16181d', label: 'dark' },
+  ] as const;
 </script>
 
 <div id="toolbar" class="stage-bar">
   <div class="bar-group" role="group" aria-labelledby="presets-label">
-    <span class="bar-label" id="presets-label">Começar de</span>
+    <span class="bar-label" id="presets-label">{t('startFrom')}</span>
     <div class="button-row">
       {#each presets as p (p.name)}
         <button type="button" class="btn btn-quiet" onclick={() => actions.applyPreset(p.name)}>
@@ -34,36 +32,36 @@
   </div>
 
   <div class="bar-group">
-    <label class="bar-label" for="preview-context">Elemento</label>
+    <label class="bar-label" for="preview-context">{t('element')}</label>
     <select id="preview-context" bind:value={ui.context}>
-      {#each contexts as c (c.id)}
-        <option value={c.id}>{c.label}</option>
+      {#each contexts as c (c)}
+        <option value={c}>{t(c)}</option>
       {/each}
     </select>
   </div>
 
   <div class="bar-group" role="group" aria-labelledby="ground-label">
-    <span class="bar-label" id="ground-label">Fundo</span>
+    <span class="bar-label" id="ground-label">{t('canvas')}</span>
     <div class="button-row">
       {#each grounds as g (g.color)}
         <button
           type="button"
           class="btn btn-quiet"
           aria-pressed={state.boxProperties.canvasColor === g.color ? 'true' : 'false'}
-          onclick={() => actions.update('canvasColor', g.color)}>{g.label}</button
+          onclick={() => actions.update('canvasColor', g.color)}>{t(g.label)}</button
         >
       {/each}
     </div>
     <input
       type="color"
       id="bg-color-picker"
-      aria-label="Cor do fundo da prancha"
+      aria-label={t('canvasColor')}
       value={state.boxProperties.canvasColor}
       oninput={(e) => actions.update('canvasColor', (e.target as HTMLInputElement).value)}
     />
     <label class="check">
       <input type="checkbox" bind:checked={ui.guides} />
-      <span>Cotas</span>
+      <span>{t('guides')}</span>
     </label>
   </div>
 </div>
