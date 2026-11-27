@@ -28,7 +28,11 @@ export interface Dim {
   /** Arrowheads (short spans) are drawn as open polylines. */
   arrows: string[];
   label: Label;
+  /** Footprint of the line, stubs and marks (label excluded). */
+  extent: Box;
 }
+
+type Box = Omit<Rect, 'rx'>;
 
 export interface Rect {
   l: number;
@@ -46,6 +50,15 @@ export interface PlateGeometry {
   ray: { line: string; head: string; label: Label } | null;
   radius: { leader: string; label: Label } | null;
 }
+
+const CHAR_W = 7.8; // advance of the 13px mono label font
+/** A label's box, ~14px tall around its baseline. */
+const textBox = (l: Label): Box => {
+  const w = [...l.text].length * CHAR_W;
+  const left = l.anchor === 'start' ? l.x : l.anchor === 'end' ? l.x - w : l.x - w / 2;
+  return { l: left, t: l.y - 11, r: left + w, b: l.y + 3 };
+};
+const meets = (a: Box, b: Box) => a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b;
 
 const tick = (px: number, py: number) => `M${px - 4} ${py + 4}L${px + 4} ${py - 4}`;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -87,7 +100,12 @@ function dimension(
     axis === 'x'
       ? { x: mid, y: base + (outward > 0 ? 18 : -9), anchor: 'middle', text }
       : { x: base + outward * 10, y: mid + 4, anchor: outward > 0 ? 'start' : 'end', text };
-  return { line, ext, marks, arrows, label };
+  const pad = span > 0 && span < SHORT ? 14 : 4;
+  const extent =
+    axis === 'x'
+      ? { l: lo - pad, t: base - 10, r: hi + pad, b: base + 10 }
+      : { l: base - 10, t: lo - pad, r: base + 10, b: hi + pad };
+  return { line, ext, marks, arrows, label, extent };
 }
 
 const LABEL_W = 62; // ~"luz 45°" at 13px mono
@@ -136,6 +154,11 @@ export function plateGeometry(
   const ay = sy > 0 ? H : 0;
   const dimX = dimension('x', ax, ax + x, yd, sy, `x ${fmt(x)}`);
   const dimY = dimension('y', ay, ay + y, xd, sx, `y ${fmt(y)}`);
+  // A cramped stage clamps both baselines into the corner: a label that would land on the other
+  // dimension moves past its own extension line on the element side, away from that corner.
+  const crowds = (d: Dim, o: Dim) => meets(textBox(d.label), o.extent) || meets(textBox(d.label), textBox(o.label));
+  if (crowds(dimX, dimY)) dimX.label = { ...dimX.label, x: ax - sx * 6, anchor: sx > 0 ? 'end' : 'start' };
+  if (crowds(dimY, dimX)) dimY.label = { ...dimY.label, y: sy > 0 ? ay - 6 : ay + 17 };
 
   // Light ray: arrives at the box corner facing the light, from the side opposite the shadow.
   let ray: PlateGeometry['ray'] = null;

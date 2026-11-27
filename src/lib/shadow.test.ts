@@ -24,6 +24,8 @@ import {
   hexToColorObj,
   rgbaToHex,
   isDarkColor,
+  contrastRatio,
+  guideInk,
   shadowCornerRadius,
 } from './shadow';
 import type { BackgroundLayer, ShadowState } from './types';
@@ -527,6 +529,27 @@ describe('shadow (pure logic)', () => {
 
     it('treats unparseable input as light', () => {
       expect(isDarkColor('red')).toBe(false);
+    });
+  });
+
+  describe('guideInk', () => {
+    it('keeps blueline where it reaches 3:1 and swaps ink on mid and dark plates', () => {
+      expect(contrastRatio('#000000', '#ffffff')).toBeCloseTo(21);
+      expect(guideInk('#e9eef0')).toBe('#2747c9');
+      expect(guideInk('#0891b2')).toBe('#16181d'); // teal: blueline is only ~2:1 here
+      expect(guideInk('#0a8fb3')).toBe('#16181d');
+      expect(guideInk('#16181d')).toBe('#f6f8f9');
+      expect(guideInk('#2747c9')).toBe('#f6f8f9');
+      expect(contrastRatio(guideInk('#2747c9'), '#2747c9')).toBeGreaterThanOrEqual(3);
+    });
+
+    it('reaches at least 3:1 on every #rgb plate color', () => {
+      let worst = 21;
+      for (let i = 0; i < 4096; i++) {
+        const canvas = `#${i.toString(16).padStart(3, '0')}`;
+        worst = Math.min(worst, contrastRatio(guideInk(canvas), canvas));
+      }
+      expect(worst).toBeGreaterThanOrEqual(3);
     });
   });
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { state as shadow, ui } from '../state.svelte';
-  import { getCSS, getBackgroundCSS, isDarkColor } from '../shadow';
+  import { getCSS, getBackgroundCSS, isDarkColor, guideInk, hexToRgba } from '../shadow';
   import { plateGeometry } from '../dimensions';
   import { fmt } from '../format';
   import Toolbar from './Toolbar.svelte';
@@ -9,7 +9,7 @@
   const bg = $derived(getBackgroundCSS(shadow));
   const radius = $derived(shadow.boxProperties.borderRadius);
   const layer = $derived(shadow.layers[shadow.currentLayerIndex]);
-  const dark = $derived(isDarkColor(shadow.boxProperties.canvasColor));
+  const guide = $derived(guideInk(shadow.boxProperties.canvasColor));
 
   // Element sizes in CSS px, drawn 1:1 so every dimension line reads in real pixels.
   const SIZES = { box: { w: 200, h: 200 }, card: { w: 280, h: 180 }, button: { w: 168, h: 48 } };
@@ -41,7 +41,9 @@
   class="column column-stage"
   aria-labelledby="preview-title"
   style:--canvas={shadow.boxProperties.canvasColor}
-  class:dark
+  style:--guide={guide}
+  style:--grid-minor={hexToRgba(guide, 0.07)}
+  style:--grid-major={hexToRgba(guide, 0.15)}
 >
   <h2 id="preview-title" class="visually-hidden">Preview</h2>
   <Toolbar />

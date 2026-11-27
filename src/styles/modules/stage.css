@@ -1,19 +1,11 @@
 /* Stage: the drafting plate. Grid and dimension lines measure the selected layer at 1:1. */
 
+/* --guide, --grid-minor and --grid-major are set inline from the plate color (guideInk). */
 .column-stage {
-  --guide: var(--blueline);
-  --grid-minor: rgba(39, 71, 201, 0.07);
-  --grid-major: rgba(39, 71, 201, 0.15);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   overflow: hidden;
   background-color: var(--canvas);
-}
-
-.column-stage.dark {
-  --guide: #c3cfff;
-  --grid-minor: rgba(233, 238, 240, 0.07);
-  --grid-major: rgba(233, 238, 240, 0.15);
 }
 
 .stage-bar {
