@@ -16,11 +16,16 @@
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="theme-color" content="#2747c9" />
     <link rel="canonical" href="https://layeredshade.netlify.app/" />
+    <!-- One page, two languages: ?lang=en renders English and sets its own title, description and canonical. -->
+    <link rel="alternate" hreflang="pt-BR" href="https://layeredshade.netlify.app/" />
+    <link rel="alternate" hreflang="en" href="https://layeredshade.netlify.app/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://layeredshade.netlify.app/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Layered Shade" />
     <meta property="og:locale" content="pt_BR" />
+    <meta property="og:locale:alternate" content="en_US" />
     <meta property="og:url" content="https://layeredshade.netlify.app/" />
     <meta property="og:title" content="Layered Shade: sombras em camadas para seis plataformas" />
     <meta
@@ -75,7 +80,7 @@
         "applicationCategory": "DesignApplication",
         "operatingSystem": "Any",
         "browserRequirements": "Requires JavaScript and a modern browser",
-        "inLanguage": "pt-BR",
+        "inLanguage": ["pt-BR", "en"],
         "isAccessibleForFree": true,
         "license": "https://opensource.org/licenses/MIT",
         "screenshot": "https://layeredshade.netlify.app/github/tela.png",

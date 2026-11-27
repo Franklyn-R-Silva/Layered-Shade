@@ -522,6 +522,7 @@ input[type='color']::-moz-color-swatch {
 .text-field {
   width: 100%;
   padding: 6px var(--space-2);
+  resize: vertical;
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius);
   background: var(--paper);

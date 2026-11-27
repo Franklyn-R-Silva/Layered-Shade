@@ -16,7 +16,7 @@
 
 - **Uma sombra, todas as plataformas.** As mesmas camadas saem para seis formatos, e cada exportação diz com clareza o que a plataforma não suporta, em vez de descartar em silêncio.
 - **Medido, não chutado.** O preview é desenhado em escala 1:1 sobre uma grade, com cotas do deslocamento, do spread, do alcance do blur e da direção da luz da camada selecionada.
-- **Grátis, instantâneo e privado.** Sem conta, sem backend, sem analytics, sem requisições a terceiros. As fontes que você envia não saem do seu navegador.
+- **Grátis, instantâneo e privado.** Sem conta, sem backend, sem analytics. Nada é pedido a terceiros, a não ser que você clique para carregar uma fonte do Google. As fontes que você envia não saem do seu navegador.
 
 ## Recursos
 
@@ -27,7 +27,8 @@
 - Fundos em gradiente (linear e radial, com quantas cores quiser) e border radius.
 
 **Ver**
-- Numa caixa, num card, num botão ou no **seu próprio texto**, em qualquer fonte instalada ou num arquivo de fonte que você enviar.
+- Numa caixa, num card, num botão ou no **seu próprio texto, com várias linhas**, numa fonte do seu computador (no Chromium dá para listar todas), em qualquer uma das ~1.960 **Google Fonts** com busca ou num arquivo de fonte que você enviar.
+- Em português ou inglês (botão PT/EN ou `?lang=en`).
 - Em fundo claro, escuro ou de qualquer cor; as cotas mantêm contraste de pelo menos 3:1 sobre ele.
 
 **Compartilhar**
@@ -81,7 +82,7 @@ Relatos de bug, traduções, correções na documentação e ideias são tão be
 
 - Autoavaliado pelos critérios do [OpenSSF Best Practices](https://www.bestpractices.dev/projects/17195); o selo acima mostra a situação atual.
 - O CodeQL analisa todo pull request. Alertas e atualizações de segurança agrupadas do Dependabot, varredura de segredos com proteção no push, instalação só pelo lockfile e actions fixadas por SHA protegem a cadeia de dependências.
-- O site usa uma Content Security Policy rígida e não carrega nada de terceiros.
+- O site usa uma Content Security Policy rígida; o único terceiro que ele pode contatar é o Google Fonts, e só quando você clica para carregar uma fonte.
 - Achou uma vulnerabilidade? Reporte de forma privada como explica o [SECURITY.md](SECURITY.md).
 
 ## Arquitetura

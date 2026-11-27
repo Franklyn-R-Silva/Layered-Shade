@@ -10,6 +10,9 @@ const HEX = /^#[0-9a-f]{6}$/i;
 // No quotes or semicolons: the name goes into CSS font-family and into generated code.
 const FONT = /^[\p{L}\p{N} _-]{1,60}$/u;
 const SIZES = ['farthest-corner', 'closest-side', 'closest-corner', 'farthest-side'];
+/** Text mode limits, shared with the text field. */
+export const MAX_TEXT = 200;
+export const MAX_LINES = 6;
 
 const num = (v: unknown, min: number, max: number): number => {
   if (typeof v !== 'number' || !Number.isFinite(v)) throw new Error('number');
@@ -68,10 +71,10 @@ function bgLayer(v: unknown): BackgroundLayer {
 function text(v: unknown): TextProps {
   const o = obj(v);
   const { content, font, weight } = o;
-  // Any Unicode is fine (it is rendered as text and escaped in exports), but a line break would end
-  // the string literal in the generated code.
-  if (typeof content !== 'string' || !content.length || content.length > 60 || /[\r\n]/.test(content))
+  // Any Unicode is fine: it is rendered as text, and the exports escape quotes and line breaks.
+  if (typeof content !== 'string' || !content.length || content.length > MAX_TEXT || /\r/.test(content))
     throw new Error('content');
+  if (content.split('\n').length > MAX_LINES) throw new Error('lines');
   if (typeof font !== 'string' || !FONT.test(font)) throw new Error('font');
   if (typeof weight !== 'number' || !Number.isInteger(weight / 100) || weight < 100 || weight > 900)
     throw new Error('weight');

@@ -58,5 +58,5 @@ Reactive UI (Svelte 5 runes) over a **pure, framework-free logic core**. This sp
 
 ## Notes
 
-- UI copy and `controls.ts` labels are **Portuguese (pt-BR)**. Docs have a pt-BR mirror under `docs/pt-BR/`; keep the English README in English.
+- UI copy lives in `src/lib/i18n.svelte.ts` (pt-BR and English, `t(key)`; English is typed against pt so a missing key fails the check). Exported code comments are English. Docs have a pt-BR mirror under `docs/pt-BR/`; keep the English README in English.
 - Static assets (`manifest.json`, `sitemap.xml`, `robots.txt`, `icons/`, `github/` preview images) live in `public/` and are served at the site root.

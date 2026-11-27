@@ -7,6 +7,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import App from './App.svelte';
 import { state, ui, actions } from './lib/state.svelte';
 import { reset } from './lib/shadow';
+import { setLang } from './lib/i18n.svelte';
 
 describe('App (integration)', () => {
   let host: HTMLDivElement;
@@ -23,6 +24,7 @@ describe('App (integration)', () => {
   });
 
   function render() {
+    setLang('pt'); // happy-dom reports en-US; these checks read the pt-BR copy
     reset(state);
     ui.mode = 'css';
     ui.sidebar = 'shadow';
@@ -47,6 +49,34 @@ describe('App (integration)', () => {
     actions.addLayer();
     flushSync();
     expect(host.querySelectorAll('#layer-controls-container .layer-item').length).toBe(2);
+  });
+
+  it('switches the UI to English and back from the top bar', () => {
+    render();
+    const toggle = () => host.querySelector('.topbar button[lang]') as HTMLButtonElement;
+    const text = (sel: string) => host.querySelector(sel)?.textContent?.trim();
+    expect(toggle().textContent).toBe('EN');
+    expect(toggle().getAttribute('aria-label')).toBe('EN: Switch to English');
+    expect(toggle().getAttribute('lang')).toBe('en');
+
+    toggle().click();
+    flushSync();
+    expect(document.documentElement.lang).toBe('en');
+    expect(text('.bar-btn-label span')).toBe('Copy link');
+    expect(text('#tab-shadow')).toBe('Shadow');
+    expect(text('#copiarTexto')).toBe('Copy CSS');
+    expect(text('#layers-title')).toBe('Shadow layers');
+    expect(toggle().textContent).toBe('PT');
+    expect(toggle().getAttribute('aria-label')).toBe('PT: Mudar para português');
+    expect(toggle().getAttribute('lang')).toBe('pt-BR');
+
+    toggle().click();
+    flushSync();
+    expect(document.documentElement.lang).toBe('pt-BR');
+    expect(text('.bar-btn-label span')).toBe('Copiar link');
+    expect(text('#tab-shadow')).toBe('Sombra');
+    expect(text('#copiarTexto')).toBe('Copiar CSS');
+    expect(text('#layers-title')).toBe('Camadas de sombra');
   });
 
   it('switches the active code tab reactively', () => {

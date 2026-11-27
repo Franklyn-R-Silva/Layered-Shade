@@ -16,7 +16,7 @@
 
 - **One shadow, every platform.** The same layers export to six targets, and each export says plainly what its platform cannot do instead of silently dropping it.
 - **Measured, not guessed.** The preview is drawn at 1:1 on a grid, with dimension lines for the selected layer's offset, spread, blur reach and light direction.
-- **Free, instant, private.** No account, no backend, no analytics, no third-party requests. Fonts you upload never leave your browser.
+- **Free, instant, private.** No account, no backend, no analytics. Nothing is requested from third parties unless you click to load a Google font. Fonts you upload never leave your browser.
 
 ## Features
 
@@ -27,7 +27,8 @@
 - Gradient backgrounds (linear and radial, any number of stops) and border radius.
 
 **Preview**
-- On a box, a card, a button or **your own text**, in any installed font or a font file you upload.
+- On a box, a card, a button or **your own multi-line text**, in a font from your computer (Chromium can list them all), any of the ~1,960 searchable **Google Fonts**, or a font file you upload.
+- In Portuguese or English (PT/EN switch, or `?lang=en`).
 - On a light or dark ground, or any canvas color; the guide lines keep at least 3:1 contrast on it.
 
 **Share**
@@ -81,7 +82,7 @@ Bug reports, translations, documentation fixes and ideas are as welcome as code.
 
 - Self-assessed against the [OpenSSF Best Practices](https://www.bestpractices.dev/projects/17195) criteria; the badge above shows the live status.
 - CodeQL scans every pull request. Dependabot alerts and grouped security updates, secret scanning with push protection, lockfile-only installs and SHA-pinned actions protect the supply chain.
-- The site ships a strict Content Security Policy and loads nothing from third parties.
+- The site ships a strict Content Security Policy; the only third party it can contact is Google Fonts, and only when you click to load a font.
 - Found a vulnerability? Report it privately as described in [SECURITY.md](SECURITY.md).
 
 ## Architecture

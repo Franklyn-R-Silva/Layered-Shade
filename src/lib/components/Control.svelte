@@ -2,8 +2,10 @@
   import { state, actions } from '../state.svelte';
   import type { ControlConfig } from '../config/controls';
   import type { ShadowLayer } from '../types';
+  import { t } from '../i18n.svelte';
 
   const { config }: { config: ControlConfig } = $props();
+  const label = $derived(t(config.label));
 
   const layer = $derived(state.layers[state.currentLayerIndex]);
 
@@ -51,18 +53,18 @@
 {#if config.type === 'checkbox'}
   <label class="check">
     <input type="checkbox" id={config.id} checked={raw as boolean} onchange={onCheck} />
-    <span>{config.label}</span>
+    <span>{label}</span>
   </label>
 {:else if config.type === 'color'}
   <div class="field field-inline">
-    <label for={config.id}>{config.label}</label>
+    <label for={config.id}>{label}</label>
     <span class="color-pair">
       <input type="color" id={config.id} value={raw as string} oninput={onColor} />
       <input
         type="text"
         class="hex"
         id={`${config.id}-value`}
-        aria-label={`${config.label} em hexadecimal`}
+        aria-label={t('inHex', { label })}
         value={raw as string}
         maxlength="7"
         spellcheck="false"
@@ -74,12 +76,12 @@
 {:else}
   <div class="field">
     <div class="field-head">
-      <label for={config.id}>{config.label}</label>
+      <label for={config.id}>{label}</label>
       <span class="num">
         <input
           type="number"
           id={`${config.id}-value`}
-          aria-label={`${config.label} em ${config.unit === '%' ? 'porcentagem' : 'pixels'}`}
+          aria-label={t(config.unit === '%' ? 'inPercent' : 'inPixels', { label })}
           min={config.min}
           max={config.max}
           value={displayValue}

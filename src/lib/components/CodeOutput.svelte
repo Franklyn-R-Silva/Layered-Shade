@@ -20,6 +20,7 @@
   import { tabKeydown } from '../tabs';
   import type { CodeMode, ShadowState } from '../types';
   import Icon from './Icon.svelte';
+  import { t } from '../i18n.svelte';
 
   const tabs: CodeMode[] = ['css', 'tailwind', 'dart', 'compose', 'swiftui', 'rn'];
   // Six tabs share a 400px column: React Native shows as "RN" but keeps its full accessible name.
@@ -105,11 +106,11 @@
 
 <section id="generated-rule" class="column column-code" aria-labelledby="code-title">
   <div class="code-head">
-    <h2 id="code-title">Código gerado</h2>
+    <h2 id="code-title">{t('generatedCode')}</h2>
     <div
       class="code-tabs"
       role="tablist"
-      aria-label="Formato do código"
+      aria-label={t('codeFormat')}
       tabindex="-1"
       onkeydown={(e) => tabKeydown(e, tabs, ui.mode, select)}
     >
@@ -133,20 +134,20 @@
 
   <div class="code-body" role="tabpanel" id="code-panel" aria-labelledby={`tab-${ui.mode}`}>
     {#if !isText && (ui.mode === 'css' || ui.mode === 'tailwind')}
-      <div class="format-switch" role="group" aria-label="Variante">
+      <div class="format-switch" role="group" aria-label={t('variant')}>
         {#if ui.mode === 'css'}
           <button type="button" aria-pressed={ui.cssFormat === 'props'} onclick={() => (ui.cssFormat = 'props')}
-            >Propriedades</button
+            >{t('properties')}</button
           >
           <button type="button" aria-pressed={ui.cssFormat === 'var'} onclick={() => (ui.cssFormat = 'var')}
-            >Variável CSS</button
+            >{t('cssVariable')}</button
           >
         {:else}
           <button type="button" aria-pressed={ui.twFormat === 'classes'} onclick={() => (ui.twFormat = 'classes')}
             >Classes</button
           >
           <button type="button" aria-pressed={ui.twFormat === 'theme'} onclick={() => (ui.twFormat = 'theme')}
-            >Tema (v4)</button
+            >{t('theme')}</button
           >
         {/if}
       </div>
@@ -165,31 +166,28 @@
       <div class="note" id="dart-install-info">
         <Icon name="package" />
         <p>
-          O <code>BoxShadow</code> do Flutter não tem inset. Para as camadas internas, instale o pacote:
+          {t('dartInsetA')}<code>BoxShadow</code>{t('dartInsetB')}
           <code class="cmd">flutter pub add flutter_inset_box_shadow</code>
         </p>
       </div>
     {/if}
     {#if ui.mode === 'dart' && extraGradients}
       <div class="note">
-        <p>
-          O <code>BoxDecoration</code> aceita um gradiente só: o Dart exporta o gradiente 1 (o do topo). CSS e Tailwind
-          levam todos.
-        </p>
+        <p>{t('dartGradientA')}<code>BoxDecoration</code>{t('dartGradientB')}</p>
       </div>
     {/if}
     <button type="button" class="btn btn-primary btn-block" id="copiarTexto" onclick={copy}>
       {#if status === 'copied'}
-        <Icon name="check" /> Copiado
+        <Icon name="check" /> {t('copied')}
       {:else}
-        <Icon name="copy" /> Copiar {TAB_LABELS[ui.mode]}
+        <Icon name="copy" /> {t('copyTab', { tab: TAB_LABELS[ui.mode] })}
       {/if}
     </button>
     <p class="copy-status" class:failed={status === 'failed'} role="status">
       {#if status === 'copied'}
-        Código {TAB_LABELS[ui.mode]} copiado para a área de transferência.
+        {t('copiedStatus', { tab: TAB_LABELS[ui.mode] })}
       {:else if status === 'failed'}
-        Não deu para copiar. Selecione o código acima e use Ctrl+C.
+        {t('copyFailed')}
       {/if}
     </p>
   </div>

@@ -4,6 +4,9 @@
   import CodeOutput from './lib/components/CodeOutput.svelte';
   import Icon from './lib/components/Icon.svelte';
   import { actions, historyFlags } from './lib/state.svelte';
+  import { i18n, t, setLang, HTML_LANG, type Lang } from './lib/i18n.svelte';
+
+  const other = $derived<Lang>(i18n.lang === 'pt' ? 'en' : 'pt');
 
   let linkCopied = $state<'idle' | 'copied' | 'address'>('idle');
   let linkTimer: ReturnType<typeof setTimeout> | undefined;
@@ -24,8 +27,8 @@
   // Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z (or Ctrl+Y); text fields keep their own undo.
   function onKey(e: KeyboardEvent) {
     if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
-    const t = e.target as HTMLElement;
-    if (t.matches('textarea, input[type="text"], input[type="number"]')) return;
+    const target = e.target as HTMLElement;
+    if (target.matches('textarea, input[type="text"], input[type="number"]')) return;
     const key = e.key.toLowerCase();
     if (key === 'z' && !e.shiftKey) actions.undo();
     else if ((key === 'z' && e.shiftKey) || key === 'y') actions.redo();
@@ -36,7 +39,7 @@
 
 <svelte:window onkeydown={onKey} />
 
-<a href="#preview" class="skip-link">Pular para o preview</a>
+<a href="#preview" class="skip-link">{t('skipToPreview')}</a>
 
 <header class="topbar">
   <div class="brand">
@@ -45,48 +48,58 @@
       <rect x="2" y="2" width="14" height="14" rx="2" class="mark-box" />
     </svg>
     <h1>Layered Shade</h1>
-    <p class="tagline">Sombras em camadas para CSS, Flutter e Tailwind</p>
+    <p class="tagline">{t('tagline')}</p>
   </div>
 
-  <div class="app-actions" role="group" aria-label="Histórico e compartilhamento">
+  <div class="app-actions" role="group" aria-label={t('historyAndShare')}>
     <button
       type="button"
       class="bar-btn"
-      aria-label="Desfazer (Ctrl+Z)"
-      title="Desfazer (Ctrl+Z)"
+      aria-label={t('undo')}
+      title={t('undo')}
       disabled={!historyFlags.canUndo}
       onclick={actions.undo}><Icon name="undo" size={18} /></button
     >
     <button
       type="button"
       class="bar-btn"
-      aria-label="Refazer (Ctrl+Shift+Z)"
-      title="Refazer (Ctrl+Shift+Z)"
+      aria-label={t('redo')}
+      title={t('redo')}
       disabled={!historyFlags.canRedo}
       onclick={actions.redo}><Icon name="redo" size={18} /></button
     >
     <button type="button" class="bar-btn bar-btn-label" onclick={copyLink}>
       <Icon name={linkCopied === 'copied' ? 'check' : 'link'} size={18} />
       <span
-        >{linkCopied === 'copied' ? 'Link copiado' : linkCopied === 'address' ? 'Link na barra de endereço' : 'Copiar link'}</span
+        >{t(linkCopied === 'copied' ? 'linkCopied' : linkCopied === 'address' ? 'linkInAddressBar' : 'copyLink')}</span
       >
     </button>
     <span class="visually-hidden" role="status"
       >{linkCopied === 'copied'
-        ? 'Link desta sombra copiado.'
+        ? t('linkCopiedStatus')
         : linkCopied === 'address'
-          ? 'Não deu para copiar: o link desta sombra está na barra de endereço.'
+          ? t('linkInAddressBarStatus')
           : ''}</span
     >
   </div>
 
-  <nav class="author" aria-label="Autor">
-    <span>por Franklyn R. Silva</span>
+  <!-- Offers the other language, named in that language. -->
+  <button
+    type="button"
+    class="bar-btn"
+    lang={HTML_LANG[other]}
+    aria-label={`${other.toUpperCase()}: ${t('switchLang')}`}
+    title={t('switchLang')}
+    onclick={() => setLang(other)}>{other.toUpperCase()}</button
+  >
+
+  <nav class="author" aria-label={t('author')}>
+    <span>{t('byAuthor')}</span>
     <a
       href="https://github.com/Franklyn-R-Silva"
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Franklyn R. Silva no GitHub"
+      aria-label={t('onGitHub')}
     >
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path
@@ -99,7 +112,7 @@
       href="https://www.linkedin.com/in/franklyn-roberto-dev/"
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Franklyn R. Silva no LinkedIn"
+      aria-label={t('onLinkedIn')}
     >
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path

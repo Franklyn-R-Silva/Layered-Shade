@@ -40,6 +40,6 @@ Layered Shade is a static frontend tool with no backend. Relevant issues include
 
 - No user data is collected or stored; there is no backend, database or analytics.
 - The site is served with a Content Security Policy that only allows the app's own scripts, styles and fonts, plus `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, a strict referrer policy and a permissions policy (see `netlify.toml`).
-- Fonts are self-hosted; the page loads nothing from third parties.
+- The app's fonts are self-hosted. The only third party the page can contact is Google Fonts (`fonts.googleapis.com`, `fonts.gstatic.com`), and only after the user clicks to load a Google font; the CSP allows nothing else. Uploaded font files are read locally and never sent.
 - Dependabot alerts and grouped security updates, secret scanning with push protection, and CodeQL code scanning are enabled on the repository.
 - CI installs from the lockfile (`npm ci`), pins every GitHub Action to a commit SHA, runs with a read-only token, and runs lint, tests and a type-checked build on every pull request. Dependabot waits 7 days before proposing a new release.

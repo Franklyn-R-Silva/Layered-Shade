@@ -96,6 +96,7 @@ describe('plateGeometry', () => {
   it('never lets the labels overlap each other or the element', () => {
     const offsets = [-100, -60, -33, -15, -5, 0, 5, 15, 33, 60, 100];
     const clashes: string[] = [];
+    for (const light of ['luz', 'ray']) // the ray label in pt-BR and in English
     for (const st of [stage, { w: 390, h: 290 }])
       for (const el of [{ w: 200, h: 200 }, { w: 280, h: 180 }, { w: 168, h: 48 }])
         for (const horizontal of offsets)
@@ -103,11 +104,11 @@ describe('plateGeometry', () => {
             for (const blur of [0, 10, 40])
               for (const spread of [-10, 0, 10])
                 for (const r of [0, 16]) {
-                  const g = plateGeometry(layer({ horizontal, vertical, blur, spread }), r, st, el);
+                  const g = plateGeometry(layer({ horizontal, vertical, blur, spread }), r, st, el, light);
                   const named = { dimX: g.dimX.label, dimY: g.dimY.label, ray: g.ray?.label, radius: g.radius?.label };
                   const boxes = Object.entries(named).flatMap(([k, l]) => (l ? [[k, box(l)] as const] : []));
                   const element = { l: 0, t: 0, r: el.w, b: el.h };
-                  const where = `${st.w}x${st.h} ${el.w}x${el.h} x${horizontal} y${vertical} b${blur} s${spread} r${r}`;
+                  const where = `${light} ${st.w}x${st.h} ${el.w}x${el.h} x${horizontal} y${vertical} b${blur} s${spread} r${r}`;
                   boxes.forEach(([k, a], i) => {
                     if (overlaps(a, element)) clashes.push(`${where}: ${k}/element`);
                     for (const [k2, c] of boxes.slice(i + 1)) if (overlaps(a, c)) clashes.push(`${where}: ${k}/${k2}`);

@@ -108,7 +108,9 @@ function dimension(
   return { line, ext, marks, arrows, label, extent };
 }
 
-const LABEL_W = 62; // ~"luz 45°" at 13px mono
+// ~"luz 45°" (or "ray 45°") at 13px mono. A longer word does not fit beside a level ray next to the
+// card on a phone stage: keep it at 3 letters (the overlap test checks both languages).
+const LABEL_W = 62;
 
 /** Label beside the ray's start; above or below it when the side has no room. */
 function rayLabel(sx0: number, sy0: number, ux: number, uy: number, text: string, b: { l: number; r: number }): Label {
@@ -126,6 +128,8 @@ export function plateGeometry(
   boxRadius: number,
   stage: { w: number; h: number },
   box: { w: number; h: number } = { w: BOX, h: BOX },
+  /** Word before the light angle, in the UI language (3 letters, see LABEL_W). */
+  light = 'luz',
 ): PlateGeometry {
   const W = box.w;
   const H = box.h;
@@ -180,7 +184,7 @@ export function plateGeometry(
       ray = {
         line: `M${cx - ux * L} ${cy - uy * L}L${ex} ${ey}`,
         head: `${ex - ux * 7 - uy * 3.5},${ey - uy * 7 + ux * 3.5} ${ex},${ey} ${ex - ux * 7 + uy * 3.5},${ey - uy * 7 - ux * 3.5}`,
-        label: rayLabel(cx - ux * L, cy - uy * L, ux, uy, `luz ${deg}°`, bounds),
+        label: rayLabel(cx - ux * L, cy - uy * L, ux, uy, `${light} ${deg}°`, bounds),
       };
     }
   }

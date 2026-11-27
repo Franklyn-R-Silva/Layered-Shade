@@ -3,14 +3,15 @@
   import { hexToRgba } from '../shadow';
   import { fmt } from '../format';
   import Icon from './Icon.svelte';
+  import { t } from '../i18n.svelte';
 
   const current = $derived(state.currentLayerIndex);
 </script>
 
 <div class="panel-head">
-  <h2 id="layers-title">Camadas de sombra</h2>
+  <h2 id="layers-title">{t('shadowLayers')}</h2>
   <button type="button" class="btn btn-quiet" onclick={() => actions.addLayer()}>
-    <Icon name="plus" /> Adicionar
+    <Icon name="plus" /> {t('add')}
   </button>
 </div>
 
@@ -26,7 +27,7 @@
         <span class="layer-index" aria-hidden="true">{i + 1}</span>
         <span class="layer-text">
           <span class="layer-name"
-            >Camada {i + 1}{layer.inset ? ' (interna)' : ''}{layer.hidden ? ' (oculta)' : ''}</span
+            >{t('layerN', { n: i + 1 })}{layer.inset ? t('insetTag') : ''}{layer.hidden ? t('hiddenTag') : ''}</span
           >
           <span class="layer-spec" aria-hidden="true"
             >{fmt(layer.horizontal)} {fmt(layer.vertical)} {fmt(layer.blur)} {fmt(layer.spread)} · {Math.round(
@@ -43,9 +44,9 @@
       <button
         type="button"
         class="icon-btn"
-        aria-label={`Ocultar camada ${i + 1}`}
+        aria-label={t('hideLayerN', { n: i + 1 })}
         aria-pressed={layer.hidden ? 'true' : 'false'}
-        title="Ocultar camada"
+        title={t('hideLayer')}
         onclick={() => actions.setLayerHidden(i, !layer.hidden)}
       >
         <Icon name={layer.hidden ? 'eyeOff' : 'eye'} />
@@ -53,8 +54,8 @@
       <button
         type="button"
         class="icon-btn icon-btn-danger"
-        aria-label={`Remover camada ${i + 1}`}
-        title={state.layers.length <= 1 ? 'A sombra precisa de pelo menos uma camada' : 'Remover camada'}
+        aria-label={t('removeLayerN', { n: i + 1 })}
+        title={t(state.layers.length <= 1 ? 'lastLayer' : 'removeLayer')}
         disabled={state.layers.length <= 1}
         onclick={() => actions.removeLayer(i)}
       >
@@ -64,9 +65,9 @@
   {/each}
 </ol>
 
-<div class="layer-actions" role="group" aria-label={`Ações da camada ${current + 1}`}>
+<div class="layer-actions" role="group" aria-label={t('layerActionsN', { n: current + 1 })}>
   <button type="button" class="btn btn-quiet" onclick={() => actions.duplicateLayer(current)}>
-    <Icon name="duplicate" /> Duplicar
+    <Icon name="duplicate" /> {t('duplicate')}
   </button>
   <button
     type="button"
@@ -74,7 +75,7 @@
     disabled={current === 0}
     onclick={() => actions.moveLayer(current, -1)}
   >
-    <Icon name="up" /> Subir
+    <Icon name="up" /> {t('moveUp')}
   </button>
   <button
     type="button"
@@ -82,6 +83,6 @@
     disabled={current === state.layers.length - 1}
     onclick={() => actions.moveLayer(current, 1)}
   >
-    <Icon name="down" /> Descer
+    <Icon name="down" /> {t('moveDown')}
   </button>
 </div>
