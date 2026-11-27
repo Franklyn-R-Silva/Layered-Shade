@@ -37,16 +37,17 @@ describe('plateGeometry', () => {
 
   it('brings the light from the opposite corner, labelled with its angle', () => {
     const g = plateGeometry(layer({ horizontal: 10, vertical: 10 }), 0, stage);
-    expect(g.ray?.label.text).toBe('luz 45°');
+    expect(g.ray?.label.text).toBe('luz 135°');
     expect(g.ray!.label.x).toBeLessThan(0);
     expect(g.ray!.label.y).toBeLessThan(0);
     expect(plateGeometry(layer({ horizontal: 0, vertical: 0 }), 0, stage).ray).toBeNull();
     // A phone-sized stage leaves ~45px above the box: the ray shortens instead of vanishing.
     const phone = plateGeometry(layer({ horizontal: 5, vertical: 5 }), 0, { w: 390, h: 290 }).ray;
     expect(phone).not.toBeNull();
-    // No room beside the ray on a 390px stage: the label moves above it instead of off the edge.
-    expect(phone!.label.anchor).toBe('middle');
-    expect(phone!.label.x - 31).toBeGreaterThanOrEqual(-(390 - BOX) / 2);
+    // No room for "luz 135°" beside the ray on a 390px stage: only the angle stays, inside the stage.
+    expect(phone!.label.text).toBe('135°');
+    const left = phone!.label.anchor === 'end' ? phone!.label.x - 4 * 7.8 : phone!.label.x;
+    expect(left).toBeGreaterThanOrEqual(-(390 - BOX) / 2);
   });
 
   it('keeps the dimension baselines and labels inside a small stage', () => {

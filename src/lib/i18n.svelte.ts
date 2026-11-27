@@ -8,10 +8,10 @@ export type Lang = 'pt' | 'en';
 const pt = {
   // Top bar
   skipToPreview: 'Pular para o preview',
-  tagline: 'Sombras em camadas para seis plataformas',
-  metaTitle: 'Layered Shade | Gerador de sombras para CSS, Flutter, Compose e SwiftUI',
+  tagline: 'Sombras em camadas para web, mobile e Python',
+  metaTitle: 'Layered Shade | Gerador de sombras para CSS, React, Vue, Flutter e SwiftUI',
   metaDescription:
-    'Monte sombras em camadas para caixas e textos e copie o código em CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI e React Native. Grátis e sem cadastro.',
+    'Monte sombras em camadas para caixas, textos e imagens e copie em CSS, Tailwind, React, Vue, Svelte, Angular, Flutter, Compose, SwiftUI, React Native ou Python.',
   historyAndShare: 'Histórico e compartilhamento',
   undo: 'Desfazer (Ctrl+Z)',
   redo: 'Refazer (Ctrl+Shift+Z)',
@@ -205,10 +205,10 @@ export type Key = keyof typeof pt;
 // Typed against `pt`: a missing key fails the type check.
 const en: Record<Key, string> = {
   skipToPreview: 'Skip to preview',
-  tagline: 'Layered shadows for six platforms',
-  metaTitle: 'Layered Shade | Shadow generator for CSS, Flutter, Compose and SwiftUI',
+  tagline: 'Layered shadows for web, mobile and Python',
+  metaTitle: 'Layered Shade | Shadow generator for CSS, React, Vue, Flutter and SwiftUI',
   metaDescription:
-    'Design layered box and text shadows and copy the code as CSS, Tailwind, Flutter, Jetpack Compose, SwiftUI or React Native. Free, no sign-up.',
+    'Design layered shadows for boxes, text and images and copy them as CSS, Tailwind, React, Vue, Svelte, Angular, Flutter, Compose, SwiftUI, React Native or Python.',
   historyAndShare: 'History and sharing',
   undo: 'Undo (Ctrl+Z)',
   redo: 'Redo (Ctrl+Shift+Z)',

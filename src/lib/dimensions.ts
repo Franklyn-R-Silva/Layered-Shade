@@ -7,6 +7,7 @@
 import type { ShadowLayer } from './types';
 import { shadowCornerRadius } from './shadow';
 import { fmt } from './format';
+import { toPolar } from './light';
 
 export const BOX = 200;
 const GAP = 22; // object → dimension line
@@ -109,16 +110,33 @@ function dimension(
   return { line, ext, marks, arrows, label, extent };
 }
 
-// ~"luz 45°" (or "ray 45°") at 13px mono. A longer word does not fit beside a level ray next to the
-// card on a phone stage: keep it at 3 letters (the overlap test checks both languages).
-const LABEL_W = 62;
+// Label widths at 13px mono (~7.8px a character): "luz 135°" / "ray 135°", or the angle alone.
+const LABEL_W = 70;
+const ANGLE_W = 32; // "359°": 4 characters
 
-/** Label beside the ray's start; above or below it when the side has no room. */
-function rayLabel(sx0: number, sy0: number, ux: number, uy: number, text: string, b: { l: number; r: number }): Label {
+/**
+ * Label beside the ray's start. When the side has no room (a level ray next to a wide element on a
+ * phone stage), the word is dropped and only the angle stays beside it; above/below is the last resort.
+ */
+function rayLabel(
+  sx0: number,
+  sy0: number,
+  ex: number,
+  ux: number,
+  uy: number,
+  text: string,
+  b: { l: number; r: number },
+): Label {
   if (Math.abs(ux) >= 0.3) {
+    const angle = text.split(' ').pop() ?? text;
+    const anchor = ux > 0 ? 'end' : 'start';
     const x = sx0 - Math.sign(ux) * 6;
-    const fits = ux > 0 ? x - LABEL_W >= b.l : x + LABEL_W <= b.r;
-    if (fits) return { x, y: sy0 + 4, anchor: ux > 0 ? 'end' : 'start', text };
+    const room = ux > 0 ? x - b.l : b.r - x;
+    if (room >= LABEL_W) return { x, y: sy0 + 4, anchor, text };
+    if (room >= ANGLE_W) return { x, y: sy0 + 4, anchor, text: angle };
+    // Above the ray, flush with its tip on the element's side, so it never sits over the element.
+    const tip = ex - Math.sign(ux) * 2;
+    if ((ux > 0 ? tip - b.l : b.r - tip) >= ANGLE_W) return { x: tip, y: Math.min(sy0, sy0 + uy * 6) - 8, anchor, text: angle };
     return { x: sx0, y: uy > 0 ? sy0 - 8 : sy0 + 16, anchor: 'middle', text };
   }
   return { x: sx0 + 8, y: sy0 + (uy > 0 ? 4 : 10), anchor: 'start', text };
@@ -181,13 +199,14 @@ export function plateGeometry(
     if (L >= 16) {
       const ex = cx - ux * 6;
       const ey = cy - uy * 6;
-      const deg = Math.round((Math.atan2(Math.abs(y), Math.abs(x)) * 180) / Math.PI);
+      // Same convention as the Angle field (where the light comes from, Photoshop-style).
+      const deg = toPolar(x, y).angle;
       const start = { x: cx - ux * L, y: cy - uy * L };
       ray = {
         start,
         line: `M${start.x} ${start.y}L${ex} ${ey}`,
         head: `${ex - ux * 7 - uy * 3.5},${ey - uy * 7 + ux * 3.5} ${ex},${ey} ${ex - ux * 7 + uy * 3.5},${ey - uy * 7 - ux * 3.5}`,
-        label: rayLabel(start.x, start.y, ux, uy, `${light} ${deg}°`, bounds),
+        label: rayLabel(start.x, start.y, ex, ux, uy, `${light} ${deg}°`, bounds),
       };
     }
   }
