@@ -76,6 +76,13 @@
   place-items: center;
   overflow: hidden;
   padding: var(--space-6);
+  cursor: grab;
+  touch-action: none; /* a touch drag moves the shadow instead of scrolling */
+  user-select: none; /* dragging across the card's sample text must not select it */
+}
+
+.stage:active {
+  cursor: grabbing;
 }
 
 /* Lines are spaced so the 200px box edges land on major lines (stage centred on a tile). */
@@ -241,6 +248,16 @@
 .key-reach {
   margin-left: var(--space-2);
   border-top-style: dashed;
+}
+
+.drag-hint {
+  display: none;
+}
+
+@media (pointer: fine) {
+  .drag-hint {
+    display: inline;
+  }
 }
 
 @media (max-width: 759px) {

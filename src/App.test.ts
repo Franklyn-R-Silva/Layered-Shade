@@ -177,4 +177,29 @@ describe('App (integration)', () => {
     expect((box.parentElement as HTMLElement).style.width).toBe('280px');
     expect(box.getAttribute('aria-label')).toContain('Card');
   });
+
+  it('drags the selected layer on the stage 1:1, clamped to ±100, as one undo step', async () => {
+    render();
+    actions.addLayer(); // the drag must move layer 2 only, and undo must keep this new layer
+    flushSync();
+    const stage = host.querySelector('.stage') as HTMLElement;
+    const pointer = (type: string, clientX: number, clientY: number) => {
+      stage.dispatchEvent(new PointerEvent(type, { clientX, clientY, pointerId: 1, button: 0, bubbles: true }));
+      flushSync();
+    };
+
+    pointer('pointerdown', 100, 100);
+    pointer('pointermove', 130, 90);
+    expect(state.layers[1]).toMatchObject({ horizontal: 35, vertical: -5 });
+    await new Promise((r) => setTimeout(r, 450)); // pause longer than the 400ms undo burst
+    pointer('pointermove', 400, -300);
+    pointer('pointerup', 400, -300);
+    expect(state.layers[1]).toMatchObject({ horizontal: 100, vertical: -100 });
+    expect(state.layers[0]).toMatchObject({ horizontal: 5, vertical: 5 });
+
+    actions.undo();
+    flushSync();
+    expect(state.layers).toHaveLength(2);
+    expect(state.layers[1]).toMatchObject({ horizontal: 5, vertical: 5 });
+  });
 });

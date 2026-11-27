@@ -58,6 +58,14 @@ export const historyFlags = $state({ canUndo: false, canRedo: false });
 let committed = encodeState(state); // state at the last history point
 let burst: ReturnType<typeof setTimeout> | undefined;
 let restoring = false;
+let gesture = false; // a pointer drag in progress: its burst stays open however long it pauses
+
+/** Closes the open burst: the current state becomes the last history point. */
+function commit() {
+  clearTimeout(burst);
+  burst = undefined;
+  committed = encodeState(state);
+}
 
 $effect.root(() => {
   $effect(() => {
@@ -75,8 +83,7 @@ $effect.root(() => {
       if (!burst) past.record(committed);
       clearTimeout(burst);
       burst = setTimeout(() => {
-        burst = undefined;
-        committed = encodeState(state);
+        if (!gesture) commit();
       }, 400);
     }
     historyFlags.canUndo = past.canUndo;
@@ -110,6 +117,15 @@ export const actions = {
   applyPreset: (name: core.PresetName) => core.applyPreset(state, name),
   undo: () => restore(past.undo(burst ? encodeState(state) : committed)),
   redo: () => restore(past.redo(burst ? encodeState(state) : committed)),
+  /** A drag on the stage is exactly one undo step: it closes any open burst at both ends. */
+  beginGesture: () => {
+    if (burst) commit();
+    gesture = true;
+  },
+  endGesture: () => {
+    gesture = false;
+    if (burst) commit();
+  },
   /** Absolute link that reopens exactly this shadow. */
   shareUrl: () => `${location.origin}${location.pathname}#s=${encodeState(state)}`,
 };

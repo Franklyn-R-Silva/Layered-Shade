@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { state as shadow, ui } from '../state.svelte';
+  import { state as shadow, ui, actions } from '../state.svelte';
   import { getCSS, getBackgroundCSS, isDarkColor } from '../shadow';
   import { plateGeometry } from '../dimensions';
   import { fmt } from '../format';
@@ -30,6 +30,29 @@
     if (mounted) animate = true;
     mounted = true;
   });
+
+  // Dragging on the plate moves the selected layer's offset 1:1 with the pointer.
+  let drag: { id: number; x: number; y: number; h: number; v: number } | undefined;
+  const offset = (start: number, d: number) => Math.max(-100, Math.min(100, Math.round(start + d))); // sliders' range
+
+  function grab(e: PointerEvent) {
+    if (e.button !== 0 || drag) return;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, h: layer.horizontal, v: layer.vertical };
+    actions.beginGesture();
+  }
+
+  function move(e: PointerEvent) {
+    if (e.pointerId !== drag?.id) return;
+    actions.update('horizontal', offset(drag.h, e.clientX - drag.x));
+    actions.update('vertical', offset(drag.v, e.clientY - drag.y));
+  }
+
+  function release(e: PointerEvent) {
+    if (e.pointerId !== drag?.id) return;
+    drag = undefined;
+    actions.endGesture();
+  }
 </script>
 
 {#snippet label(l: { x: number; y: number; anchor: string; text: string })}
@@ -46,7 +69,18 @@
   <h2 id="preview-title" class="visually-hidden">Preview</h2>
   <Toolbar />
 
-  <div class="stage" class:guides={ui.guides} bind:clientWidth={stageW} bind:clientHeight={stageH}>
+  <!-- Pointer-only drag: the offset sliders and fields are its keyboard alternative (WCAG 2.5.7). -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div
+    class="stage"
+    class:guides={ui.guides}
+    bind:clientWidth={stageW}
+    bind:clientHeight={stageH}
+    onpointerdown={grab}
+    onpointermove={move}
+    onpointerup={release}
+    onpointercancel={release}
+  >
     <div class="plate" style:width={`${size.w}px`} style:height={`${size.h}px`}>
       <div
         id="box"
@@ -118,5 +152,6 @@
         {/if}
       </span>
     {/if}
+    <span class="drag-hint">Arraste na prancha para mover a sombra</span>
   </div>
 </section>
